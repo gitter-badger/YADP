@@ -18,6 +18,7 @@
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
+#include <YADPlib>
  
 public Plugin:pluginInfo = {
 	name = "YADP",
