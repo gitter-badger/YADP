@@ -1,5 +1,4 @@
 var cprocess = require('child_process');
-var spawn = require('child_process').spawn;
 var glob = require("glob");
 var path = require("path");
 var fs = require("fs");
@@ -42,43 +41,76 @@ function getReleasePath(base) {
 	return path.join(base, version.getVersion());
 }
 
+function preprocessFile(file) {
+	fsx.copySync(file, file + ".tmp");
+	updateFile(file);
+}
+
+function clearPreprocessor(file) {
+	fsx.deleteSync(file);
+	fs.renameSync(file + ".tmp", file);
+}
+
+function emptyDir(dir) {
+	try {
+		fsx.removeSync(dir);
+		fsx.mkdirsSync(dir);
+		return true;
+	} catch(e) {
+		return false;
+	}
+}
+
 function _compile() {
 	var srcPath = path.join(__dirname, settings.PATH_SP_SRC);
 	var binPath = path.join(__dirname, settings.PATH_SP_BIN);
 	var relPath = path.join(__dirname, settings.PATH_SP_REL);
 	var incPath = path.join(__dirname, settings.PATH_SP_INCLUDE);
+	var sicPath = path.join(srcPath, "include/");
 	var cmpPath = path.join(__dirname, settings.PATH_COMPILER);
-	glob(srcPath + "*.sp", null, function (er, files) {
-		updateVersion();
-		console.log("Current Version: " + version.getVersion());
-		for (var i in files) {
-			var file = files[i];
-			var fileTmp = file + ".tmp";
-			var fileRes =  path.basename(file, '.sp') + '.smx'
-			var arg = ("-i" + incPath) + " " + settings.COMP_FLAGS + " " + file;
-			
-			fsx.copySync(file, fileTmp);
-			updateFile(file);
-			
-			var proc = cprocess.exec(cmpPath + ' ' + arg, {cwd: binPath}, function (err, stdout, stderr) {
-				if(err) console.log(err.code);
-			});
-			
-			var ls = [];
-			proc.stdout.setEncoding('utf8');
-			proc.stdout.on('data', function (d) { ls.push(d); });
-			proc.stdout.on('end', function () {
-				fsx.deleteSync(file);
-				fs.renameSync(fileTmp, file);
-				if(argv.publish){
-					fsx.copySync(srcPath + fileRes, path.join(getReleasePath(relPath), "addons/sourcemod/plugins/")  + fileRes);
-					fsx.copySync(file, path.join(getReleasePath(relPath), "addons/sourcemod/scripting/")  + path.basename(file));
-				}
-				fs.renameSync(srcPath + fileRes, binPath + fileRes);
-				console.log(ls.join());
-			});
+	
+	var srcFiles = glob.sync(srcPath + "*.sp", null);
+	var incFiles = glob.sync(srcPath + "*.inc", null);
+	var allFiles = srcFiles.concat(incFiles);
+	var cmpFiles = [];
+	
+	updateVersion();
+	console.log("Current Version: " + version.getVersion());
+	emptyDir(binPath);
+	for (var i in allFiles) {
+		preprocessFile(allFiles[i]);
+	}
+	for (var i in srcFiles) {
+		var file = srcFiles[i];
+		var fileRes =  path.basename(file, '.sp') + '.smx'
+		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + settings.COMP_FLAGS + " " + file;
+		
+		var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});
+		process.stdout.write(proc);
+		if(fs.existsSync(srcPath + fileRes)){
+			cmpFiles.push(fileRes);
 		}
-	});
+	}
+	for (var i in cmpFiles) {
+		var file = cmpFiles[i];	
+		fs.renameSync(srcPath + file, binPath + file);
+	}
+	for (var i in allFiles) {
+		clearPreprocessor(allFiles[i]);
+	}
+	if(srcFiles.length == cmpFiles.length && argv.publish) {
+		var cpath = getReleasePath(relPath);
+		for (var i in srcFiles) {
+			var file = srcFiles[i];	
+			fsx.copySync(file, path.join(cpath, "addons/sourcemod/scripting/")  + path.basename(file));
+		}
+		for (var i in cmpFiles) {
+			var file = cmpFiles[i];
+			fsx.copySync(binPath + file, path.join(cpath, "addons/sourcemod/plugins/")  + file);
+		}
+		fsx.copySync(sicPath, path.join(cpath, "addons/sourcemod/scripting/include/"));
+		console.log("Created Version " + version.getVersion());
+	}
 }
 
 module.exports = {
