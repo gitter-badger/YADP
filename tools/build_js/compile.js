@@ -70,7 +70,7 @@ function _compile() {
 	var cmpPath = path.join(__dirname, settings.PATH_COMPILER);
 	
 	var srcFiles = glob.sync(srcPath + "*.sp", null);
-	var incFiles = glob.sync(srcPath + "*.inc", null);
+	var incFiles = glob.sync(sicPath + "*.inc", null);
 	var allFiles = srcFiles.concat(incFiles);
 	var cmpFiles = [];
 	
@@ -85,8 +85,13 @@ function _compile() {
 		var fileRes =  path.basename(file, '.sp') + '.smx'
 		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + settings.COMP_FLAGS + " " + file;
 		
-		var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});
-		process.stdout.write(proc);
+		try {
+			var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});
+			process.stdout.write(proc);
+		} catch(e) {
+			process.stdout.write(e.stdout);
+		}
+		
 		if(fs.existsSync(srcPath + fileRes)){
 			cmpFiles.push(fileRes);
 		}
