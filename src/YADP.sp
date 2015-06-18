@@ -15,15 +15,24 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
+ * Version: $version$
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
 #include <YADPlib>
+#include "YADPlib/util.sp"
+#include "YADPlib/debug.sp"
+#include "YADPlib/config.sp"
+#include "YADPlib/command.sp"
  
-public Plugin:pluginInfo = {
+public Plugin:myinfo = {
 	name = "YADP",
 	author = "Hendrik Reker",
 	description = "Yet Another Dice Plugin",
 	version = "$version$",
 	url = "https://github.com/reker-/YADP"
 };
+
+public OnPluginStart() {
+	YAPD_Initialize();
+}

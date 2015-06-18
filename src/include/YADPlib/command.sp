@@ -18,22 +18,16 @@
  * Version: $version$
  * Authors: Hendrik Reker
  */
-#if defined _YADPLIB_INCLUDED
-	#endinput
-#endif
-#define _YADPLIB_INCLUDED
-#define	YADPLIB_VERSION		"$version$"
-#define	YADPLIB_BUILD_DATE	"$date$"
+#include <sourcemod>
+#include <YADPlib>
 
-#include <YADPlib/util>
-#include <YADPlib/debug>
-#include <YADPlib/config>
-#include <YADPlib/command>
+public YAPD_Command_Initialize() {
+	YAPD_Debug_LogMessage("command", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+}
 
-stock YAPD_Initialize() {
-	YAPD_Util_Initialize();
-	YAPD_Debug_Initialize();
-	YAPD_Config_Initialize();
-	YAPD_Command_Initialize();
-	YAPD_Debug_LogMessage("global", "initialized", (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelInfo);
+public Action:YAPD_Command_HandleRequest(args) {
+	new String:strArg[256];
+	GetCmdArgString(strArg, sizeof(strArg));
+	// implement logic
+	return Plugin_Handled;
 }

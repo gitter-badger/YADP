@@ -18,22 +18,26 @@
  * Version: $version$
  * Authors: Hendrik Reker
  */
-#if defined _YADPLIB_INCLUDED
+#if defined _YADPLIB_DEBUG_INCLUDED
 	#endinput
 #endif
-#define _YADPLIB_INCLUDED
-#define	YADPLIB_VERSION		"$version$"
-#define	YADPLIB_BUILD_DATE	"$date$"
+#define _YADPLIB_DEBUG_INCLUDED
 
-#include <YADPlib/util>
-#include <YADPlib/debug>
-#include <YADPlib/config>
-#include <YADPlib/command>
+enum YAPD_Debug_LogMode {
+	LogClient	= 0x01,
+	LogServer	= 0x02,
+	LogFile		= 0x04,
+};
 
-stock YAPD_Initialize() {
-	YAPD_Util_Initialize();
-	YAPD_Debug_Initialize();
-	YAPD_Config_Initialize();
-	YAPD_Command_Initialize();
-	YAPD_Debug_LogMessage("global", "initialized", (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelInfo);
-}
+enum YAPD_Debug_LogLevel {
+	LevelInfo		= 0x01,
+	LevelWarning	= 0x02,
+	LevelError		= 0x04,
+	LevelCritical	= 0x08,
+};
+
+public YAPD_Debug_LogLevel:g_LogLevel = YAPD_Debug_LogLevel:LevelInfo;
+
+forward YAPD_Debug_Initialize();
+forward YAPD_Debug_LogMessage(String:src[], String:msg[], YAPD_Debug_LogMode:mode, YAPD_Debug_LogLevel:level);
+forward YAPD_Debug_GetLogFilePath(String:path[], maxlength);
