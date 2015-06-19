@@ -1,0 +1,3 @@
+[submodule "src/include/AutoExecConfig"]
+	path = src/include/AutoExecConfig
+	url = git@github.com:Impact123/AutoExecConfig.git
