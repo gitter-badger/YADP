@@ -89,7 +89,8 @@ function _compile() {
 			var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});
 			process.stdout.write(proc);
 		} catch(e) {
-			process.stdout.write(e.stdout);
+			if(e && e.stdout)
+				process.stdout.write(e.stdout);
 		}
 		
 		if(fs.existsSync(srcPath + fileRes)){
