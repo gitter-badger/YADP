@@ -22,7 +22,7 @@
 #include <YADPlib>
 
 YAPD_Debug_LogLevel:g_LogLevel = YAPD_Debug_LogLevel:LevelInfo;
-new Handle:g_cvLoglevel = INVALID_HANDLE;
+new ConVar:g_cvLoglevel;
 
 public YAPD_Debug_Initialize() {
 	CreateConfig();

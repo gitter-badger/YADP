@@ -33,7 +33,7 @@
 
 
 
-new Handle:g_cvVersion = INVALID_HANDLE;
+new ConVar:g_cvVersion;
 stock YAPD_Initialize() {
 	new String:msgStr[128];
 	YAPD_Util_Initialize();
