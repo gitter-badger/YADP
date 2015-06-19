@@ -25,6 +25,10 @@ public YAPD_Util_Initialize() {
 	YAPD_Debug_LogMessage("util", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
+public YAPD_Util_Configure() {
+
+}
+
 public YAPD_Util_PrintToConsoleAll(String:message[]) {
 	if(strlen(message) > 1024) return; // Not Supported by CS:GO
 	for (new i = 1; i <= MaxClients; i++) { 

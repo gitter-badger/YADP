@@ -24,7 +24,7 @@
 #include "YADPlib/debug.sp"
 #include "YADPlib/config.sp"
 #include "YADPlib/command.sp"
- 
+
 public Plugin:myinfo = {
 	name = "YADP",
 	author = "Hendrik Reker",
@@ -35,4 +35,8 @@ public Plugin:myinfo = {
 
 public OnPluginStart() {
 	YAPD_Initialize();
+	YADP_Configure();
+}
+
+public OnConfigsExecuted() {
 }

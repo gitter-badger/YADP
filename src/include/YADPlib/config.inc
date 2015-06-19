@@ -24,3 +24,4 @@
 #define _YADPLIB_CONFIG_INCLUDED
 
 forward YAPD_Config_Initialize();
+forward YAPD_Config_Configure();

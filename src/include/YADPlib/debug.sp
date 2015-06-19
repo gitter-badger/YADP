@@ -21,8 +21,36 @@
 #include <sourcemod>
 #include <YADPlib>
 
+YAPD_Debug_LogLevel:g_LogLevel = YAPD_Debug_LogLevel:LevelInfo;
+new Handle:g_cvLoglevel = INVALID_HANDLE;
+
 public YAPD_Debug_Initialize() {
+	CreateConfig();
 	YAPD_Debug_LogMessage("debug", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+}
+
+public YAPD_Debug_Configure() {
+	ApplyConfig();
+}
+
+CreateConfig() {
+	g_cvLoglevel = CreateConVar("yadp_loglevel", "1", "Determines what messages will be ignored. (1,2,4 or 8)", (FCVAR_PLUGIN), true, float(_:LevelInfo), true, float(_:LevelCritical));
+}
+
+ApplyConfig() {
+	new lvl = GetConVarInt(g_cvLoglevel);
+	switch(lvl) {
+		case 1:
+			g_LogLevel = YAPD_Debug_LogLevel:LevelInfo;
+		case 2:
+			g_LogLevel = YAPD_Debug_LogLevel:LevelWarning;
+		case 4:
+			g_LogLevel = YAPD_Debug_LogLevel:LevelError;
+		case 8:
+			g_LogLevel = YAPD_Debug_LogLevel:LevelCritical;
+		default:
+			g_LogLevel = YAPD_Debug_LogLevel:LevelInfo;
+	}
 }
 
 public YAPD_Debug_LogMessage(String:src[], String:msg[], YAPD_Debug_LogMode:mode, YAPD_Debug_LogLevel:level) {

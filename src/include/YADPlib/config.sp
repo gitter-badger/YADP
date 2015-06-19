@@ -27,9 +27,13 @@ public YAPD_Config_Initialize() {
 	YAPD_Debug_LogMessage("config", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
+public YAPD_Config_Configure() {
+
+}
+
 ProcessLine(String:line[]) {
 	new String:msg[50];
-	RegConsoleCmd(line, YAPD_Command_HandleRequest);
+	RegConsoleCmd(line, YAPD_Command_HandleRequest, "YADP roll the dice.");
 	Format(msg, sizeof(msg), "Registered command '%s'.", line);
 	YAPD_Debug_LogMessage("config", msg, YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }

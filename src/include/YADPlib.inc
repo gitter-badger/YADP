@@ -22,18 +22,36 @@
 	#endinput
 #endif
 #define _YADPLIB_INCLUDED
-#define	YADPLIB_VERSION		"$version$"
-#define	YADPLIB_BUILD_DATE	"$date$"
 
 #include <YADPlib/util>
 #include <YADPlib/debug>
 #include <YADPlib/config>
 #include <YADPlib/command>
 
+#define	YADPLIB_VERSION		"$version$"
+#define	YADPLIB_BUILD_DATE	"$date$"
+
+
+
+new Handle:g_cvVersion = INVALID_HANDLE;
 stock YAPD_Initialize() {
+	new String:msgStr[128];
 	YAPD_Util_Initialize();
 	YAPD_Debug_Initialize();
 	YAPD_Config_Initialize();
 	YAPD_Command_Initialize();
-	YAPD_Debug_LogMessage("global", "initialized", (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelInfo);
+	
+	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
+	
+	AutoExecConfig(true, "plugin.YADP");
+	
+	Format(msgStr, sizeof(msgStr), "initialized. V<%s/%s>", YADPLIB_VERSION, YADPLIB_BUILD_DATE);
+	YAPD_Debug_LogMessage("global", msgStr, (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelCritical);
+}
+
+stock YADP_Configure() {
+	YAPD_Util_Configure();
+	YAPD_Debug_Configure();
+	YAPD_Config_Configure();
+	YAPD_Command_Configure();
 }

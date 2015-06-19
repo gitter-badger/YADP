@@ -24,4 +24,5 @@
 #define _YADPLIB_COMMAND_INCLUDED
 
 forward YAPD_Command_Initialize();
+forward YAPD_Command_Configure();
 forward Action:YAPD_Command_HandleRequest(client, args);

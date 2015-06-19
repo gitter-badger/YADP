@@ -25,6 +25,10 @@ public YAPD_Command_Initialize() {
 	YAPD_Debug_LogMessage("command", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
+public YAPD_Command_Configure() {
+
+}
+
 public Action:YAPD_Command_HandleRequest(args) {
 	new String:strArg[256];
 	GetCmdArgString(strArg, sizeof(strArg));
