@@ -26,7 +26,7 @@
 #include <YADPlib/util>
 #include <YADPlib/debug>
 #include <YADPlib/config>
-#include <YADPlib/Module>
+#include <YADPlib/module>
 #include <YADPlib/command>
 
 #define	YADPLIB_VERSION		"$version$"
@@ -49,13 +49,12 @@ stock YAPD_Initialize() {
 	}
 	if(GetConVarInt(g_cvEnabled) != 1) return;
 	
-	
 	YAPD_Initialize_Util();
 	YAPD_Initialize_Debug();
 	YAPD_Initialize_Config();
 	YAPD_Initialize_Module();
 	YAPD_Initialize_Command();
-	
+
 	AutoExecConfig(true, "plugin.YADP");
 	g_InitializedYADP = true;
 	

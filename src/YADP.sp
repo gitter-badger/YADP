@@ -23,7 +23,7 @@
 #include "YADPlib/util.sp"
 #include "YADPlib/debug.sp"
 #include "YADPlib/config.sp"
-#include "YADPlib/Module.sp"
+#include "YADPlib/module.sp"
 #include "YADPlib/command.sp"
 
 public Plugin:myinfo = {
