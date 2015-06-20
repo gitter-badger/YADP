@@ -101,9 +101,6 @@ function _compile() {
 		var file = cmpFiles[i];	
 		fs.renameSync(srcPath + file, binPath + file);
 	}
-	for (var i in allFiles) {
-		clearPreprocessor(allFiles[i]);
-	}
 	if(srcFiles.length == cmpFiles.length && argv.publish) {
 		var cpath = getReleasePath(relPath);
 		for (var i in srcFiles) {
@@ -115,8 +112,21 @@ function _compile() {
 			fsx.copySync(binPath + file, path.join(cpath, "addons/sourcemod/plugins/")  + file);
 		}
 		fsx.copySync(sicPath, path.join(cpath, "addons/sourcemod/scripting/include/"));
+		var relFiles = glob.sync(path.join(cpath, "addons/") + "**/*.sp", null);
+		relFiles = relFiles.concat(glob.sync(path.join(cpath, "addons/") + "**/*.inc", null));
+		for (var i in relFiles) {
+			preprocessFile(relFiles[i]);
+		}
+		var tmpFiles = glob.sync(path.join(cpath, "addons/") + "**/*.tmp", null);
+		for (var i in tmpFiles) {
+			fsx.deleteSync(tmpFiles[i]);
+		}
 		console.log("Created Version " + version.getVersion());
 	}
+	for (var i in allFiles) {
+		clearPreprocessor(allFiles[i]);
+	}
+	
 }
 
 module.exports = {
