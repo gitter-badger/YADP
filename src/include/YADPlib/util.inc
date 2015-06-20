@@ -23,8 +23,8 @@
 #endif
 #define _YADPLIB_UTIL_INCLUDED
 
-forward YAPD_Util_Initialize();
-forward YAPD_Util_Configure();
+forward YAPD_Initialize_Util();
+forward YAPD_Configure_Util();
 forward YAPD_Util_PrintToConsoleAll(String:message[]);
 forward YAPD_Util_RequireDir(String:path[]);
 forward YAPD_Util_RequireFile(String:path[]);

@@ -21,11 +21,11 @@
 #include <sourcemod>
 #include <YADPlib>
 
-public YAPD_Command_Initialize() {
+public YAPD_Initialize_Command() {
 	YAPD_Debug_LogMessage("command", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
-public YAPD_Command_Configure() {
+public YAPD_Configure_Command() {
 
 }
 

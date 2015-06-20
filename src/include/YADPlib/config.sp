@@ -22,12 +22,12 @@
 #include <YADPlib>
 
 new Handle:g_hCmdArray;
-public YAPD_Config_Initialize() {
+public YAPD_Initialize_Config() {
 	RegisterCommands();
 	YAPD_Debug_LogMessage("config", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
-public YAPD_Config_Configure() {
+public YAPD_Configure_Config() {
 
 }
 

@@ -36,7 +36,7 @@ enum YAPD_Debug_LogLevel {
 	LevelCritical	= 0x08,
 };
 
-forward YAPD_Debug_Initialize();
-forward YAPD_Debug_Configure();
+forward YAPD_Initialize_Debug();
+forward YAPD_Configure_Debug();
 forward YAPD_Debug_LogMessage(String:src[], String:msg[], YAPD_Debug_LogMode:mode, YAPD_Debug_LogLevel:level);
 forward YAPD_Debug_GetLogFilePath(String:path[], maxlength);

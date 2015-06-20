@@ -49,10 +49,10 @@ stock YAPD_Initialize() {
 	if(GetConVarInt(g_cvEnabled) != 1) return;
 	
 	
-	YAPD_Util_Initialize();
-	YAPD_Debug_Initialize();
-	YAPD_Config_Initialize();
-	YAPD_Command_Initialize();
+	YAPD_Initialize_Util();
+	YAPD_Initialize_Debug();
+	YAPD_Initialize_Config();
+	YAPD_Initialize_Command();
 	
 	AutoExecConfig(true, "plugin.YADP");
 	g_InitializedYADP = true;
@@ -63,9 +63,9 @@ stock YAPD_Initialize() {
 
 stock YADP_Configure() {
 	if(!g_InitializedYADP) return;
-	YAPD_Util_Configure();
-	YAPD_Debug_Configure();
-	YAPD_Config_Configure();
-	YAPD_Command_Configure();
+	YAPD_Configure_Util();
+	YAPD_Configure_Debug();
+	YAPD_Configure_Config();
+	YAPD_Configure_Command();
 	g_ConfiguredYADP = true;
 }
