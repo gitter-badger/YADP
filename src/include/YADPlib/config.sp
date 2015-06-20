@@ -24,7 +24,7 @@
 new Handle:g_hCmdArray;
 public YAPD_Config_Initialize() {
 	RegisterCommands();
-	YAPD_Debug_LogMessage("config", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+	YAPD_Debug_LogMessage("config", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
 public YAPD_Config_Configure() {

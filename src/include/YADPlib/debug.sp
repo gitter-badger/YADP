@@ -26,7 +26,7 @@ new ConVar:g_cvLoglevel;
 
 public YAPD_Debug_Initialize() {
 	CreateConfig();
-	YAPD_Debug_LogMessage("debug", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+	YAPD_Debug_LogMessage("debug", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
 public YAPD_Debug_Configure() {

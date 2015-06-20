@@ -22,7 +22,7 @@
 #include <YADPlib>
 
 public YAPD_Util_Initialize() {
-	YAPD_Debug_LogMessage("util", "initialized", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+	YAPD_Debug_LogMessage("util", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
 public YAPD_Util_Configure() {
