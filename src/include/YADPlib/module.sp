@@ -20,26 +20,11 @@
  */
 #include <sourcemod>
 #include <YADPlib>
-#include "YADPlib/util.sp"
-#include "YADPlib/debug.sp"
-#include "YADPlib/config.sp"
-#include "YADPlib/Module.sp"
-#include "YADPlib/command.sp"
 
-public Plugin:myinfo = {
-	name = "YADP",
-	author = "Hendrik Reker",
-	description = "Yet Another Dice Plugin",
-	version = "$version$",
-	url = "https://github.com/reker-/YADP"
-};
-
-public OnPluginStart() {
-	YAPD_Initialize();
-	YADP_Configure();
-	if(g_InitializedYADP && !g_ConfiguredYADP) 
-		YAPD_Debug_LogMessage("global", "could not configure YADP.", (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelCritical);
+public YAPD_Initialize_Module() {
+	YAPD_Debug_LogMessage("module", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
 }
 
-public OnConfigsExecuted() {
+public YAPD_Configure_Module() {
+
 }
