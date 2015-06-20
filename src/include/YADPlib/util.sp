@@ -21,26 +21,26 @@
 #include <sourcemod>
 #include <YADPlib>
 
-public YAPD_Initialize_Util() {
-	YAPD_Debug_LogMessage("util", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+public void YAPD_Initialize_Util() {
+	YAPD_Debug_LogMessage("util", "initialized.", LogServer, LevelInfo);
 }
 
-public YAPD_Configure_Util() {
+public void YAPD_Configure_Util() {
 
 }
 
-public YAPD_Util_PrintToConsoleAll(String:message[]) {
+public void YAPD_Util_PrintToConsoleAll(char[] message) {
 	if(strlen(message) > 1024) return; // Not Supported by CS:GO
-	for (new i = 1; i <= MaxClients; i++) { 
+	for (int i = 1; i <= MaxClients; i++) { 
 		if(!IsClientInGame(i)) continue;	
 		PrintToConsole(i, message); 
 	}
 }
 
 
-public bool:YAPD_Util_AppendToFile(String:path[], String:content[]) {
-	new Handle:hFile = OpenFile(path, "a+");
-	if(hFile != INVALID_HANDLE){
+public bool YAPD_Util_AppendToFile(char[] path, char[] content) {
+	Handle hFile = OpenFile(path, "a+");
+	if(hFile != null){
 		WriteFileLine(hFile, content);
 	} else {
 		CloseHandle(hFile);
@@ -50,29 +50,29 @@ public bool:YAPD_Util_AppendToFile(String:path[], String:content[]) {
 	return true;
 }
 
-public YAPD_Util_RequireDir(String:filePath[]) {
-	decl String:dirPath[PLATFORM_MAX_PATH];
+public void YAPD_Util_RequireDir(char[] filePath) {
+	char dirPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, dirPath, PLATFORM_MAX_PATH, filePath);
 	if(!DirExists(dirPath)) {
 		CreateDirectory(dirPath, 511);
 	}
 }
 
-public YAPD_Util_RequireFile(String:filePath[]) {
-	decl String:path[PLATFORM_MAX_PATH];
+public void YAPD_Util_RequireFile(char[] filePath) {
+	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, filePath);
 	if(!FileExists(path)) {
-		new Handle:hFile = OpenFile(path, "w+");
+		Handle hFile = OpenFile(path, "w+");
 		CloseHandle(hFile);
 	}
 }
 
-public YAPD_Util_ReadAllLines(String:path[], Handle:adtHandle) {
-	decl String:filePath[PLATFORM_MAX_PATH];
+public void YAPD_Util_ReadAllLines(char[] path, Handle adtHandle) {
+	char filePath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
-	new Handle:hFile = OpenFile(filePath, "r");
-	if(hFile != INVALID_HANDLE){
-		decl String:buffer[128];
+	Handle hFile = OpenFile(filePath, "r");
+	if(hFile != null){
+		char buffer[128];
 		while(ReadFileLine(hFile, buffer, sizeof(buffer))) {
 			YAPD_Util_ReplaceShellComment(buffer);
 			if(strlen(buffer) > 0) {
@@ -83,13 +83,13 @@ public YAPD_Util_ReadAllLines(String:path[], Handle:adtHandle) {
 	CloseHandle(hFile);
 }
 
-public YAPD_Util_CountLines(String:path[]) {
-	decl String:filePath[PLATFORM_MAX_PATH];
+public int YAPD_Util_CountLines(char[] path) {
+	char filePath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
-	new Handle:hFile = OpenFile(filePath, "r");
-	new cnt = 0;
-	if(hFile != INVALID_HANDLE){
-		decl String:buffer[50];
+	Handle hFile = OpenFile(filePath, "r");
+	int cnt = 0;
+	if(hFile != null){
+		char buffer[50];
 		while(ReadFileLine(hFile, buffer, sizeof(buffer))) {
 			YAPD_Util_ReplaceShellComment(buffer);
 			if(strlen(buffer) > 0) cnt++;
@@ -99,13 +99,13 @@ public YAPD_Util_CountLines(String:path[]) {
 	return cnt;
 }
 
-public YAPD_Util_ReplaceShellComment(String:str[]) {
-	new pos = FindCharInString(str, '#');
+public void YAPD_Util_ReplaceShellComment(char[] str) {
+	int pos = FindCharInString(str, '#');
 	if(pos < 0) {
 		TrimString(str);
 		return;
 	}
-	for(new i = pos; i < strlen(str); i++) {
+	for(int i = pos; i < strlen(str); i++) {
 		str[i] = ' ';
 	}
 	TrimString(str);

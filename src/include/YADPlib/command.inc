@@ -23,6 +23,6 @@
 #endif
 #define _YADPLIB_COMMAND_INCLUDED
 
-forward YAPD_Initialize_Command();
-forward YAPD_Configure_Command();
-forward Action:YAPD_Command_HandleRequest(client, args);
+forward void YAPD_Initialize_Command();
+forward void YAPD_Configure_Command();
+forward Action YAPD_Command_HandleRequest(int client, int args);

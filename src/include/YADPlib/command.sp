@@ -21,16 +21,16 @@
 #include <sourcemod>
 #include <YADPlib>
 
-public YAPD_Initialize_Command() {
-	YAPD_Debug_LogMessage("command", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+public void YAPD_Initialize_Command() {
+	YAPD_Debug_LogMessage("command", "initialized.", LogServer, LevelInfo);
 }
 
-public YAPD_Configure_Command() {
+public void YAPD_Configure_Command() {
 
 }
 
-public Action:YAPD_Command_HandleRequest(args) {
-	new String:strArg[256];
+public Action YAPD_Command_HandleRequest(int args) {
+	char strArg[256];
 	GetCmdArgString(strArg, sizeof(strArg));
 	// implement logic
 	return Plugin_Handled;

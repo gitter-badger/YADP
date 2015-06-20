@@ -23,12 +23,12 @@
 #endif
 #define _YADPLIB_UTIL_INCLUDED
 
-forward YAPD_Initialize_Util();
-forward YAPD_Configure_Util();
-forward YAPD_Util_PrintToConsoleAll(String:message[]);
-forward YAPD_Util_RequireDir(String:path[]);
-forward YAPD_Util_RequireFile(String:path[]);
-forward bool:YAPD_Util_AppendToFile(String:path[], String:content[]);
-forward YAPD_Util_ReadAllLines(String:path[], Handle:adtHandle);
-forward YAPD_Util_CountLines(String:path[]);
-forward YAPD_Util_ReplaceShellComment(String:str[]);
+forward void YAPD_Initialize_Util();
+forward void YAPD_Configure_Util();
+forward void YAPD_Util_PrintToConsoleAll(char[] message);
+forward void YAPD_Util_RequireDir(char[] path);
+forward void YAPD_Util_RequireFile(char[] path);
+forward bool YAPD_Util_AppendToFile(char[] path, char[] content);
+forward void YAPD_Util_ReadAllLines(char[] path, Handle adtHandle);
+forward int YAPD_Util_CountLines(char[] path);
+forward void YAPD_Util_ReplaceShellComment(char[] str);

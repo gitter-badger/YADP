@@ -21,36 +21,36 @@
 #include <sourcemod>
 #include <YADPlib>
 
-new Handle:g_hCmdArray;
-public YAPD_Initialize_Config() {
+Handle g_hCmdArray = null;
+public void YAPD_Initialize_Config() {
 	RegisterCommands();
-	YAPD_Debug_LogMessage("config", "initialized.", YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+	YAPD_Debug_LogMessage("config", "initialized.", LogServer, LevelInfo);
 }
 
-public YAPD_Configure_Config() {
+public void YAPD_Configure_Config() {
 
 }
 
-ProcessLine(String:line[]) {
-	new String:msg[50];
+void ProcessLine(char[] line) {
+	char msg[50];
 	RegConsoleCmd(line, YAPD_Command_HandleRequest, "YADP roll the dice.");
 	Format(msg, sizeof(msg), "Registered command '%s'.", line);
-	YAPD_Debug_LogMessage("config", msg, YAPD_Debug_LogMode:LogServer, YAPD_Debug_LogLevel:LevelInfo);
+	YAPD_Debug_LogMessage("config", msg, LogServer, LevelInfo);
 }
 
-RegisterCommands() {
-	decl String:srcPath[26];
+void RegisterCommands() {
+	char srcPath[26];
 	srcPath = "configs/YADP/";
 	YAPD_Util_RequireDir(srcPath);
 	srcPath = "configs/YADP/commands.txt";
 	YAPD_Util_RequireFile(srcPath);
 	
-	new cmdCnt = YAPD_Util_CountLines(srcPath);
+	int cmdCnt = YAPD_Util_CountLines(srcPath);
 	if(cmdCnt < 1) return;
 	g_hCmdArray = CreateArray(cmdCnt);
 	YAPD_Util_ReadAllLines(srcPath, g_hCmdArray);
-	decl String:buffer[20];
-	for(new i=0; i<GetArraySize(g_hCmdArray); i++ ) {
+	char buffer[20];
+	for(int i = 0; i < GetArraySize(g_hCmdArray); i++) {
 		GetArrayString(g_hCmdArray, i, buffer, 20);
 		ProcessLine(buffer);
     }

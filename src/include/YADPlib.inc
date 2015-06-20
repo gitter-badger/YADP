@@ -22,6 +22,7 @@
 	#endinput
 #endif
 #define _YADPLIB_INCLUDED
+#pragma newdecls required
 
 #include <YADPlib/util>
 #include <YADPlib/debug>
@@ -32,19 +33,18 @@
 #define	YADPLIB_VERSION		"$version$"
 #define	YADPLIB_BUILD_DATE	"$date$"
 
+ConVar g_cvVersion;
+ConVar g_cvEnabled;
+bool g_InitializedYADP = false;
+bool g_ConfiguredYADP = false;
 
-
-new ConVar:g_cvVersion;
-new ConVar:g_cvEnabled;
-new bool:g_InitializedYADP = false;
-new bool:g_ConfiguredYADP = false;
-stock YAPD_Initialize() {
-	new String:msgStr[128];
+stock void YAPD_Initialize() {
+	char msgStr[128];
 	
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
 	if(g_cvEnabled == INVALID_HANDLE || g_cvEnabled == INVALID_HANDLE) {
-		YAPD_Debug_LogMessage("global", "could not register ConVars.", (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelCritical);
+		YAPD_Debug_LogMessage("global", "could not register ConVars.", (LogServer | LogFile), LevelCritical);
 		return;
 	}
 	if(GetConVarInt(g_cvEnabled) != 1) return;
@@ -59,10 +59,10 @@ stock YAPD_Initialize() {
 	g_InitializedYADP = true;
 	
 	Format(msgStr, sizeof(msgStr), "initialized. V<%s/%s>", YADPLIB_VERSION, YADPLIB_BUILD_DATE);
-	YAPD_Debug_LogMessage("global", msgStr, (YAPD_Debug_LogMode:LogServer | YAPD_Debug_LogMode:LogFile), YAPD_Debug_LogLevel:LevelCritical);
+	YAPD_Debug_LogMessage("global", msgStr, (LogServer | LogFile), LevelCritical);
 }
 
-stock YADP_Configure() {
+stock void YADP_Configure() {
 	if(!g_InitializedYADP) return;
 	YAPD_Configure_Util();
 	YAPD_Configure_Debug();
