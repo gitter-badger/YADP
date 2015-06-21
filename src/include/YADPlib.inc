@@ -36,17 +36,17 @@
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
-bool g_InitializedYADP = false;
-bool g_ConfiguredYADP = false;
+static bool g_InitializedYADP = false;
+static bool g_ConfiguredYADP = false;
 
-stock void YAPD_Initialize() {
+stock bool YAPD_Initialize() {
 	char msgStr[128];
 	
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
 	if(g_cvEnabled == null || g_cvVersion == null) {
 		YAPD_Debug_LogMessage("global", "could not register ConVars.", (LogServer | LogFile), LevelCritical);
-		return;
+		return false;
 	}
 	
 	YAPD_Initialize_Util();
@@ -58,15 +58,16 @@ stock void YAPD_Initialize() {
 
 	AutoExecConfig(true, "plugin.YADP");
 	
-	if(GetConVarInt(g_cvEnabled) != 1) return;
+	if(GetConVarInt(g_cvEnabled) != 1) return false;
 	g_InitializedYADP = true;
 	
 	Format(msgStr, sizeof(msgStr), "initialized. V<%s/%s>", YADPLIB_VERSION, YADPLIB_BUILD_DATE);
 	YAPD_Debug_LogMessage("global", msgStr, (LogServer | LogFile), LevelCritical);
+	return g_InitializedYADP;
 }
 
-stock void YADP_Configure() {
-	if(!g_InitializedYADP) return;
+stock bool YADP_Configure() {
+	if(!g_InitializedYADP) return false;
 	YAPD_Configure_Util();
 	YAPD_Configure_Debug();
 	YAPD_Configure_Config();
@@ -74,4 +75,5 @@ stock void YADP_Configure() {
 	YAPD_Configure_Chat();
 	YAPD_Configure_Command();
 	g_ConfiguredYADP = true;
+	return g_ConfiguredYADP;
 }

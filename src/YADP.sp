@@ -31,9 +31,9 @@ public Plugin myinfo = {
 };
 
 public void OnPluginStart() {
-	YAPD_Initialize();
-	YADP_Configure();
-	if(g_InitializedYADP && !g_ConfiguredYADP) 
+	bool initYADP = YAPD_Initialize();
+	bool confYADP = YADP_Configure();
+	if(initYADP && !confYADP) 
 		YAPD_Debug_LogMessage("global", "could not configure YADP.", (LogServer | LogFile), LevelCritical);
 }
 
