@@ -26,9 +26,14 @@
 #define MAXMODULES		20
 #define MAXMODULENAME	10
 #define MAXMODULEDESC	100
+
+typedef ModuleCallback = function Action(int args);
+
 forward void YAPD_Initialize_Module();
 forward void YAPD_Configure_Module();
-forward int YAPD_Module_Register(char[] name, char[] desc, int weight);
+forward int YAPD_Module_Register(char[] name, char[] desc, int weight, ModuleCallback callback);
 forward void YAPD_Module_GetName(int idx, char[] buffer, int maxlength);
 forward void YAPD_Module_GetDescription(int idx, char[] buffer, int maxlength);
 forward int YAPD_Module_GetWeight(int idx);
+forward bool YAPD_Module_StartInvoking(int idx);
+forward bool YAPD_Module_StopInvoking(int idx, any &result);
