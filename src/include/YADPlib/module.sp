@@ -25,7 +25,7 @@ char g_modNames[MAXMODULES][MAXMODULENAME];
 char g_modDescs[MAXMODULES][MAXMODULEDESC];
 char g_modWghts[MAXMODULES];
 ModuleCallback g_modCallbacks[MAXMODULES];
-int g_modIdx = 0;
+int g_modIdx = -1;
 int g_modIdxInvoking = -1;
 bool g_CanRegister = false;
 
@@ -54,55 +54,56 @@ public int YAPD_Module_Register(char[] name, char[] desc, int weight, ModuleCall
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return -1;
 	}
+	g_modIdx++;
 	g_modNames[g_modIdx] = mName;
 	g_modDescs[g_modIdx] = mDesc;
 	g_modWghts[g_modIdx] = weight;
 	g_modCallbacks[g_modIdx] = callback;
 	Format(errMsg, sizeof(errMsg), "registered module '%s'.", mName);
 	YAPD_Debug_LogMessage("module", errMsg, LogServer, LevelInfo);
-	return g_modIdx++;
+	return g_modIdx;
 }
 
 public void YAPD_Module_GetName(int idx, char[] bufferModName, int bufferModNameMaxLength) {
-	if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx) || bufferModNameMaxLength < MAXMODULENAME){
+	if((idx < 0 || idx > g_modIdx) || bufferModNameMaxLength < MAXMODULENAME){
 		char errMsg[80];
-		if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx))
+		if((idx < 0 || idx > g_modIdx))
 			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
 		else
 			Format(errMsg, sizeof(errMsg), "Module names require up to %d characters.", MAXMODULENAME);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
-	strcopy(bufferModName, bufferModNameMaxLength, g_modNames[g_modIdx]);
+	strcopy(bufferModName, bufferModNameMaxLength, g_modNames[idx]);
 }
 
 public void YAPD_Module_GetDescription(int idx, char[] bufferModDesc, int bufferModDescMaxLength) {
-	if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx) || bufferModDescMaxLength < MAXMODULEDESC){
+	if((idx < 0 || idx > g_modIdx) || bufferModDescMaxLength < MAXMODULEDESC){
 		char errMsg[80];
-		if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx))
+		if((idx < 0 || idx > g_modIdx))
 			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
 		else
 			Format(errMsg, sizeof(errMsg), "Module descriptions require up to %d characters.", MAXMODULEDESC);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
-	strcopy(bufferModDesc, bufferModDescMaxLength, g_modDescs[g_modIdx]);
+	strcopy(bufferModDesc, bufferModDescMaxLength, g_modDescs[idx]);
 }
 
 public int YAPD_Module_GetWeight(int idx) {
-	if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx)){
+	if((idx < 0 || idx > g_modIdx)){
 		char errMsg[80];
 		Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return -1;
 	}
-	return g_modWghts[g_modIdx];
+	return g_modWghts[idx];
 }
 
 public bool YAPD_Module_StartInvoking(int idx) {
-	if(g_modIdxInvoking != -1 || g_modIdxInvoking >= g_modIdx) {
+	if(g_modIdxInvoking != -1 || (idx < 0 || idx > g_modIdx)) {
 		char errMsg[80];
-		if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx))
+		if((idx < 0 || idx > g_modIdx))
 			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
 		else
 			Format(errMsg, sizeof(errMsg), "can not invoke module <%d>. Already invoking <%d>.", idx, g_modIdxInvoking);
@@ -115,9 +116,9 @@ public bool YAPD_Module_StartInvoking(int idx) {
 }
 
 public bool YAPD_Module_StopInvoking(int idx, any &result) {
-	if(g_modIdxInvoking == -1 || (g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx)) {
+	if(g_modIdxInvoking == -1 || (idx < 0 || idx > g_modIdx) || (idx != g_modIdxInvoking)) {
 		char errMsg[80];
-		if((g_modIdxInvoking < 0 || g_modIdxInvoking >= g_modIdx))
+		if((idx < 0 || idx > g_modIdx))
 			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
 		else if(g_modIdxInvoking == -1)
 			Format(errMsg, sizeof(errMsg), "no invocation in progress.");
@@ -129,4 +130,21 @@ public bool YAPD_Module_StopInvoking(int idx, any &result) {
 	Call_Finish(result);
 	g_modIdxInvoking = -1;
 	return true;
+}
+
+public int YAPD_Module_ChooseRandom() {
+	int sumWght = 0;
+	for(int i = 0; i <= g_modIdx; i++) {
+		sumWght += g_modWghts[i];
+	}
+	int rndIdx = GetRandomInt(0, sumWght);
+	int selIdx = -1;
+	for(int i = 0; i <= g_modIdx; i++) {
+		if(rndIdx < g_modWghts[i]) {
+			selIdx = i;
+			break;
+		}
+		rndIdx -= g_modWghts[i];
+	}
+	return selIdx;
 }

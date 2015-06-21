@@ -37,3 +37,4 @@ forward void YAPD_Module_GetDescription(int idx, char[] buffer, int maxlength);
 forward int YAPD_Module_GetWeight(int idx);
 forward bool YAPD_Module_StartInvoking(int idx);
 forward bool YAPD_Module_StopInvoking(int idx, any &result);
+forward int YAPD_Module_ChooseRandom();
