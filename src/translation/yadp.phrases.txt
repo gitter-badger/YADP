@@ -1,7 +1,0 @@
-"Phrases"
-{
-	"yadp_main_NoAttemptsLeft"
-	{
-		"en"		"You do not have any attempts left."
-	}
-}

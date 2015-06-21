@@ -25,7 +25,9 @@
 #include <YADPlib/debug>
 
 stock void YAPD_Initialize_Util() {
-	YAPD_Debug_LogMessage("util", "initialized.", LogServer, LevelInfo);
+	char msg[40];
+	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
+	YAPD_Debug_LogMessage("util", msg, LogServer, LevelInfo);
 }
 
 stock void YAPD_Configure_Util() {
@@ -33,7 +35,7 @@ stock void YAPD_Configure_Util() {
 }
 
 stock void YAPD_Util_PrintToConsoleAll(char[] message) {
-	if(strlen(message) > 1024) return; // Not Supported by CS:GO
+	if(strlen(message) > 1024) return; // Not Supported by CS:GO / L4D2
 	for (int i = 1; i <= MaxClients; i++) { 
 		if(!IsClientInGame(i)) continue;	
 		PrintToConsole(i, message); 

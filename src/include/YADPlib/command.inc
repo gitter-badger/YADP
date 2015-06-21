@@ -26,8 +26,10 @@
 static int g_DiceAttepmts[MAXPLAYERS + 1];
 
 stock void YAPD_Initialize_Command() {
-	YAPD_Debug_LogMessage("command", "initialized.", LogServer, LevelInfo); 
-	HookEvent("round_prestart", YAPD_Command_RoundPrestart, EventHookMode_PostNoCopy)
+	char msg[40];
+	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
+	HookEvent("round_prestart", YAPD_Command_RoundPrestart, EventHookMode_PostNoCopy);
+	YAPD_Debug_LogMessage("command", msg, LogServer, LevelInfo);
 }
 
 stock void YAPD_Configure_Command() {

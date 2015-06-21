@@ -39,7 +39,9 @@ static bool g_CanRegister = false;
 
 stock void YAPD_Initialize_Module() {
 	g_CanRegister = true;
-	YAPD_Debug_LogMessage("module", "initialized.", LogServer, LevelInfo);
+	char msg[40];
+	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
+	YAPD_Debug_LogMessage("module", msg, LogServer, LevelInfo);
 }
 
 stock void YAPD_Configure_Module() {
@@ -53,12 +55,12 @@ stock int YAPD_Module_Register(char[] name, char[] desc, int weight, ModuleCallb
 	strcopy(mName, sizeof(mName), name);
 	strcopy(mDesc, sizeof(mDesc), desc);
 	if(g_modIdx >= MAXMODULES || !g_CanRegister) {
-		Format(errMsg, sizeof(errMsg), "can not register module '%s'.", mName);
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegModFail", LANG_SERVER, mName);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		if(!g_CanRegister)
-			Format(errMsg, sizeof(errMsg), "It is too late to register a module.");
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegModLate", LANG_SERVER);
 		else
-			Format(errMsg, sizeof(errMsg), "Maximum number of modules: %d", MAXMODULES);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegModMax", LANG_SERVER, MAXMODULES);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return -1;
 	}
@@ -67,7 +69,7 @@ stock int YAPD_Module_Register(char[] name, char[] desc, int weight, ModuleCallb
 	g_modDescs[g_modIdx] = mDesc;
 	g_modWghts[g_modIdx] = weight;
 	g_modCallbacks[g_modIdx] = callback;
-	Format(errMsg, sizeof(errMsg), "registered module '%s'.", mName);
+	Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegMod", LANG_SERVER, mName);
 	YAPD_Debug_LogMessage("module", errMsg, LogServer, LevelInfo);
 	return g_modIdx;
 }
@@ -76,9 +78,9 @@ stock void YAPD_Module_GetName(int idx, char[] bufferModName, int bufferModNameM
 	if((idx < 0 || idx > g_modIdx) || bufferModNameMaxLength < MAXMODULENAME){
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
-			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		else
-			Format(errMsg, sizeof(errMsg), "Module names require up to %d characters.", MAXMODULENAME);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModNameBuffer", LANG_SERVER, MAXMODULENAME);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
@@ -89,9 +91,9 @@ stock void YAPD_Module_GetDescription(int idx, char[] bufferModDesc, int bufferM
 	if((idx < 0 || idx > g_modIdx) || bufferModDescMaxLength < MAXMODULEDESC){
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
-			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		else
-			Format(errMsg, sizeof(errMsg), "Module descriptions require up to %d characters.", MAXMODULEDESC);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDescBuffer", LANG_SERVER, MAXMODULEDESC);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
@@ -101,7 +103,7 @@ stock void YAPD_Module_GetDescription(int idx, char[] bufferModDesc, int bufferM
 stock int YAPD_Module_GetWeight(int idx) {
 	if((idx < 0 || idx > g_modIdx)){
 		char errMsg[80];
-		Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return -1;
 	}
@@ -112,9 +114,9 @@ stock bool YAPD_Module_StartInvoking(int idx) {
 	if(g_modIdxInvoking != -1 || (idx < 0 || idx > g_modIdx)) {
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
-			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		else
-			Format(errMsg, sizeof(errMsg), "can not invoke module <%d>. Already invoking <%d>.", idx, g_modIdxInvoking);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModInvokeInProgress", LANG_SERVER, idx, g_modIdxInvoking);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return false;
 	}
@@ -127,11 +129,11 @@ stock bool YAPD_Module_StopInvoking(int idx, any &result) {
 	if(g_modIdxInvoking == -1 || (idx < 0 || idx > g_modIdx) || (idx != g_modIdxInvoking)) {
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
-			Format(errMsg, sizeof(errMsg), "Module <%d> does not exist.", idx);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		else if(g_modIdxInvoking == -1)
-			Format(errMsg, sizeof(errMsg), "no invocation in progress.");
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModNoInvokeInProgress", LANG_SERVER);
 		else
-			Format(errMsg, sizeof(errMsg), "can not stop invoking module <%d>. Already invoking <%d>.", idx, g_modIdxInvoking);
+			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModInvokeStopWrongMod", LANG_SERVER, idx, g_modIdxInvoking);
 		YAPD_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return false;
 	}

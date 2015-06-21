@@ -67,6 +67,7 @@ function _compile() {
 	var relPath = path.join(__dirname, settings.PATH_SP_REL);
 	var incPath = path.join(__dirname, settings.PATH_SP_INCLUDE);
 	var sicPath = path.join(srcPath, "include/");
+	var tlrPath = path.join(srcPath, "translations/");
 	var cmpPath = path.join(__dirname, settings.PATH_COMPILER);
 	
 	var srcFiles = glob.sync(srcPath + "*.sp", null);
@@ -112,6 +113,7 @@ function _compile() {
 			fsx.copySync(binPath + file, path.join(cpath, "addons/sourcemod/plugins/")  + file);
 		}
 		fsx.copySync(sicPath, path.join(cpath, "addons/sourcemod/scripting/include/"));
+		fsx.copySync(tlrPath, path.join(cpath, "addons/sourcemod/translations/"));
 		var relFiles = glob.sync(path.join(cpath, "addons/") + "**/*.sp", null);
 		relFiles = relFiles.concat(glob.sync(path.join(cpath, "addons/") + "**/*.inc", null));
 		for (var i in relFiles) {

@@ -1,0 +1,85 @@
+"Phrases"
+{
+	"yadp_main_ConfigFailed"
+	{
+		"en"		"could not configure YADP."
+	}
+	"yadp_main_ConVarFailed"
+	{
+		"en"		"could not register ConVars."
+	}
+	"yadp_main_LogFileFailed"
+	{
+		"en"		"can not open log file."
+	}
+	"yadp_main_LogFileBuffer"
+	{
+		"en"		"logfile path buffer was too small."
+	}
+	"yadp_main_Init"
+	{
+		"en"		"initialized."
+	}
+	"yadp_main_InitVersion"
+	{
+		"#format"	"{1:s}{2:s}"
+		"en"		"initialized. V<{1}/{2}>"
+	}
+	"yadp_main_RegCmd"
+	{
+		"#format"	"{1:s}"
+		"en"		"registered command '{1}'."
+	}
+	"yadp_main_RegModFail"
+	{
+		"#format"	"{1:s}"
+		"en"		"can not register module '{1}'."
+	}
+	"yadp_main_RegModLate"
+	{
+		"en"		"it is too late to register a module."
+	}
+	"yadp_main_RegModMax"
+	{
+		"#format"	"{1:d}"
+		"en"		"maximum number of modules: {1}."
+	}
+	"yadp_main_RegMod"
+	{
+		"#format"	"{1:s}"
+		"en"		"registered module '{1}'."
+	}
+	"yadp_main_ModDoesNotExist"
+	{
+		"#format"	"{1:d}"
+		"en"		"module <{1}> does not exist."
+	}
+	"yadp_main_ModNameBuffer"
+	{
+		"#format"	"{1:d}"
+		"en"		"module names require up to {1} characters."
+	}
+	"yadp_main_ModDescBuffer"
+	{
+		"#format"	"{1:d}"
+		"en"		"module descriptions require up to {1} characters."
+	}
+	"yadp_main_ModInvokeInProgress"
+	{
+		"#format"	"{1:d}{2:d}"
+		"en"		"can not invoke module <{1}>. Already invoking <{2}>."
+	}
+	"yadp_main_ModNoInvokeInProgress"
+	{
+		"en"		"no invocation in progress."
+	}
+	"yadp_main_ModInvokeStopWrongMod"
+	{
+		"#format"	"{1:d}{2:d}"
+		"en"		"can not stop invoking module <{1}>. Currently invoking <{2}>."
+	}
+	"yadp_main_NoAttemptsLeft"
+	{
+		"en"		"you do not have any attempts left."
+	}
+}

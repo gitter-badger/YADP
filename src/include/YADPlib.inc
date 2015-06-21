@@ -40,12 +40,14 @@ static bool g_InitializedYADP = false;
 static bool g_ConfiguredYADP = false;
 
 stock bool YAPD_Initialize() {
+	LoadTranslations("yadp.phrases.txt");
 	char msgStr[128];
-	
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
 	if(g_cvEnabled == null || g_cvVersion == null) {
-		YAPD_Debug_LogMessage("global", "could not register ConVars.", (LogServer | LogFile), LevelCritical);
+		char errMsg[40];
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConVarFailed", LANG_SERVER);
+		YAPD_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
 		return false;
 	}
 	
@@ -61,7 +63,7 @@ stock bool YAPD_Initialize() {
 	if(GetConVarInt(g_cvEnabled) != 1) return false;
 	g_InitializedYADP = true;
 	
-	Format(msgStr, sizeof(msgStr), "initialized. V<%s/%s>", YADPLIB_VERSION, YADPLIB_BUILD_DATE);
+	Format(msgStr, sizeof(msgStr), "%T", "yadp_main_InitVersion", LANG_SERVER, YADPLIB_VERSION, YADPLIB_BUILD_DATE);
 	YAPD_Debug_LogMessage("global", msgStr, (LogServer | LogFile), LevelCritical);
 	return g_InitializedYADP;
 }

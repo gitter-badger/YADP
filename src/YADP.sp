@@ -33,8 +33,11 @@ public Plugin myinfo = {
 public void OnPluginStart() {
 	bool initYADP = YAPD_Initialize();
 	bool confYADP = YADP_Configure();
-	if(initYADP && !confYADP) 
-		YAPD_Debug_LogMessage("global", "could not configure YADP.", (LogServer | LogFile), LevelCritical);
+	if(initYADP && !confYADP) {
+		char errMsg[40];
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConfigFailed", LANG_SERVER);
+		YAPD_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
+	}
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)

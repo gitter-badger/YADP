@@ -26,8 +26,10 @@
 static Handle g_hCmdArray = null;
 
 stock void YAPD_Initialize_Config() {
+	char msg[40];
 	RegisterCommands();
-	YAPD_Debug_LogMessage("config", "initialized.", LogServer, LevelInfo);
+	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
+	YAPD_Debug_LogMessage("config", msg, LogServer, LevelInfo);
 }
 
 stock void YAPD_Configure_Config() {
@@ -37,7 +39,7 @@ stock void YAPD_Configure_Config() {
 static void ProcessLine(char[] line) {
 	char msg[50];
 	RegConsoleCmd(line, YAPD_Command_HandleRequest, "YADP roll the dice.");
-	Format(msg, sizeof(msg), "Registered command '%s'.", line);
+	Format(msg, sizeof(msg), "%T", "yadp_main_RegCmd", LANG_SERVER, line);
 	YAPD_Debug_LogMessage("config", msg, LogServer, LevelInfo);
 }
 
