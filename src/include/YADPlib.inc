@@ -28,6 +28,7 @@
 #include <YADPlib/debug>
 #include <YADPlib/config>
 #include <YADPlib/module>
+#include <YADPlib/chat>
 #include <YADPlib/command>
 
 #define	YADPLIB_VERSION		"$version$"
@@ -43,7 +44,7 @@ stock void YAPD_Initialize() {
 	
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
-	if(g_cvEnabled == INVALID_HANDLE || g_cvEnabled == INVALID_HANDLE) {
+	if(g_cvEnabled == null || g_cvEnabled == null) {
 		YAPD_Debug_LogMessage("global", "could not register ConVars.", (LogServer | LogFile), LevelCritical);
 		return;
 	}
@@ -53,6 +54,7 @@ stock void YAPD_Initialize() {
 	YAPD_Initialize_Debug();
 	YAPD_Initialize_Config();
 	YAPD_Initialize_Module();
+	YAPD_Initialize_Chat();
 	YAPD_Initialize_Command();
 
 	AutoExecConfig(true, "plugin.YADP");
@@ -68,6 +70,7 @@ stock void YADP_Configure() {
 	YAPD_Configure_Debug();
 	YAPD_Configure_Config();
 	YAPD_Configure_Module();
+	YAPD_Configure_Chat();
 	YAPD_Configure_Command();
 	g_ConfiguredYADP = true;
 }

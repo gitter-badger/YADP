@@ -26,3 +26,4 @@
 forward void YAPD_Initialize_Command();
 forward void YAPD_Configure_Command();
 forward Action YAPD_Command_HandleRequest(int client, int args);
+forward Action YAPD_Command_RoundPrestart(Event event, const char[] name, bool dontBroadcast);

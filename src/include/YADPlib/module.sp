@@ -138,7 +138,7 @@ public int YAPD_Module_ChooseRandom() {
 		sumWght += g_modWghts[i];
 	}
 	int rndIdx = GetRandomInt(0, sumWght);
-	int selIdx = -1;
+	int selIdx = 0;
 	for(int i = 0; i <= g_modIdx; i++) {
 		if(rndIdx < g_modWghts[i]) {
 			selIdx = i;

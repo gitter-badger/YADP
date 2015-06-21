@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"yadp_main_NoAttemptsLeft"
+	{
+		"de"		"Du hast keine Versuche übrig."
+	}
+}

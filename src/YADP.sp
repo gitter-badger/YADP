@@ -19,14 +19,14 @@
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
+#pragma newdecls required
 #include <YADPlib>
 #include "YADPlib/util.sp"
 #include "YADPlib/debug.sp"
 #include "YADPlib/config.sp"
 #include "YADPlib/module.sp"
+#include "YADPlib/chat.sp"
 #include "YADPlib/command.sp"
-
-#pragma newdecls required
 
 public Plugin myinfo = {
 	name = "YADP",
@@ -43,6 +43,8 @@ public void OnPluginStart() {
 		YAPD_Debug_LogMessage("global", "could not configure YADP.", (LogServer | LogFile), LevelCritical);
 }
 
-public void OnConfigsExecuted() {
-
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	RegPluginLibrary("yadplib");
+	return APLRes_Success;
 }
