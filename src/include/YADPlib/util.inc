@@ -22,13 +22,93 @@
 	#endinput
 #endif
 #define _YADPLIB_UTIL_INCLUDED
+#include <YADPlib/debug>
 
-forward void YAPD_Initialize_Util();
-forward void YAPD_Configure_Util();
-forward void YAPD_Util_PrintToConsoleAll(char[] message);
-forward void YAPD_Util_RequireDir(char[] path);
-forward void YAPD_Util_RequireFile(char[] path);
-forward bool YAPD_Util_AppendToFile(char[] path, char[] content);
-forward void YAPD_Util_ReadAllLines(char[] path, Handle adtHandle);
-forward int YAPD_Util_CountLines(char[] path);
-forward void YAPD_Util_ReplaceShellComment(char[] str);
+stock void YAPD_Initialize_Util() {
+	YAPD_Debug_LogMessage("util", "initialized.", LogServer, LevelInfo);
+}
+
+stock void YAPD_Configure_Util() {
+
+}
+
+stock void YAPD_Util_PrintToConsoleAll(char[] message) {
+	if(strlen(message) > 1024) return; // Not Supported by CS:GO
+	for (int i = 1; i <= MaxClients; i++) { 
+		if(!IsClientInGame(i)) continue;	
+		PrintToConsole(i, message); 
+	}
+}
+
+stock bool YAPD_Util_AppendToFile(char[] path, char[] content) {
+	Handle hFile = OpenFile(path, "a+");
+	if(hFile != null){
+		WriteFileLine(hFile, content);
+	} else {
+		CloseHandle(hFile);
+		return false;
+	}
+	CloseHandle(hFile);
+	return true;
+}
+
+stock void YAPD_Util_RequireDir(char[] filePath) {
+	char dirPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, dirPath, PLATFORM_MAX_PATH, filePath);
+	if(!DirExists(dirPath)) {
+		CreateDirectory(dirPath, 511);
+	}
+}
+
+stock void YAPD_Util_RequireFile(char[] filePath) {
+	char path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, filePath);
+	if(!FileExists(path)) {
+		Handle hFile = OpenFile(path, "w+");
+		CloseHandle(hFile);
+	}
+}
+
+stock void YAPD_Util_ReadAllLines(char[] path, Handle adtHandle) {
+	char filePath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
+	Handle hFile = OpenFile(filePath, "r");
+	if(hFile != null){
+		char buffer[128];
+		while(ReadFileLine(hFile, buffer, sizeof(buffer))) {
+			YAPD_Util_ReplaceShellComment(buffer);
+			if(strlen(buffer) > 0) {
+				PushArrayString(adtHandle, buffer);
+			}
+		}
+	}
+	CloseHandle(hFile);
+}
+
+stock int YAPD_Util_CountLines(char[] path) {
+	char filePath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
+	Handle hFile = OpenFile(filePath, "r");
+	int cnt = 0;
+	if(hFile != null){
+		char buffer[50];
+		while(ReadFileLine(hFile, buffer, sizeof(buffer))) {
+			YAPD_Util_ReplaceShellComment(buffer);
+			if(strlen(buffer) > 0) cnt++;
+		}
+	}
+	CloseHandle(hFile);
+	return cnt;
+}
+
+stock void YAPD_Util_ReplaceShellComment(char[] str) {
+	int pos = FindCharInString(str, '#');
+	if(pos < 0) {
+		TrimString(str);
+		return;
+	}
+	for(int i = pos; i < strlen(str); i++) {
+		str[i] = ' ';
+	}
+	TrimString(str);
+}

@@ -23,5 +23,38 @@
 #endif
 #define _YADPLIB_CONFIG_INCLUDED
 
-forward void YAPD_Initialize_Config();
-forward void YAPD_Configure_Config();
+static Handle g_hCmdArray = null;
+
+stock void YAPD_Initialize_Config() {
+	RegisterCommands();
+	YAPD_Debug_LogMessage("config", "initialized.", LogServer, LevelInfo);
+}
+
+stock void YAPD_Configure_Config() {
+
+}
+
+static void ProcessLine(char[] line) {
+	char msg[50];
+	RegConsoleCmd(line, YAPD_Command_HandleRequest, "YADP roll the dice.");
+	Format(msg, sizeof(msg), "Registered command '%s'.", line);
+	YAPD_Debug_LogMessage("config", msg, LogServer, LevelInfo);
+}
+
+static void RegisterCommands() {
+	char srcPath[26];
+	srcPath = "configs/YADP/";
+	YAPD_Util_RequireDir(srcPath);
+	srcPath = "configs/YADP/commands.txt";
+	YAPD_Util_RequireFile(srcPath);
+	
+	int cmdCnt = YAPD_Util_CountLines(srcPath);
+	if(cmdCnt < 1) return;
+	g_hCmdArray = CreateArray(cmdCnt);
+	YAPD_Util_ReadAllLines(srcPath, g_hCmdArray);
+	char buffer[20];
+	for(int i = 0; i < GetArraySize(g_hCmdArray); i++) {
+		GetArrayString(g_hCmdArray, i, buffer, 20);
+		ProcessLine(buffer);
+    }
+}

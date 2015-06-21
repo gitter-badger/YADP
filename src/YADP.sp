@@ -21,12 +21,6 @@
 #include <sourcemod>
 #pragma newdecls required
 #include <YADPlib>
-#include "YADPlib/util.sp"
-#include "YADPlib/debug.sp"
-#include "YADPlib/config.sp"
-#include "YADPlib/module.sp"
-#include "YADPlib/chat.sp"
-#include "YADPlib/command.sp"
 
 public Plugin myinfo = {
 	name = "YADP",

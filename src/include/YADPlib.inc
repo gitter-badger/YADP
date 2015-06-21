@@ -34,8 +34,8 @@
 #define	YADPLIB_VERSION		"$version$"
 #define	YADPLIB_BUILD_DATE	"$date$"
 
-ConVar g_cvVersion;
-ConVar g_cvEnabled;
+static ConVar g_cvVersion;
+static ConVar g_cvEnabled;
 bool g_InitializedYADP = false;
 bool g_ConfiguredYADP = false;
 
@@ -44,11 +44,10 @@ stock void YAPD_Initialize() {
 	
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
-	if(g_cvEnabled == null || g_cvEnabled == null) {
+	if(g_cvEnabled == null || g_cvVersion == null) {
 		YAPD_Debug_LogMessage("global", "could not register ConVars.", (LogServer | LogFile), LevelCritical);
 		return;
 	}
-	if(GetConVarInt(g_cvEnabled) != 1) return;
 	
 	YAPD_Initialize_Util();
 	YAPD_Initialize_Debug();
@@ -58,6 +57,8 @@ stock void YAPD_Initialize() {
 	YAPD_Initialize_Command();
 
 	AutoExecConfig(true, "plugin.YADP");
+	
+	if(GetConVarInt(g_cvEnabled) != 1) return;
 	g_InitializedYADP = true;
 	
 	Format(msgStr, sizeof(msgStr), "initialized. V<%s/%s>", YADPLIB_VERSION, YADPLIB_BUILD_DATE);

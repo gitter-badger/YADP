@@ -36,7 +36,72 @@ enum YAPD_Debug_LogLevel {
 	LevelCritical	= 0x08,
 };
 
-forward void YAPD_Initialize_Debug();
-forward void YAPD_Configure_Debug();
-forward void YAPD_Debug_LogMessage(char[] src, char[] msg, YAPD_Debug_LogMode mode, YAPD_Debug_LogLevel level);
-forward void YAPD_Debug_GetLogFilePath(char[] path, int maxlength);
+static YAPD_Debug_LogLevel g_LogLevel = LevelInfo;
+static ConVar g_cvLoglevel;
+
+stock void YAPD_Initialize_Debug() {
+	CreateConfig();
+	YAPD_Debug_LogMessage("debug", "initialized.", LogServer, LevelInfo);
+}
+
+stock void YAPD_Configure_Debug() {
+	ApplyConfig();
+}
+
+static void CreateConfig() {
+	g_cvLoglevel = CreateConVar("yadp_loglevel", "1", "Determines what messages will be ignored. (1,2,4 or 8)", (FCVAR_PLUGIN), true, float(view_as<int>(LevelInfo)), true, float(view_as<int>(LevelCritical)));
+}
+
+static void ApplyConfig() {
+	int lvl = GetConVarInt(g_cvLoglevel);
+	switch(lvl) {
+		case LevelInfo:
+			g_LogLevel = LevelInfo;
+		case LevelWarning:
+			g_LogLevel = LevelWarning;
+		case LevelError:
+			g_LogLevel = LevelError;
+		case LevelCritical:
+			g_LogLevel = LevelCritical;
+		default:
+			g_LogLevel = LevelInfo;
+	}
+}
+
+stock void YAPD_Debug_LogMessage(char[] src, char[] msg, YAPD_Debug_LogMode mode, YAPD_Debug_LogLevel level) {
+	if(level < g_LogLevel) return;
+	char msgStr[256];
+	char timeStr[20];
+	char srcStr[8];
+	FormatTime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", -1);
+	strcopy(srcStr, 8, src);
+	Format(msgStr, sizeof(msgStr), "[YADP][%s][%s]: %s", timeStr, srcStr, msg);
+	if((mode & LogClient) == LogClient) {
+		YAPD_Util_PrintToConsoleAll(msgStr);
+	}
+	if((mode & LogServer) == LogServer) {
+		PrintToServer(msgStr);
+	}
+	if((mode & LogFile) == LogFile) {
+		char logPath[PLATFORM_MAX_PATH];
+		YAPD_Debug_GetLogFilePath(logPath, PLATFORM_MAX_PATH);
+		if(!YAPD_Util_AppendToFile(logPath, msgStr)) {
+			YAPD_Debug_LogMessage("debug", "Can not open log file.", LogServer, LevelError);
+			YAPD_Debug_LogMessage("debug", logPath, LogServer, LevelError);
+		}
+	}
+}
+
+stock void YAPD_Debug_GetLogFilePath(char[] path, int maxlength) {
+	if(maxlength < PLATFORM_MAX_PATH) {
+		YAPD_Debug_LogMessage("debug", "Logfile path buffer was too small.", LogServer, LevelError);
+		return;
+	}
+	char dateStr[9];
+	char filePath[28];
+	FormatTime(dateStr, sizeof(dateStr), "%Y%m%d", -1);
+	filePath = "logs/YADP/";
+	YAPD_Util_RequireDir(filePath);
+	Format(filePath, sizeof(filePath), "logs/YADP/%s.log", dateStr);
+	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, filePath);
+}

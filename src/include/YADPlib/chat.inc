@@ -23,6 +23,15 @@
 #endif
 #define _YADPLIB_CHAT_INCLUDED
 
-forward void YAPD_Initialize_Chat();
-forward void YAPD_Configure_Chat();
-forward void YAPD_Chat_ReplyToCommand(int client, char[] message);
+stock void YAPD_Initialize_Chat() {
+
+}
+
+stock void YAPD_Configure_Chat() {
+
+}
+
+
+stock void YAPD_Chat_ReplyToCommand(int client, char[] message) {
+	ReplyToCommand(client, "%s: %s", "[YADP]", message);
+}
