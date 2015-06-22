@@ -23,15 +23,22 @@
 #endif
 #define _YADPLIB_CHAT_INCLUDED
 
-stock void YAPD_Initialize_Chat() {
+#pragma newdecls optional
+#include <colors_csgo>
+#pragma newdecls required
 
+static ConVar g_cvChatName;
+static char g_chatName[10];
+
+stock void YAPD_Initialize_Chat() {
+	g_cvChatName = CreateConVar("yadp_chatName", "YADP", "The identifier used by YADP in chat messages.", FCVAR_PLUGIN);
 }
 
 stock void YAPD_Configure_Chat() {
-
+	GetConVarString(g_cvChatName, g_chatName, sizeof(g_chatName));
 }
 
 
 stock void YAPD_Chat_ReplyToCommand(int client, char[] message) {
-	ReplyToCommand(client, "%s: %s", "[YADP]", message);
+	CReplyToCommand(client, "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 }

@@ -38,7 +38,7 @@ stock void YAPD_Configure_Command() {
 
 stock Action YAPD_Command_RoundPrestart(Event event, const char[] name, bool dontBroadcast) {
 	for(int i = 1; i <= MAXPLAYERS; i++) {
-		if(g_DiceAttepmts[i] != 1) g_DiceAttepmts[i]++;
+		if(g_DiceAttepmts[i] < 1) g_DiceAttepmts[i]++;
 	}
 }
 
@@ -47,13 +47,14 @@ stock Action YAPD_Command_HandleRequest(int client, int args) {
 		char msg[100];
 		Format(msg, sizeof(msg), "%T", "yadp_main_NoAttemptsLeft", client);
 		YAPD_Chat_ReplyToCommand(client, msg);
+		return Plugin_Handled;
 	}
+	g_DiceAttepmts[client]--;
 	int mod = YAPD_Module_ChooseRandom();
 	Action res;
 	YAPD_Module_StartInvoking(mod);
 	Call_PushCell(client);
 	Call_PushCell(0);
 	YAPD_Module_StopInvoking(mod, res);
-	g_DiceAttepmts[client]--;
 	return Plugin_Handled;
 }
