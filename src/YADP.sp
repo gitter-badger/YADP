@@ -30,43 +30,18 @@ public Plugin myinfo = {
 	url = "https://github.com/reker-/YADP"
 };
 
-Handle g_hOnModuleInit;
-Handle g_hOnModuleConf;
-
 public void OnPluginStart() {
-	g_hOnModuleInit = CreateForward(ET_Ignore);
-	g_hOnModuleConf = CreateForward(ET_Ignore);
-	
-	YAPD_Initialize();
-	YADP_Configure();
-	SendOnModuleInit();
-	SendOnModuleConf();
-	if(g_InitializedYADP && !g_ConfiguredYADP) 
-		YAPD_Debug_LogMessage("global", "could not configure YADP.", (LogServer | LogFile), LevelCritical);
+	bool initYADP = YAPD_Initialize();
+	bool confYADP = YADP_Configure();
+	if(initYADP && !confYADP) {
+		char errMsg[40];
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConfigFailed", LANG_SERVER);
+		YAPD_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
+	}
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	CreateNative("RegOnModuleInitEx", RegOnModuleInit);
-	CreateNative("RegOnModuleConfEx", RegOnModuleConf);
 	RegPluginLibrary("yadplib");
 	return APLRes_Success;
-}
-
-int RegOnModuleInit(Handle plugin, int numParams) {
-	AddToForward(g_hOnModuleInit, plugin, GetNativeFunction(1));
-}
-
-int RegOnModuleConf(Handle plugin, int numParams) {
-	AddToForward(g_hOnModuleConf, plugin, GetNativeFunction(1));
-}
-
-void SendOnModuleInit() {
-	Call_StartForward(g_hOnModuleInit);
-	Call_Finish();
-}
-
-void SendOnModuleConf() {
-	Call_StartForward(g_hOnModuleConf);
-	Call_Finish();
 }
