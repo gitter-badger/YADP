@@ -24,25 +24,25 @@
 #define _YADPLIB_UTIL_INCLUDED
 #include <YADPlib/debug>
 
-stock void YAPD_Initialize_Util() {
+stock void YADP_Initialize_Util() {
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
-	YAPD_Debug_LogMessage("util", msg, LogServer, LevelInfo);
+	YADP_Debug_LogMessage("util", msg, LogServer, LevelInfo);
 }
 
-stock void YAPD_Configure_Util() {
+stock void YADP_Configure_Util() {
 
 }
 
-stock void YAPD_Util_PrintToConsoleAll(char[] message) {
-	if(strlen(message) > 1024) return; // Not Supported by CS:GO / L4D2
+stock void YADP_Util_PrintToConsoleAll(char[] message) {
+	if(strlen(message) > 1024) return; // Not Supported by CS:GO & L4D2
 	for (int i = 1; i <= MaxClients; i++) { 
 		if(!IsClientInGame(i)) continue;	
 		PrintToConsole(i, message); 
 	}
 }
 
-stock bool YAPD_Util_AppendToFile(char[] path, char[] content) {
+stock bool YADP_Util_AppendToFile(char[] path, char[] content) {
 	Handle hFile = OpenFile(path, "a+");
 	if(hFile != null){
 		WriteFileLine(hFile, content);
@@ -54,7 +54,7 @@ stock bool YAPD_Util_AppendToFile(char[] path, char[] content) {
 	return true;
 }
 
-stock void YAPD_Util_RequireDir(char[] filePath) {
+stock void YADP_Util_RequireDir(char[] filePath) {
 	char dirPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, dirPath, PLATFORM_MAX_PATH, filePath);
 	if(!DirExists(dirPath)) {
@@ -62,7 +62,7 @@ stock void YAPD_Util_RequireDir(char[] filePath) {
 	}
 }
 
-stock void YAPD_Util_RequireFile(char[] filePath) {
+stock void YADP_Util_RequireFile(char[] filePath) {
 	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, filePath);
 	if(!FileExists(path)) {
@@ -71,14 +71,14 @@ stock void YAPD_Util_RequireFile(char[] filePath) {
 	}
 }
 
-stock void YAPD_Util_ReadAllLines(char[] path, Handle adtHandle) {
+stock void YADP_Util_ReadAllLines(char[] path, Handle adtHandle) {
 	char filePath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
 	Handle hFile = OpenFile(filePath, "r");
 	if(hFile != null){
 		char buffer[128];
 		while(ReadFileLine(hFile, buffer, sizeof(buffer))) {
-			YAPD_Util_ReplaceShellComment(buffer);
+			YADP_Util_ReplaceShellComment(buffer);
 			if(strlen(buffer) > 0) {
 				PushArrayString(adtHandle, buffer);
 			}
@@ -87,7 +87,7 @@ stock void YAPD_Util_ReadAllLines(char[] path, Handle adtHandle) {
 	CloseHandle(hFile);
 }
 
-stock int YAPD_Util_CountLines(char[] path) {
+stock int YADP_Util_CountLines(char[] path) {
 	char filePath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
 	Handle hFile = OpenFile(filePath, "r");
@@ -95,7 +95,7 @@ stock int YAPD_Util_CountLines(char[] path) {
 	if(hFile != null){
 		char buffer[50];
 		while(ReadFileLine(hFile, buffer, sizeof(buffer))) {
-			YAPD_Util_ReplaceShellComment(buffer);
+			YADP_Util_ReplaceShellComment(buffer);
 			if(strlen(buffer) > 0) cnt++;
 		}
 	}
@@ -103,7 +103,7 @@ stock int YAPD_Util_CountLines(char[] path) {
 	return cnt;
 }
 
-stock void YAPD_Util_ReplaceShellComment(char[] str) {
+stock void YADP_Util_ReplaceShellComment(char[] str) {
 	int pos = FindCharInString(str, '#');
 	if(pos < 0) {
 		TrimString(str);
@@ -113,4 +113,18 @@ stock void YAPD_Util_ReplaceShellComment(char[] str) {
 		str[i] = ' ';
 	}
 	TrimString(str);
+}
+
+stock bool YADP_Util_isValidClient(int client) {
+	if(client < 0 || client > MaxClients)
+		return false;
+	if(!IsClientConnected(client) || !IsClientAuthorized(client) || !IsClientInGame(client))
+		return false;
+	if(IsFakeClient(client) || IsClientSourceTV(client) || IsClientReplay(client))
+		return false;
+	if(IsClientObserver(client))
+		return false;
+	if(IsClientInKickQueue(client))
+		return false;
+	return true;
 }

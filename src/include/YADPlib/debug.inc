@@ -23,30 +23,30 @@
 #endif
 #define _YADPLIB_DEBUG_INCLUDED
 
-enum YAPD_Debug_LogMode {
+enum YADP_Debug_LogMode {
 	LogClient	= 0x01,
 	LogServer	= 0x02,
 	LogFile		= 0x04,
 };
 
-enum YAPD_Debug_LogLevel {
+enum YADP_Debug_LogLevel {
 	LevelInfo		= 0x01,
 	LevelWarning	= 0x02,
 	LevelError		= 0x04,
 	LevelCritical	= 0x08,
 };
 
-static YAPD_Debug_LogLevel g_LogLevel = LevelInfo;
+static YADP_Debug_LogLevel g_LogLevel = LevelInfo;
 static ConVar g_cvLoglevel;
 
-stock void YAPD_Initialize_Debug() {
+stock void YADP_Initialize_Debug() {
 	char msg[40];
 	CreateConfig();
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
-	YAPD_Debug_LogMessage("debug", "initialized.", LogServer, LevelInfo);
+	YADP_Debug_LogMessage("debug", "initialized.", LogServer, LevelInfo);
 }
 
-stock void YAPD_Configure_Debug() {
+stock void YADP_Configure_Debug() {
 	ApplyConfig();
 }
 
@@ -70,7 +70,7 @@ static void ApplyConfig() {
 	}
 }
 
-stock void YAPD_Debug_LogMessage(char[] src, char[] msg, YAPD_Debug_LogMode mode, YAPD_Debug_LogLevel level) {
+stock void YADP_Debug_LogMessage(char[] src, char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level) {
 	if(level < g_LogLevel) return;
 	char msgStr[256];
 	char timeStr[20];
@@ -79,32 +79,32 @@ stock void YAPD_Debug_LogMessage(char[] src, char[] msg, YAPD_Debug_LogMode mode
 	strcopy(srcStr, 8, src);
 	Format(msgStr, sizeof(msgStr), "[YADP][%s][%s]: %s", timeStr, srcStr, msg);
 	if((mode & LogClient) == LogClient) {
-		YAPD_Util_PrintToConsoleAll(msgStr);
+		YADP_Util_PrintToConsoleAll(msgStr);
 	}
 	if((mode & LogServer) == LogServer) {
 		PrintToServer(msgStr);
 	}
 	if((mode & LogFile) == LogFile) {
 		char logPath[PLATFORM_MAX_PATH];
-		YAPD_Debug_GetLogFilePath(logPath, PLATFORM_MAX_PATH);
-		if(!YAPD_Util_AppendToFile(logPath, msgStr)) {
+		YADP_Debug_GetLogFilePath(logPath, PLATFORM_MAX_PATH);
+		if(!YADP_Util_AppendToFile(logPath, msgStr)) {
 			char errMsg[40];
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_LogFileFailed", LANG_SERVER)
-			YAPD_Debug_LogMessage("debug", errMsg, LogServer, LevelError);
-			YAPD_Debug_LogMessage("debug", logPath, LogServer, LevelError);
+			YADP_Debug_LogMessage("debug", errMsg, LogServer, LevelError);
+			YADP_Debug_LogMessage("debug", logPath, LogServer, LevelError);
 		}
 	}
 }
 
-stock void YAPD_Debug_GetLogFilePath(char[] path, int maxlength) {
+stock void YADP_Debug_GetLogFilePath(char[] path, int maxlength) {
 	if(maxlength < PLATFORM_MAX_PATH) {
 		char errMsg[40];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_LogFileBuffer", LANG_SERVER);
-		YAPD_Debug_LogMessage("debug", errMsg, LogServer, LevelError);
+		YADP_Debug_LogMessage("debug", errMsg, LogServer, LevelError);
 		return;
 	}
 	char dateStr[9];
 	FormatTime(dateStr, sizeof(dateStr), "%Y%m%d", -1);
-	YAPD_Util_RequireDir("logs/YADP/");
+	YADP_Util_RequireDir("logs/YADP/");
 	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, "logs/YADP/%s.log", dateStr);
 }

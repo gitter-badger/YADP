@@ -30,15 +30,18 @@
 static ConVar g_cvChatName;
 static char g_chatName[10];
 
-stock void YAPD_Initialize_Chat() {
+stock void YADP_Initialize_Chat() {
 	g_cvChatName = CreateConVar("yadp_chatName", "YADP", "The identifier used by YADP in chat messages.", FCVAR_PLUGIN);
 }
 
-stock void YAPD_Configure_Chat() {
+stock void YADP_Configure_Chat() {
 	GetConVarString(g_cvChatName, g_chatName, sizeof(g_chatName));
 }
 
+stock void YADP_Chat_PrintToChat(int client, char[] message) {
+	CPrintToChat(client, "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
+}
 
-stock void YAPD_Chat_ReplyToCommand(int client, char[] message) {
+stock void YADP_Chat_ReplyToCommand(int client, char[] message) {
 	CReplyToCommand(client, "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 }

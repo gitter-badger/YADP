@@ -82,4 +82,30 @@
 	{
 		"en"		"you do not have any attempts left."
 	}
+	"yadp_main_RollTheDice"
+	{
+		"#format"	"{1:s}"
+		"en"		"you can use {red}{1}{default} to roll the dice."
+	}
+	"yadp_main_NumberOfAttempts"
+	{
+		"#format"	"{1:d}"
+		"en"		"you still have {red}{1}{default} attempts."
+	}
+	"yadp_main_UserDisableActive"
+	{
+		"en"		"rolling the dice is disabled."
+	}
+	"yadp_main_UserDisableInactive"
+	{
+		"en"		"rolling the dice is enabled."
+	}
+	"yadp_main_UserAutoActive"
+	{
+		"en"		"automatic rolling is enabled."
+	}
+	"yadp_main_UserAutoInactive"
+	{
+		"en"		"automatic rolling is disabled."
+	}
 }

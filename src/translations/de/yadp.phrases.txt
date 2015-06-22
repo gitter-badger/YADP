@@ -82,4 +82,30 @@
 	{
 		"de"		"Keine Versuche übrig."
 	}
+	"yadp_main_RollTheDice"
+	{
+		"#format"	"{1:s}"
+		"de"		"nutze {red}{1}{default} zum Würfeln."
+	}
+	"yadp_main_NumberOfAttempts"
+	{
+		"#format"	"{1:d}"
+		"de"		"es sind noch {red}{1}{default} Versuche übrig."
+	}
+	"yadp_main_UserDisableActive"
+	{
+		"de"		"Würfeln ist deaktiviert."
+	}
+	"yadp_main_UserDisableInactive"
+	{
+		"de"		"Würfeln ist aktiviert."
+	}
+	"yadp_main_UserAutoActive"
+	{
+		"de"		"automatisches Würfeln ist aktiviert."
+	}
+	"yadp_main_UserAutoInactive"
+	{
+		"de"		"automatisches Würfeln ist deaktiviert."
+	}
 }

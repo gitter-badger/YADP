@@ -22,39 +22,125 @@
 	#endinput
 #endif
 #define _YADPLIB_COMMAND_INCLUDED
+#pragma newdecls optional
+#include <clientprefs>
+#pragma newdecls required
+
 
 static int g_DiceAttepmts[MAXPLAYERS + 1];
+static Handle g_ckDisable;
+static Handle g_ckAuto;
 
-stock void YAPD_Initialize_Command() {
+stock void YADP_Initialize_Command() {
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
-	HookEvent("round_prestart", YAPD_Command_RoundPrestart, EventHookMode_PostNoCopy);
-	YAPD_Debug_LogMessage("command", msg, LogServer, LevelInfo);
+	HookEvent("round_start", YADP_Command_Roundstart, EventHookMode_PostNoCopy);
+	YADP_Debug_LogMessage("command", msg, LogServer, LevelInfo);
 }
 
-stock void YAPD_Configure_Command() {
-	
+stock void YADP_Configure_Command() {
+	g_ckDisable = RegClientCookie("yadp_disable", "YADP disable dice.", CookieAccess_Protected);
+	g_ckAuto = RegClientCookie("yadp_auto", "YADP automated rolling.", CookieAccess_Protected);
 }
 
-stock Action YAPD_Command_RoundPrestart(Event event, const char[] name, bool dontBroadcast) {
+stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBroadcast) {
 	for(int i = 1; i <= MAXPLAYERS; i++) {
+		if(!YADP_Util_isValidClient(i)) continue;
 		if(g_DiceAttepmts[i] < 1) g_DiceAttepmts[i]++;
+		if(HasDiceDisabled(i)) continue;
+		char msg[100];
+		if(HasDiceAuto(i)){
+			YADP_Command_HandleRequest(i, 0);
+		} else {
+			char cmd[15];
+			YADP_Config_GetRandomCmd(cmd, sizeof(cmd));
+			Format(msg, sizeof(msg), "%T", "yadp_main_RollTheDice", i, cmd);
+			YADP_Chat_PrintToChat(i, msg);
+		}
+		if(g_DiceAttepmts[i] > 1) {
+			Format(msg, sizeof(msg), "%T", "yadp_main_NumberOfAttempts", i, g_DiceAttepmts[i]);
+			YADP_Chat_PrintToChat(i, msg);
+		}
 	}
 }
 
-stock Action YAPD_Command_HandleRequest(int client, int args) {
-	if(g_DiceAttepmts[client] < 0) {
+stock Action YADP_Command_HandleRequest(int client, int args) {
+	if(!YADP_Util_isValidClient(client)) return Plugin_Handled;
+	if(g_DiceAttepmts[client] < 1) {
 		char msg[100];
 		Format(msg, sizeof(msg), "%T", "yadp_main_NoAttemptsLeft", client);
-		YAPD_Chat_ReplyToCommand(client, msg);
+		YADP_Chat_ReplyToCommand(client, msg);
 		return Plugin_Handled;
 	}
 	g_DiceAttepmts[client]--;
-	int mod = YAPD_Module_ChooseRandom();
+	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
 	Action res;
-	YAPD_Module_StartInvoking(mod);
+	YADP_Module_StartInvoking(mod);
 	Call_PushCell(client);
-	Call_PushCell(0);
-	YAPD_Module_StopInvoking(mod, res);
+	YADP_Module_StopInvoking(mod, res);
+	return Plugin_Handled;
+}
+
+stock bool HasDiceDisabled(int client) {
+	if(!YADP_Util_isValidClient(client)) return true;
+	if(!AreClientCookiesCached(client)) {
+		SetDiceAuto(client, false);
+		SetDiceDisabled(client, false);
+		return false;
+	}
+	char val[5];
+	GetClientCookie(client, g_ckDisable, val, sizeof(val));
+	return val[0] == '1';
+}
+
+stock void SetDiceDisabled(int client, bool value) {
+	if(!YADP_Util_isValidClient(client)) return;
+	char val[2];
+	val	= value ? "1" : "0";
+	SetClientCookie(client, g_ckDisable, val);
+}
+
+stock bool HasDiceAuto(int client) {
+	if(!YADP_Util_isValidClient(client)) return false;
+	if(!AreClientCookiesCached(client)) {
+		SetDiceAuto(client, false);
+		SetDiceDisabled(client, false);
+		return false;
+	}
+	char val[5];
+	GetClientCookie(client, g_ckAuto, val, sizeof(val));
+	return val[0] == '1';
+}
+
+stock void SetDiceAuto(int client, bool value) {
+	if(!YADP_Util_isValidClient(client)) return;
+	char val[2];
+	val = value ? "1" : "0";
+	SetClientCookie(client, g_ckAuto, val);
+}
+
+stock Action YADP_Command_HandleDisable(int client, int args) {
+	if(!YADP_Util_isValidClient(client)) return Plugin_Handled;
+	bool disable = !HasDiceDisabled(client);
+	SetDiceDisabled(client, disable);
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", (disable ? "yadp_main_UserDisableActive" : "yadp_main_UserDisableInactive"), client);
+	YADP_Chat_ReplyToCommand(client, msg);
+	return Plugin_Handled;
+}
+
+stock Action YADP_Command_HandleAuto(int client, int args) {
+	if(!YADP_Util_isValidClient(client)) return Plugin_Handled;
+	bool auto = !HasDiceAuto(client);
+	SetDiceAuto(client, auto);
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", (auto ? "yadp_main_UserAutoActive" : "yadp_main_UserAutoInactive"), client);
+	YADP_Chat_ReplyToCommand(client, msg);
+	return Plugin_Handled;
+}
+
+stock Action YADP_Command_HandleMenu(int client, int args) {
+	if(!YADP_Util_isValidClient(client)) return Plugin_Handled;
+	
 	return Plugin_Handled;
 }

@@ -25,35 +25,54 @@
 
 static Handle g_hCmdArray = null;
 
-stock void YAPD_Initialize_Config() {
+stock void YADP_Initialize_Config() {
 	char msg[40];
 	RegisterCommands();
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
-	YAPD_Debug_LogMessage("config", msg, LogServer, LevelInfo);
+	YADP_Debug_LogMessage("config", msg, LogServer, LevelInfo);
 }
 
-stock void YAPD_Configure_Config() {
+stock void YADP_Configure_Config() {
+	char cmd[50];
+	cmd = "sm_yadp";
+	RegConsoleCmd(cmd, YADP_Command_HandleRequest, "YADP roll the dice");
+	cmd = "sm_yadp_disable";
+	RegConsoleCmd(cmd, YADP_Command_HandleDisable, "YADP disable");
+	cmd = "sm_yadp_auto";
+	RegConsoleCmd(cmd, YADP_Command_HandleAuto, "YADP auto-roll");
+	cmd = "sm_yadp_menu";
+	RegConsoleCmd(cmd, YADP_Command_HandleMenu, "YADP menu");
+}
 
+stock void YADP_Config_GetRandomCmd(char[] buffer, int maxlength) {
+	GetArrayString(g_hCmdArray, GetRandomInt(0, GetArraySize(g_hCmdArray) - 1), buffer, maxlength);
+	ReplaceString(buffer, maxlength, "sm_", "!", false);
 }
 
 static void ProcessLine(char[] line) {
-	char msg[50];
-	RegConsoleCmd(line, YAPD_Command_HandleRequest, "YADP roll the dice.");
-	Format(msg, sizeof(msg), "%T", "yadp_main_RegCmd", LANG_SERVER, line);
-	YAPD_Debug_LogMessage("config", msg, LogServer, LevelInfo);
+	char txt[50];
+	RegConsoleCmd(line, YADP_Command_HandleRequest, "YADP roll the dice");
+	Format(txt, sizeof(txt), "%s_disable", line);
+	RegConsoleCmd(txt, YADP_Command_HandleDisable, "YADP disable");
+	Format(txt, sizeof(txt), "%s_auto", line);
+	RegConsoleCmd(txt, YADP_Command_HandleAuto, "YADP auto-roll");
+	Format(txt, sizeof(txt), "%s_menu", line);
+	RegConsoleCmd(txt, YADP_Command_HandleMenu, "YADP menu");
+	Format(txt, sizeof(txt), "%T", "yadp_main_RegCmd", LANG_SERVER, line);
+	YADP_Debug_LogMessage("config", txt, LogServer, LevelInfo);
 }
 
 static void RegisterCommands() {
 	char srcPath[26];
 	srcPath = "configs/YADP/";
-	YAPD_Util_RequireDir(srcPath);
+	YADP_Util_RequireDir(srcPath);
 	srcPath = "configs/YADP/commands.txt";
-	YAPD_Util_RequireFile(srcPath);
+	YADP_Util_RequireFile(srcPath);
 	
-	int cmdCnt = YAPD_Util_CountLines(srcPath);
+	int cmdCnt = YADP_Util_CountLines(srcPath);
 	if(cmdCnt < 1) return;
 	g_hCmdArray = CreateArray(cmdCnt);
-	YAPD_Util_ReadAllLines(srcPath, g_hCmdArray);
+	YADP_Util_ReadAllLines(srcPath, g_hCmdArray);
 	char buffer[20];
 	for(int i = 0; i < GetArraySize(g_hCmdArray); i++) {
 		GetArrayString(g_hCmdArray, i, buffer, 20);

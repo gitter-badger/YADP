@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: $version$
+ * Version: 0.0.0.219
  * Authors: Hendrik Reker
  */
 #if defined _YADPLIB_INCLUDED
@@ -31,15 +31,15 @@
 #include <YADPlib/chat>
 #include <YADPlib/command>
 
-#define	YADPLIB_VERSION		"$version$"
-#define	YADPLIB_BUILD_DATE	"$date$"
+#define	YADPLIB_VERSION		"0.0.0.219"
+#define	YADPLIB_BUILD_DATE	"2015-06-22"
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
 static bool g_InitializedYADP = false;
 static bool g_ConfiguredYADP = false;
 
-stock bool YAPD_Initialize() {
+stock bool YADP_Initialize() {
 	LoadTranslations("yadp.phrases.txt");
 	char msgStr[128];
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
@@ -47,16 +47,16 @@ stock bool YAPD_Initialize() {
 	if(g_cvEnabled == null || g_cvVersion == null) {
 		char errMsg[40];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConVarFailed", LANG_SERVER);
-		YAPD_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
+		YADP_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
 		return false;
 	}
 	
-	YAPD_Initialize_Util();
-	YAPD_Initialize_Debug();
-	YAPD_Initialize_Config();
-	YAPD_Initialize_Module();
-	YAPD_Initialize_Chat();
-	YAPD_Initialize_Command();
+	YADP_Initialize_Util();
+	YADP_Initialize_Debug();
+	YADP_Initialize_Config();
+	YADP_Initialize_Module();
+	YADP_Initialize_Chat();
+	YADP_Initialize_Command();
 
 	AutoExecConfig(true, "plugin.YADP");
 	
@@ -64,18 +64,18 @@ stock bool YAPD_Initialize() {
 	g_InitializedYADP = true;
 	
 	Format(msgStr, sizeof(msgStr), "%T", "yadp_main_InitVersion", LANG_SERVER, YADPLIB_VERSION, YADPLIB_BUILD_DATE);
-	YAPD_Debug_LogMessage("global", msgStr, (LogServer | LogFile), LevelCritical);
+	YADP_Debug_LogMessage("global", msgStr, (LogServer | LogFile), LevelCritical);
 	return g_InitializedYADP;
 }
 
 stock bool YADP_Configure() {
 	if(!g_InitializedYADP) return false;
-	YAPD_Configure_Util();
-	YAPD_Configure_Debug();
-	YAPD_Configure_Config();
-	YAPD_Configure_Module();
-	YAPD_Configure_Chat();
-	YAPD_Configure_Command();
+	YADP_Configure_Util();
+	YADP_Configure_Debug();
+	YADP_Configure_Config();
+	YADP_Configure_Module();
+	YADP_Configure_Chat();
+	YADP_Configure_Command();
 	g_ConfiguredYADP = true;
 	return g_ConfiguredYADP;
 }
