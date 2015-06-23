@@ -75,9 +75,10 @@ stock Action YADP_Command_HandleRequest(int client, int args) {
 	g_DiceAttepmts[client]--;
 	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
 	Action res;
-	YADP_Module_StartInvoking(mod);
-	Call_PushCell(client);
-	YADP_Module_StopInvoking(mod, res);
+	if(YADP_Module_StartInvoking(mod)) {
+		Call_PushCell(client);
+		YADP_Module_StopInvoking(mod, res);
+	}
 	return Plugin_Handled;
 }
 

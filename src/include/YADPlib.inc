@@ -31,17 +31,32 @@
 #include <YADPlib/chat>
 #include <YADPlib/command>
 
-#define	YADPLIB_VERSION		"0.0.0.219"
+#define	YADPLIB_VERSION		"0.0.0.242"
 #define	YADPLIB_BUILD_DATE	"2015-06-22"
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
 static bool g_InitializedYADP = false;
 static bool g_ConfiguredYADP = false;
+static bool g_CreatedYADP = false;
+static Handle g_hOnModuleInit;
+static Handle g_hOnModuleConf;
+
+stock void YADP_Create() {
+	if(g_CreatedYADP) return;
+	CreateNative("Register_OnModuleInit", RegOnModuleInit);
+	CreateNative("Register_OnModuleConf", RegOnModuleConf);
+	CreateNative("RegisterModule", RegModule);
+	CreateNative("SendChatMessage", SendToClient);
+	RegPluginLibrary("yadplib");
+	g_CreatedYADP = true;
+}
 
 stock bool YADP_Initialize() {
 	LoadTranslations("yadp.phrases.txt");
 	char msgStr[128];
+	g_hOnModuleInit = CreateForward(ET_Ignore);
+	g_hOnModuleConf = CreateForward(ET_Ignore);
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
 	if(g_cvEnabled == null || g_cvVersion == null) {
@@ -78,4 +93,78 @@ stock bool YADP_Configure() {
 	YADP_Configure_Command();
 	g_ConfiguredYADP = true;
 	return g_ConfiguredYADP;
+}
+
+stock void YADP_EnableModules() {
+	YADP_Module_RegisterEnable();
+	SendOnModuleInit();
+	YADP_Module_RegisterDisable();
+	SendOnModuleConf();
+}
+
+static int RegOnModuleInit(Handle plugin, int numParams) {
+	if(numParams != 1 || !g_InitializedYADP) return 0;
+	char pName[50];
+	char msg[128];
+	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_ModInit", LANG_SERVER, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	AddToForward(g_hOnModuleInit, plugin, GetNativeFunction(1));
+	return 0;
+}
+
+static int RegOnModuleConf(Handle plugin, int numParams) {
+	if(numParams != 1 || !g_InitializedYADP) return 0;
+	char pName[50];
+	char msg[128];
+	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_ModConf", LANG_SERVER, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	AddToForward(g_hOnModuleConf, plugin, GetNativeFunction(1)); 
+	return 0;
+}
+
+static int RegModule(Handle plugin, int numParams) {
+	if(numParams != 5 || !g_InitializedYADP) return 0;
+	char mName[MAXMODULENAME];
+	char mDesc[MAXMODULEDESC];
+	GetNativeString(1, mName, sizeof(mName));
+	GetNativeString(2, mDesc, sizeof(mDesc));
+	char pName[50];
+	char msg[128];
+	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_ModReg", LANG_SERVER, mName, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	return YADP_Module_Register(mName, mDesc, GetNativeCell(3), view_as<YADP_Module_Team>(GetNativeCell(4)), view_as<OnDicedCallback>(GetNativeFunction(5)));
+}
+
+static int SendToClient(Handle plugin, int numParams) {
+	if(numParams != 2 || !g_InitializedYADP) return 0;
+	char msg[256];
+	GetNativeString(2, msg, sizeof(msg));
+	int clt = GetNativeCell(1);
+	char pName[50];
+	char cAuth[50];
+	char lmsg[306];
+	if(YADP_Util_isValidClient(clt))
+		GetClientAuthId(clt, AuthId_SteamID64, cAuth, sizeof(cAuth), true);
+	else
+		cAuth = "<missing-auth>"
+	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	Format(lmsg, sizeof(lmsg), "%T", "yadp_main_ModMsg", LANG_SERVER, pName, cAuth, msg);
+	YADP_Debug_LogMessage("global", lmsg, LogFile, LevelInfo);
+	YADP_Chat_PrintToChat(clt, msg);
+	return 0;
+}
+
+static void SendOnModuleInit() {
+	if(!g_InitializedYADP) return;
+	Call_StartForward(g_hOnModuleInit);
+	Call_Finish();
+}
+
+static void SendOnModuleConf() {
+	if(!g_InitializedYADP) return;
+	Call_StartForward(g_hOnModuleConf);
+	Call_Finish();
 }
