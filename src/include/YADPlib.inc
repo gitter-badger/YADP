@@ -107,7 +107,7 @@ static int RegOnModuleInit(Handle plugin, int numParams) {
 	if(numParams != 1 || !g_InitializedYADP) return 0;
 	char pName[50];
 	char msg[128];
-	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_ModInit", LANG_SERVER, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	AddToForward(g_hOnModuleInit, plugin, GetNativeFunction(1));
@@ -118,7 +118,7 @@ static int RegOnModuleConf(Handle plugin, int numParams) {
 	if(numParams != 1 || !g_InitializedYADP) return 0;
 	char pName[50];
 	char msg[128];
-	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_ModConf", LANG_SERVER, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	AddToForward(g_hOnModuleConf, plugin, GetNativeFunction(1)); 
@@ -130,7 +130,7 @@ static int RegOnDiced(Handle plugin, int numParams) {
 	int modIdx = GetNativeCell(1);
 	char pName[50];
 	char msg[128];
-	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	Handle fwd = YADP_Module_GetHandle(modIdx);
