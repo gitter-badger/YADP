@@ -12,7 +12,7 @@
 #endif
 #define _colors_included
 
-#define MAX_MESSAGE_LENGTH 250
+#define MAX_MESSAGE_LENGTH 320
 #define MAX_COLORS 16
 
 #define SERVER_INDEX 0
@@ -556,4 +556,3 @@ public Action:CEvent_MapStart(Handle:event, const String:name[], bool:dontBroadc
 	for (new i = 1; i <= MaxClients; i++)
 		CSkipList[i] = false;
 }
-

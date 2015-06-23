@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: 0.0.0.272
+ * Version: $version$
  * Authors: Hendrik Reker
  */
 #if defined _YADPLIB_INCLUDED

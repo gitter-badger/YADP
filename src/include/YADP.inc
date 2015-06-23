@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: 0.0.0.272
+ * Version: $version$
  * Authors: Hendrik Reker
  */
 #if defined _YADP_INCLUDED
@@ -24,8 +24,8 @@
 #define _YADP_INCLUDED
 #pragma newdecls required
 
-#define	YADP_VERSION		"0.0.0.272"
-#define	YADP_BUILD_DATE		"2015-06-23"
+#define	YADP_VERSION		"$version$"
+#define	YADP_BUILD_DATE		"$date$"
 
 #if !defined _YADPLIB_MODULE_INCLUDED
 
