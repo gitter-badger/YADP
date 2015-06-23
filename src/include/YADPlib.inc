@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: 0.0.0.219
+ * Version: 0.0.0.272
  * Authors: Hendrik Reker
  */
 #if defined _YADPLIB_INCLUDED
@@ -31,8 +31,8 @@
 #include <YADPlib/chat>
 #include <YADPlib/command>
 
-#define	YADPLIB_VERSION		"0.0.0.242"
-#define	YADPLIB_BUILD_DATE	"2015-06-22"
+#define	YADPLIB_VERSION		"0.0.0.272"
+#define	YADPLIB_BUILD_DATE	"2015-06-23"
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
@@ -46,6 +46,7 @@ stock void YADP_Create() {
 	if(g_CreatedYADP) return;
 	CreateNative("Register_OnModuleInit", RegOnModuleInit);
 	CreateNative("Register_OnModuleConf", RegOnModuleConf);
+	CreateNative("Register_OnDiced", RegOnDiced);
 	CreateNative("RegisterModule", RegModule);
 	CreateNative("SendChatMessage", SendToClient);
 	RegPluginLibrary("yadplib");
@@ -124,6 +125,20 @@ static int RegOnModuleConf(Handle plugin, int numParams) {
 	return 0;
 }
 
+static int RegOnDiced(Handle plugin, int numParams) {
+	if(numParams != 1 || !g_InitializedYADP) return 0;
+	int modIdx = GetNativeCell(1);
+	char pName[50];
+	char msg[128];
+	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	Handle fwd = YADP_Module_GetHandle(modIdx);
+	if(fwd == null) return -1;
+	AddToForward(fwd, plugin, GetNativeFunction(2)); 
+	return 0;
+}
+
 static int RegModule(Handle plugin, int numParams) {
 	if(numParams != 5 || !g_InitializedYADP) return 0;
 	char mName[MAXMODULENAME];
@@ -135,14 +150,15 @@ static int RegModule(Handle plugin, int numParams) {
 	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_ModReg", LANG_SERVER, mName, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
-	return YADP_Module_Register(mName, mDesc, GetNativeCell(3), view_as<YADP_Module_Team>(GetNativeCell(4)), view_as<OnDicedCallback>(GetNativeFunction(5)));
+	return YADP_Module_Register(mName, mDesc, GetNativeCell(3), view_as<YADP_Module_Team>(GetNativeCell(4)));
 }
 
 static int SendToClient(Handle plugin, int numParams) {
 	if(numParams != 2 || !g_InitializedYADP) return 0;
+	int clt = GetNativeCell(1);
 	char msg[256];
 	GetNativeString(2, msg, sizeof(msg));
-	int clt = GetNativeCell(1);
+	PrintToServer(msg);
 	char pName[50];
 	char cAuth[50];
 	char lmsg[306];

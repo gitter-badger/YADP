@@ -47,15 +47,18 @@ public void OnLibraryRemoved(const char[] name) {
 }
 
 void ModuleInit() {
-	g_modIndex = RegisterModule("weapon", "Players may get a weapon", 10, ModuleTeam_Any, HandleDiced);
-	PrintToServer("YADM_weapon: Index %d", g_modIndex);
+	PrintToServer("--init--");
+	g_modIndex = RegisterModule("weapon", "Players may get a weapon", 10, ModuleTeam_Any);
+	Register_OnDiced(g_modIndex, HandleDiced);
+	PrintToServer("--idx: %d", g_modIndex);
 }
 
 void ModuleConf() {
-
+	PrintToServer("--conf--");
 }
 
 void HandleDiced(int client) {
-	if(g_modIndex == -1) return;
+	if(g_modIndex < 0) return;
+	PrintToServer("%N got a weapon.", client);
 	SendChatMessage(client, "you got a weapon.");
 }

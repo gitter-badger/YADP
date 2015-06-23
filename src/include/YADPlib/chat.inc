@@ -24,7 +24,7 @@
 #define _YADPLIB_CHAT_INCLUDED
 
 #pragma newdecls optional
-#include <colors_csgo>
+/* #include <colors_csgo> */
 #pragma newdecls required
 
 static ConVar g_cvChatName;
@@ -39,9 +39,15 @@ stock void YADP_Configure_Chat() {
 }
 
 stock void YADP_Chat_PrintToChat(int client, char[] message) {
-	CPrintToChat(client, "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
+	char msg[256];
+	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
+	/*C*/
+	PrintToChat(client, msg);
 }
 
 stock void YADP_Chat_ReplyToCommand(int client, char[] message) {
-	CReplyToCommand(client, "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
+	char msg[256];
+	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
+	/*C*/
+	ReplyToCommand(client, msg);
 }

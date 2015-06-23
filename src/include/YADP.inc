@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: 0.0.0.252
+ * Version: 0.0.0.272
  * Authors: Hendrik Reker
  */
 #if defined _YADP_INCLUDED
@@ -24,7 +24,7 @@
 #define _YADP_INCLUDED
 #pragma newdecls required
 
-#define	YADP_VERSION		"0.0.0.252"
+#define	YADP_VERSION		"0.0.0.272"
 #define	YADP_BUILD_DATE		"2015-06-23"
 
 #if !defined _YADPLIB_MODULE_INCLUDED
@@ -46,7 +46,8 @@ typedef ModuleCallback = function void();
 
 native void Register_OnModuleInit(ModuleCallback f);
 native void Register_OnModuleConf(ModuleCallback f);
-native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team, OnDicedCallback callback);
+native void Register_OnDiced(int idx, OnDicedCallback f);
+native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
 native void SendChatMessage(int client, char[] msg);
 
 #pragma newdecls optional

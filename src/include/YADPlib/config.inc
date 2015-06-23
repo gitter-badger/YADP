@@ -36,8 +36,8 @@ stock void YADP_Configure_Config() {
 	char cmd[50];
 	cmd = "sm_yadp";
 	RegConsoleCmd(cmd, YADP_Command_HandleRequest, "YADP roll the dice");
-	cmd = "sm_yadp_disable";
-	RegConsoleCmd(cmd, YADP_Command_HandleDisable, "YADP disable");
+	cmd = "sm_yadp_stop";
+	RegConsoleCmd(cmd, YADP_Command_HandleDisable, "YADP stop");
 	cmd = "sm_yadp_auto";
 	RegConsoleCmd(cmd, YADP_Command_HandleAuto, "YADP auto-roll");
 	cmd = "sm_yadp_menu";
@@ -52,7 +52,7 @@ stock void YADP_Config_GetRandomCmd(char[] buffer, int maxlength) {
 static void ProcessLine(char[] line) {
 	char txt[50];
 	RegConsoleCmd(line, YADP_Command_HandleRequest, "YADP roll the dice");
-	Format(txt, sizeof(txt), "%s_disable", line);
+	Format(txt, sizeof(txt), "%s_stop", line);
 	RegConsoleCmd(txt, YADP_Command_HandleDisable, "YADP disable");
 	Format(txt, sizeof(txt), "%s_auto", line);
 	RegConsoleCmd(txt, YADP_Command_HandleAuto, "YADP auto-roll");

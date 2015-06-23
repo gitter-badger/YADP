@@ -38,13 +38,16 @@ enum YADP_Module_Team {
 static char g_modNames[MAXMODULES][MAXMODULENAME];
 static char g_modDescs[MAXMODULES][MAXMODULEDESC];
 static char g_modWghts[MAXMODULES];
-static OnDicedCallback g_modCallbacks[MAXMODULES];
+static Handle g_modCallbacks[MAXMODULES];
 static YADP_Module_Team g_modTeam[MAXMODULES];
 static int g_modIdx = -1;
 static int g_modIdxInvoking = -1;
 static bool g_CanRegister = false;
 
 stock void YADP_Initialize_Module() {
+	for(int i= 0; i < MAXMODULES; i++) {
+		g_modCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
+	}
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
 	YADP_Debug_LogMessage("module", msg, LogServer, LevelInfo);
@@ -62,7 +65,7 @@ stock void YADP_Module_RegisterDisable() {
 	g_CanRegister = false;
 }
 
-stock int YADP_Module_Register(char[] name, char[] desc, int weight, YADP_Module_Team team, OnDicedCallback callback) {
+stock int YADP_Module_Register(char[] name, char[] desc, int weight, YADP_Module_Team team) {
 	char errMsg[128];
 	char mName[MAXMODULENAME];
 	char mDesc[MAXMODULEDESC];
@@ -83,7 +86,6 @@ stock int YADP_Module_Register(char[] name, char[] desc, int weight, YADP_Module
 	g_modDescs[g_modIdx] = mDesc;
 	g_modWghts[g_modIdx] = weight;
 	g_modTeam[g_modIdx] = team;
-	g_modCallbacks[g_modIdx] = callback;
 	Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegMod", LANG_SERVER, mName);
 	YADP_Debug_LogMessage("module", errMsg, LogServer, LevelInfo);
 	return g_modIdx;
@@ -135,6 +137,16 @@ stock YADP_Module_Team YADP_Module_GetTeam(int idx) {
 	return g_modTeam[idx];
 }
 
+stock Handle YADP_Module_GetHandle(int idx) {
+	if((idx < 0 || idx > g_modIdx)){
+		char errMsg[80];
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
+		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
+		return null;
+	}
+	return g_modCallbacks[idx];
+}
+
 stock bool YADP_Module_StartInvoking(int idx) {
 	if(g_modIdxInvoking != -1 || (idx < 0 || idx > g_modIdx)) {
 		char errMsg[80];
@@ -146,11 +158,11 @@ stock bool YADP_Module_StartInvoking(int idx) {
 		return false;
 	}
 	g_modIdxInvoking = idx;
-	Call_StartFunction(INVALID_HANDLE, g_modCallbacks[idx]);
+	Call_StartForward(g_modCallbacks[g_modIdxInvoking]);
 	return true;
 }
 
-stock bool YADP_Module_StopInvoking(int idx, any &result) {
+stock bool YADP_Module_StopInvoking(int idx) {
 	if(g_modIdxInvoking == -1 || (idx < 0 || idx > g_modIdx) || (idx != g_modIdxInvoking)) {
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
@@ -162,7 +174,7 @@ stock bool YADP_Module_StopInvoking(int idx, any &result) {
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return false;
 	}
-	Call_Finish(result);
+	Call_Finish();
 	g_modIdxInvoking = -1;
 	return true;
 }

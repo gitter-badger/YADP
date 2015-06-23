@@ -123,6 +123,11 @@
 		"#format"	"{1:s}{2:s}"
 		"en"		"registered module '{1}' by plugin '{2}'."
 	}
+	"yadp_main_RegOnDiced"
+	{
+		"#format"	"{1:d}{2:s}"
+		"en"		"registered OnDiced for module {1} by plugin '{2}'."
+	}
 	"yadp_main_ModMsg"
 	{
 		"#format"	"{1:s}{2:s}{3:s}"
