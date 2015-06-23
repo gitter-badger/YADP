@@ -131,6 +131,6 @@
 	"yadp_main_ModMsg"
 	{
 		"#format"	"{1:s}{2:s}{3:s}"
-		"en"		"plugin '{1}' send message to {2}: '{3}'."
+		"en"		"plugin '{1}' sent message to {2}: '{3}'."
 	}
 }

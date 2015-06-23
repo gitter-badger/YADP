@@ -116,7 +116,7 @@ stock void YADP_Util_ReplaceShellComment(char[] str) {
 }
 
 stock bool YADP_Util_isValidClient(int client) {
-	if(client < 0 || client > MaxClients)
+	if(client < 1 || client > MaxClients)
 		return false;
 	if(!IsClientConnected(client) || !IsClientAuthorized(client) || !IsClientInGame(client))
 		return false;

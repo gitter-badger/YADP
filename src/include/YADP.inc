@@ -27,6 +27,12 @@
 #define	YADP_VERSION		"$version$"
 #define	YADP_BUILD_DATE		"$date$"
 
+#if !defined _YADPLIB_INCLUDED
+
+#define YADPLIB_NAME		"yadplib"
+
+#endif
+
 #if !defined _YADPLIB_MODULE_INCLUDED
 
 #define MAXMODULENAME	10

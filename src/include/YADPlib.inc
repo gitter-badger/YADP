@@ -31,8 +31,9 @@
 #include <YADPlib/chat>
 #include <YADPlib/command>
 
-#define	YADPLIB_VERSION		"0.0.0.272"
-#define	YADPLIB_BUILD_DATE	"2015-06-23"
+#define	YADPLIB_VERSION		"$version$"
+#define	YADPLIB_BUILD_DATE	"$date$"
+#define YADPLIB_NAME		"yadplib"
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
@@ -49,7 +50,7 @@ stock void YADP_Create() {
 	CreateNative("Register_OnDiced", RegOnDiced);
 	CreateNative("RegisterModule", RegModule);
 	CreateNative("SendChatMessage", SendToClient);
-	RegPluginLibrary("yadplib");
+	RegPluginLibrary(YADPLIB_NAME);
 	g_CreatedYADP = true;
 }
 
@@ -126,28 +127,29 @@ static int RegOnModuleConf(Handle plugin, int numParams) {
 }
 
 static int RegOnDiced(Handle plugin, int numParams) {
-	if(numParams != 1 || !g_InitializedYADP) return 0;
+	if(numParams != 2 || !g_InitializedYADP) return 0;
 	int modIdx = GetNativeCell(1);
+	Handle fwd = YADP_Module_GetHandle(modIdx);
+	if(fwd == null) return -1;
 	char pName[50];
 	char msg[128];
 	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
-	Handle fwd = YADP_Module_GetHandle(modIdx);
-	if(fwd == null) return -1;
+	
 	AddToForward(fwd, plugin, GetNativeFunction(2)); 
 	return 0;
 }
 
 static int RegModule(Handle plugin, int numParams) {
-	if(numParams != 5 || !g_InitializedYADP) return 0;
+	if(numParams != 4 || !g_InitializedYADP) return 0;
 	char mName[MAXMODULENAME];
 	char mDesc[MAXMODULEDESC];
 	GetNativeString(1, mName, sizeof(mName));
 	GetNativeString(2, mDesc, sizeof(mDesc));
 	char pName[50];
 	char msg[128];
-	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_ModReg", LANG_SERVER, mName, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	return YADP_Module_Register(mName, mDesc, GetNativeCell(3), view_as<YADP_Module_Team>(GetNativeCell(4)));
@@ -158,7 +160,6 @@ static int SendToClient(Handle plugin, int numParams) {
 	int clt = GetNativeCell(1);
 	char msg[256];
 	GetNativeString(2, msg, sizeof(msg));
-	PrintToServer(msg);
 	char pName[50];
 	char cAuth[50];
 	char lmsg[306];
@@ -166,7 +167,7 @@ static int SendToClient(Handle plugin, int numParams) {
 		GetClientAuthId(clt, AuthId_SteamID64, cAuth, sizeof(cAuth), true);
 	else
 		cAuth = "<missing-auth>"
-	GetPluginInfo(plugin, PlInfo_Name, pName, sizeof(pName));
+	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(lmsg, sizeof(lmsg), "%T", "yadp_main_ModMsg", LANG_SERVER, pName, cAuth, msg);
 	YADP_Debug_LogMessage("global", lmsg, LogFile, LevelInfo);
 	YADP_Chat_PrintToChat(clt, msg);
