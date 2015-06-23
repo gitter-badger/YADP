@@ -108,4 +108,24 @@
 	{
 		"en"		"automatic rolling is disabled."
 	}
+	"yadp_main_ModInit"
+	{
+		"#format"	"{1:s}"
+		"en"		"initialized module in plugin '{1}'."
+	}
+	"yadp_main_ModConf"
+	{
+		"#format"	"{1:s}"
+		"en"		"configured module in plugin '{1}'."
+	}
+	"yadp_main_ModReg"
+	{
+		"#format"	"{1:s}{2:s}"
+		"en"		"registered module '{1}' by plugin '{2}'."
+	}
+	"yadp_main_ModMsg"
+	{
+		"#format"	"{1:s}{2:s}{3:s}"
+		"en"		"plugin '{1}' send message to {2}: '{3}'."
+	}
 }

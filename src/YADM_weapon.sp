@@ -20,33 +20,42 @@
  */
 #include <sourcemod>
 #pragma newdecls required
-#include <YADPlib>
+#include <YADP>
 
 public Plugin myinfo = {
-	name = "YADP",
+	name = "YADM: weapon",
 	author = "Hendrik Reker",
-	description = "Yet Another Dice Plugin",
+	description = "Yet Another Dice Module: weapon",
 	version = "$version$",
 	url = "https://github.com/reker-/YADP"
 };
 
-public void OnPluginStart() {
-	bool initYADP = YADP_Initialize();
-	bool confYADP = YADP_Configure();
-	if(initYADP && !confYADP) {
-		char errMsg[40];
-		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConfigFailed", LANG_SERVER);
-		YADP_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
-		return;
-	}
-}
+int g_modIndex = -1;
 
 public void OnAllPluginsLoaded() {
-	YADP_EnableModules();
 }
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	YADP_Create();
-	return APLRes_Success;
+public void OnLibraryAdded(const char[] name) {
+	if (!StrEqual(name, "yadplib")) return;
+	Register_OnModuleInit(ModuleInit);
+	Register_OnModuleConf(ModuleConf);
 }
 
+public void OnLibraryRemoved(const char[] name) {
+	if (StrEqual(name, "yadplib")) return;
+	g_modIndex = -1;
+}
+
+void ModuleInit() {
+	g_modIndex = RegisterModule("weapon", "Players may get a weapon", 10, ModuleTeam_Any, HandleDiced);
+	PrintToServer("YADM_weapon: Index %d", g_modIndex);
+}
+
+void ModuleConf() {
+
+}
+
+void HandleDiced(int client) {
+	if(g_modIndex == -1) return;
+	SendChatMessage(client, "you got a weapon.");
+}

@@ -15,38 +15,38 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: $version$
+ * Version: 0.0.0.252
  * Authors: Hendrik Reker
  */
-#include <sourcemod>
+#if defined _YADP_INCLUDED
+	#endinput
+#endif
+#define _YADP_INCLUDED
 #pragma newdecls required
-#include <YADPlib>
 
-public Plugin myinfo = {
-	name = "YADP",
-	author = "Hendrik Reker",
-	description = "Yet Another Dice Plugin",
-	version = "$version$",
-	url = "https://github.com/reker-/YADP"
-};
+#define	YADP_VERSION		"0.0.0.252"
+#define	YADP_BUILD_DATE		"2015-06-23"
 
-public void OnPluginStart() {
-	bool initYADP = YADP_Initialize();
-	bool confYADP = YADP_Configure();
-	if(initYADP && !confYADP) {
-		char errMsg[40];
-		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConfigFailed", LANG_SERVER);
-		YADP_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
-		return;
-	}
+#if !defined _YADPLIB_MODULE_INCLUDED
+
+#define MAXMODULENAME	10
+#define MAXMODULEDESC	100
+
+typedef OnDicedCallback = function void(int client);
+
+enum YADP_Module_Team {
+	ModuleTeam_Any	= 0x1,
+	ModuleTeam_T 	= 0x2,
+	ModuleTeam_CT	= 0x3,
 }
 
-public void OnAllPluginsLoaded() {
-	YADP_EnableModules();
-}
+#endif
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
-	YADP_Create();
-	return APLRes_Success;
-}
+typedef ModuleCallback = function void();
 
+native void Register_OnModuleInit(ModuleCallback f);
+native void Register_OnModuleConf(ModuleCallback f);
+native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team, OnDicedCallback callback);
+native void SendChatMessage(int client, char[] msg);
+
+#pragma newdecls optional

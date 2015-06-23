@@ -27,7 +27,7 @@
 #define MAXMODULENAME	10
 #define MAXMODULEDESC	100
 
-typedef OnDiceCallback = function void(int client);
+typedef OnDicedCallback = function void(int client);
 
 enum YADP_Module_Team {
 	ModuleTeam_Any	= 0x1,
@@ -38,24 +38,31 @@ enum YADP_Module_Team {
 static char g_modNames[MAXMODULES][MAXMODULENAME];
 static char g_modDescs[MAXMODULES][MAXMODULEDESC];
 static char g_modWghts[MAXMODULES];
-static OnDiceCallback g_modCallbacks[MAXMODULES];
+static OnDicedCallback g_modCallbacks[MAXMODULES];
 static YADP_Module_Team g_modTeam[MAXMODULES];
 static int g_modIdx = -1;
 static int g_modIdxInvoking = -1;
 static bool g_CanRegister = false;
 
 stock void YADP_Initialize_Module() {
-	g_CanRegister = true;
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
 	YADP_Debug_LogMessage("module", msg, LogServer, LevelInfo);
 }
 
 stock void YADP_Configure_Module() {
+}
+
+
+stock void YADP_Module_RegisterEnable() {
+	g_CanRegister = true;
+}
+
+stock void YADP_Module_RegisterDisable() {
 	g_CanRegister = false;
 }
 
-stock int YADP_Module_Register(char[] name, char[] desc, int weight, YADP_Module_Team team, OnDiceCallback callback) {
+stock int YADP_Module_Register(char[] name, char[] desc, int weight, YADP_Module_Team team, OnDicedCallback callback) {
 	char errMsg[128];
 	char mName[MAXMODULENAME];
 	char mDesc[MAXMODULEDESC];
