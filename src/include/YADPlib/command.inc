@@ -72,7 +72,9 @@ stock Action YADP_Command_HandleRequest(int client, int args) {
 		YADP_Chat_ReplyToCommand(client, msg);
 		return Plugin_Handled;
 	}
-	g_DiceAttepmts[client]--;
+	if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root))){
+		g_DiceAttepmts[client]--;
+	}
 	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
 	YADP_Module_StartInvoking(mod);
 	Call_PushCell(client);
