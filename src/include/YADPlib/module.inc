@@ -65,7 +65,7 @@ stock void YADP_Module_RegisterDisable() {
 	g_CanRegister = false;
 }
 
-stock int YADP_Module_Register(char[] name, char[] desc, int weight, YADP_Module_Team team) {
+stock int YADP_Module_Register(const char[] name, const char[] desc, int weight, YADP_Module_Team team) {
 	char errMsg[128];
 	char mName[MAXMODULENAME];
 	char mDesc[MAXMODULEDESC];

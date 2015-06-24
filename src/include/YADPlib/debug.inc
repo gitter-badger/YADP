@@ -70,7 +70,7 @@ static void ApplyConfig() {
 	}
 }
 
-stock void YADP_Debug_LogMessage(char[] src, char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level) {
+stock void YADP_Debug_LogMessage(const char[] src, const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level) {
 	if(level < g_LogLevel) return;
 	char msgStr[256];
 	char timeStr[20];

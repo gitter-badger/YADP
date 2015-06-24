@@ -38,13 +38,13 @@ stock void YADP_Configure_Chat() {
 	GetConVarString(g_cvChatName, g_chatName, sizeof(g_chatName));
 }
 
-stock void YADP_Chat_PrintToChat(int client, char[] message) {
+stock void YADP_Chat_PrintToChat(int client, const char[] message) {
 	char msg[256];
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CPrintToChat(client, msg);
 }
 
-stock void YADP_Chat_ReplyToCommand(int client, char[] message) {
+stock void YADP_Chat_ReplyToCommand(int client, const char[] message) {
 	char msg[256];
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CReplyToCommand(client, msg);

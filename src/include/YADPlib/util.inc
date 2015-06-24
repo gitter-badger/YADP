@@ -34,7 +34,7 @@ stock void YADP_Configure_Util() {
 
 }
 
-stock void YADP_Util_PrintToConsoleAll(char[] message) {
+stock void YADP_Util_PrintToConsoleAll(const char[] message) {
 	if(strlen(message) > 1024) return; // Not Supported by CS:GO & L4D2
 	for (int i = 1; i <= MaxClients; i++) { 
 		if(!IsClientInGame(i)) continue;	
@@ -42,7 +42,7 @@ stock void YADP_Util_PrintToConsoleAll(char[] message) {
 	}
 }
 
-stock bool YADP_Util_AppendToFile(char[] path, char[] content) {
+stock bool YADP_Util_AppendToFile(const char[] path, const char[] content) {
 	Handle hFile = OpenFile(path, "a+");
 	if(hFile != null){
 		WriteFileLine(hFile, content);
@@ -54,7 +54,7 @@ stock bool YADP_Util_AppendToFile(char[] path, char[] content) {
 	return true;
 }
 
-stock void YADP_Util_RequireDir(char[] filePath) {
+stock void YADP_Util_RequireDir(const char[] filePath) {
 	char dirPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, dirPath, PLATFORM_MAX_PATH, filePath);
 	if(!DirExists(dirPath)) {
@@ -62,7 +62,7 @@ stock void YADP_Util_RequireDir(char[] filePath) {
 	}
 }
 
-stock void YADP_Util_RequireFile(char[] filePath) {
+stock void YADP_Util_RequireFile(const char[] filePath) {
 	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, filePath);
 	if(!FileExists(path)) {
@@ -71,7 +71,7 @@ stock void YADP_Util_RequireFile(char[] filePath) {
 	}
 }
 
-stock void YADP_Util_ReadAllLines(char[] path, Handle adtHandle) {
+stock void YADP_Util_ReadAllLines(const char[] path, Handle adtHandle) {
 	char filePath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
 	Handle hFile = OpenFile(filePath, "r");
@@ -87,7 +87,7 @@ stock void YADP_Util_ReadAllLines(char[] path, Handle adtHandle) {
 	CloseHandle(hFile);
 }
 
-stock int YADP_Util_CountLines(char[] path) {
+stock int YADP_Util_CountLines(const char[] path) {
 	char filePath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, filePath, PLATFORM_MAX_PATH, path);
 	Handle hFile = OpenFile(filePath, "r");

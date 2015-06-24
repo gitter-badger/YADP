@@ -49,7 +49,7 @@ stock void YADP_Config_GetRandomCmd(char[] buffer, int maxlength) {
 	ReplaceString(buffer, maxlength, "sm_", "!", false);
 }
 
-static void ProcessLine(char[] line) {
+static void ProcessLine(const char[] line) {
 	char txt[50];
 	RegConsoleCmd(line, YADP_Command_HandleRequest, "YADP roll the dice");
 	Format(txt, sizeof(txt), "%s_stop", line);
