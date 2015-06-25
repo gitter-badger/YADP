@@ -43,8 +43,12 @@ static YADP_Module_Team g_modTeam[MAXMODULES];
 static int g_modIdx = -1;
 static int g_modIdxInvoking = -1;
 static bool g_CanRegister = false;
+static Handle g_hOnModuleInit;
+static Handle g_hOnModuleConf;
 
 stock void YADP_Initialize_Module() {
+	g_hOnModuleInit = CreateForward(ET_Ignore);
+	g_hOnModuleConf = CreateForward(ET_Ignore);
 	for(int i= 0; i < MAXMODULES; i++) {
 		g_modCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
 	}
@@ -177,6 +181,54 @@ stock bool YADP_Module_StopInvoking(int idx) {
 	Call_Finish();
 	g_modIdxInvoking = -1;
 	return true;
+}
+
+stock int YADP_Module_RegOnInit(Handle plugin, int numParams) {
+	if(numParams != 1 || !YADP_Initialized()) return 0;
+	char pName[50];
+	char msg[128];
+	GetPluginFilename(plugin, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_ModInit", LANG_SERVER, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	AddToForward(g_hOnModuleInit, plugin, GetNativeFunction(1));
+	return 0;
+}
+
+stock int YADP_Module_RegOnConf(Handle plugin, int numParams) {
+	if(numParams != 1 || !YADP_Initialized()) return 0;
+	char pName[50];
+	char msg[128];
+	GetPluginFilename(plugin, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_ModConf", LANG_SERVER, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	AddToForward(g_hOnModuleConf, plugin, GetNativeFunction(1)); 
+	return 0;
+}
+
+stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams) {
+	if(numParams != 2 || !YADP_Initialized()) return 0;
+	int modIdx = GetNativeCell(1);
+	Handle fwd = YADP_Module_GetHandle(modIdx);
+	if(fwd == null) return -1;
+	char pName[50];
+	char msg[128];
+	GetPluginFilename(plugin, pName, sizeof(pName));
+	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
+	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
+	AddToForward(fwd, plugin, GetNativeFunction(2)); 
+	return 0;
+}
+
+stock void YADP_Module_SendOnInit() {
+	if(!YADP_Initialized()) return;
+	Call_StartForward(g_hOnModuleInit);
+	Call_Finish();
+}
+
+stock void YADP_Module_SendOnConf() {
+	if(!YADP_Initialized()) return;
+	Call_StartForward(g_hOnModuleConf);
+	Call_Finish();
 }
 
 stock int YADP_Module_ChooseRandom(YADP_Module_Team team) {

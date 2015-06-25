@@ -31,9 +31,9 @@ public Plugin myinfo = {
 };
 
 public void OnPluginStart() {
-	bool initYADP = YADP_Initialize();
-	bool confYADP = YADP_Configure();
-	if(initYADP && !confYADP) {
+	YADP_Initialize();
+	YADP_Configure();
+	if(!YADP_Ready()) {
 		char errMsg[40];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConfigFailed", LANG_SERVER);
 		YADP_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);

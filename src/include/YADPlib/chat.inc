@@ -49,3 +49,23 @@ stock void YADP_Chat_ReplyToCommand(int client, const char[] message) {
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CReplyToCommand(client, msg);
 }
+
+
+stock int YADP_Chat_SendToClient(Handle plugin, int numParams) {
+	if(numParams != 2 || !YADP_Initialized()) return 0;
+	int clt = GetNativeCell(1);
+	char msg[256];
+	GetNativeString(2, msg, sizeof(msg));
+	char pName[50];
+	char cAuth[50];
+	char lmsg[306];
+	if(YADP_Util_isValidClient(clt))
+		GetClientAuthId(clt, AuthId_SteamID64, cAuth, sizeof(cAuth), true);
+	else
+		cAuth = "<missing-auth>"
+	GetPluginFilename(plugin, pName, sizeof(pName));
+	Format(lmsg, sizeof(lmsg), "%T", "yadp_main_ModMsg", LANG_SERVER, pName, cAuth, msg);
+	YADP_Debug_LogMessage("global", lmsg, LogFile, LevelInfo);
+	YADP_Chat_PrintToChat(clt, msg);
+	return 0;
+}
