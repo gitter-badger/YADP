@@ -171,8 +171,8 @@ static void CreateConVars() {
 }
 
 static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal) {
-	char cvName[60];
-	char cvDesc[60];
+	char cvName[50];
+	char cvDesc[128];
 	Format(cvName, sizeof(cvName), "yadp_%s_%s_enable_%s", (weapon?"weapon":"grenade"), (ct?"ct":"t"), name);
 	Format(cvDesc, sizeof(cvDesc), "Are %ss allowed to get a %s?", (ct?"CT":"T"), lName);
 	return CreateConVar(cvName, defVal, cvDesc, FCVAR_PLUGIN, true, 0.0, true, 1.0);
@@ -180,8 +180,8 @@ static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool
 
 
 static ConVar CreateItemConVarWeight(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal) {
-	char cvName[60];
-	char cvDesc[60];
+	char cvName[50];
+	char cvDesc[128];
 	Format(cvName, sizeof(cvName), "yadp_%s_%s_weight_%s", (weapon?"weapon":"grenade"), (ct?"ct":"t"), name);
 	Format(cvDesc, sizeof(cvDesc), "Determines the probability of %ss getting a %s", (ct?"CT":"T"), lName);
 	return CreateConVar(cvName, defVal, cvDesc, FCVAR_PLUGIN, true, 0.0);
