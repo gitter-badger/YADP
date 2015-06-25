@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"yadp_health_ChangeHealth"
+	{
+		"#format"	"{1:s}{2:s}"
+		"en"		"you got {1}{2}{default} HP."
+	}
+	"yadp_health_ChangeArmor"
+	{
+		"#format"	"{1:s}{2:s}"
+		"en"		"you got {1}{2}{default} AP."
+	}
+}

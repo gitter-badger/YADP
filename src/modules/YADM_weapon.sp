@@ -88,6 +88,8 @@ static char g_gNames[MAXGRENADES][2][20] = {
 
 static ConVar g_cVarsWeapons[MAXWEAPONS][4];
 static ConVar g_cVarsGrenades[MAXGRENADES][4];
+static int g_optWeapons[MAXWEAPONS][4];
+static int g_optGrenades[MAXGRENADES][4];
 static ConVar g_cvEnableWeapon;
 static ConVar g_cvEnableGrenade;
 static ConVar g_cvWeightWeapon;
@@ -127,7 +129,20 @@ static void ModuleInit() {
 }
 
 static void ModuleConf() {
-
+	for(int i = 0; i < MAXWEAPONS; i++) {
+		char cvVal[10];
+		IntToString(i * 10, cvVal, sizeof(cvVal));
+		g_optWeapons[i][0] = GetConVarInt(g_cVarsWeapons[i][0]);
+		g_optWeapons[i][1] = GetConVarInt(g_cVarsWeapons[i][1]);
+		g_optWeapons[i][2] = GetConVarInt(g_cVarsWeapons[i][2]);
+		g_optWeapons[i][3] = GetConVarInt(g_cVarsWeapons[i][3]);
+	}
+	for(int i = 0; i < MAXGRENADES; i++) {
+		g_optGrenades[i][0] = GetConVarInt(g_cVarsGrenades[i][0]);
+		g_optGrenades[i][1] = GetConVarInt(g_cVarsGrenades[i][1]);
+		g_optGrenades[i][2] = GetConVarInt(g_cVarsGrenades[i][2]);
+		g_optGrenades[i][3] = GetConVarInt(g_cVarsGrenades[i][3]);
+	}
 }
 
 static void HandleDicedWeapon(int client) {
@@ -206,17 +221,17 @@ static ConVar CreateItemConVarWeight(const char[] name, const char[] lName, bool
 static bool CanGetItem(int idx, int team, bool weapon) {
 	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES))) return false;
 	if(weapon)
-		return GetConVarInt(g_cVarsWeapons[idx][(team == 3 ? 0 : 1)]) == 1;
+		return g_optWeapons[idx][(team == 3 ? 0 : 1)] == 1;
 	else
-		return GetConVarInt(g_cVarsGrenades[idx][(team == 3 ? 0 : 1)]) == 1; 
+		return g_optGrenades[idx][(team == 3 ? 0 : 1)] == 1; 
 }
 
 static int GetWeightItem(int idx, int team, bool weapon) {
 	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES))) return false;
 	if(weapon)
-		return GetConVarInt(g_cVarsWeapons[idx][(team == 3 ? 2 : 3)]);
+		return g_optWeapons[idx][(team == 3 ? 2 : 3)];
 	else
-		return GetConVarInt(g_cVarsGrenades[idx][(team == 3 ? 2 : 3)]); 
+		return g_optGrenades[idx][(team == 3 ? 2 : 3)]; 
 }
 
 static int GetRandomItem(int team, bool weapon) {
