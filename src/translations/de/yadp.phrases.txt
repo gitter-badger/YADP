@@ -108,4 +108,29 @@
 	{
 		"de"		"automatisches Würfeln ist deaktiviert."
 	}
+	"yadp_main_ModInit"
+	{
+		"#format"	"{1:s}"
+		"de"		"Modul in Plugin '{1}' initialisiert."
+	}
+	"yadp_main_ModConf"
+	{
+		"#format"	"{1:s}"
+		"de"		"Modul in Plugin '{1}' konfiguriert."
+	}
+	"yadp_main_ModReg"
+	{
+		"#format"	"{1:s}{2:s}"
+		"de"		"Modul '{1}' durch Plugin '{2}' registriert."
+	}
+	"yadp_main_RegOnDiced"
+	{
+		"#format"	"{1:d}{2:s}"
+		"de"		"OnDiced für Modul {1} durch Plugin '{2}' registriert."
+	}
+	"yadp_main_ModMsg"
+	{
+		"#format"	"{1:s}{2:s}{3:s}"
+		"de"		"Plugin '{1}' benachrichtigte {2}: '{3}'."
+	}
 }
