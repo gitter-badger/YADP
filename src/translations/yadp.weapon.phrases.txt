@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"yadp_weapon_GotWeapon"
+	{
+		"#format"	"{1:s}"
+		"en"		"you got a {red}{1}{default}."
+	}
+	"yadp_weapon_GotGrenade"
+	{
+		"#format"	"{1:d}{2:s}"
+		"en"		"you got {1} x {red}{2}{default}."
+	}
+}

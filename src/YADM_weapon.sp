@@ -89,6 +89,10 @@ static char g_gNames[MAXGRENADES][2][20] = {
 static ConVar g_cVarsWeapons[MAXWEAPONS][4];
 static ConVar g_cVarsGrenades[MAXGRENADES][4];
 
+public void OnPluginStart() {
+	LoadTranslations("yadp.weapon.phrases.txt");
+}
+
 public void OnLibraryAdded(const char[] name) {
 	if (!StrEqual(name, YADPLIB_NAME)) return;
 	Register_OnModuleInit(ModuleInit);
@@ -102,9 +106,9 @@ public void OnLibraryRemoved(const char[] name) {
 }
 
 static void ModuleInit() {
-	g_modIndexWeapon = RegisterModule("Weapon", "Players may get random weapons", WEIGHT_WEAPON, ModuleTeam_Any);
+	g_modIndexWeapon = RegisterModule("Weapon", "Players get random weapons", WEIGHT_WEAPON, ModuleTeam_Any);
 	Register_OnDiced(g_modIndexWeapon, HandleDicedWeapon);
-	g_modIndexGrenade = RegisterModule("Grenade", "Players may get random grenades", WEIGHT_GRENADE, ModuleTeam_Any);
+	g_modIndexGrenade = RegisterModule("Grenade", "Players get random grenades", WEIGHT_GRENADE, ModuleTeam_Any);
 	Register_OnDiced(g_modIndexGrenade, HandleDicedGrenade);
 	CreateConVars();
 	AutoExecConfig(true, "plugin.YADP.Weapon");
@@ -127,15 +131,15 @@ static void HandleDicedGrenade(int client) {
 static void GiveItem(int client, int idx, bool weapon) {
 	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES))) return;
 	char wType[40];
-	char wName[40];
+	char wName[80];
 	int amount = 1;
 	if(weapon) {
 		Format(wType, sizeof(wType), "weapon_%s", g_wNames[idx][0]);
-		Format(wName, sizeof(wName), "you got a %s.", g_wNames[idx][1]);
+		Format(wName, sizeof(wName), "%T", "yadp_weapon_GotWeapon", client, g_wNames[idx][1]);
 	} else {
 		amount = GetRandomInt(GetMinGrenadeAmount(), GetMaxGrenadeAmount());
 		Format(wType, sizeof(wType), "weapon_%s", g_gNames[idx][0]);
-		Format(wName, sizeof(wName), "you got %d %s.", amount, g_gNames[idx][1]);
+		Format(wName, sizeof(wName), "%T", "yadp_weapon_GotGrenade", client, amount, g_gNames[idx][1]);
 	}
 	for(int i = 0; i < amount; i++) {
 		GivePlayerItem(client, wType);
