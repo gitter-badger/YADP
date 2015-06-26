@@ -20,6 +20,7 @@
  */
 #include <sourcemod>
 #include <sdktools_functions>
+#include <sdkhooks>
 #pragma newdecls required
 #include <YADP>
 
@@ -31,13 +32,14 @@ public Plugin myinfo = {
 	url = "https://github.com/reker-/YADP"
 };
 
-static int g_modIdxHealth = -1;
-static int g_modIdxArmor = -1;
-static int g_modIdxHealthArmor = -1;
-static int g_minHealth = 0;
-static int g_maxHealth = 0;
-static int g_minArmor = 0;
-static int g_maxArmor = 0;
+enum HealthMode {
+	HealthMode_None = 0,
+	HealthMode_HalfDamageR = 1,
+	HealthMode_DoubleDamageR = 2,
+	HealthMode_HalfDamageG = 4,
+	HealthMode_DoubleDamageG = 8,
+};
+
 static ConVar g_cvEnableHealth;
 static ConVar g_cvWeigthHealth;
 static ConVar g_cvHealthMin;
@@ -46,17 +48,55 @@ static ConVar g_cvEnableArmor;
 static ConVar g_cvWeigthArmor;
 static ConVar g_cvArmorMin;
 static ConVar g_cvArmorMax;
+static ConVar g_cvEnableDamage;
+static ConVar g_cvWeigthDamage;
+static int g_modIdxHealth = -1;
+static int g_modIdxArmor = -1;
+static int g_modIdxHealthArmor = -1;
+static int g_modIdxDamage = -1;
+static int g_minHealth = 0;
+static int g_maxHealth = 0;
+static int g_minArmor = 0;
+static int g_maxArmor = 0;
+static HealthMode g_Modes[MAXPLAYERS + 1];
 
 public void OnPluginStart() {
 	LoadTranslations("yadp.health.phrases.txt");
-	g_cvEnableHealth = CreateConVar("yadp_health_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableHealth = CreateConVar("yadp_health_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthHealth = CreateConVar("yadp_health_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
 	g_cvHealthMin = CreateConVar("yadp_health_min", "-90", "Minimum health a player can receive.", FCVAR_PLUGIN);
 	g_cvHealthMax = CreateConVar("yadp_health_max", "90", "Maximum health a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "1", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "0", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
 	g_cvArmorMin = CreateConVar("yadp_armor_min", "10", "Minimum armor a player can receive.", FCVAR_PLUGIN);
 	g_cvArmorMax = CreateConVar("yadp_armor_max", "150", "Maximum armor a player can receive.", FCVAR_PLUGIN);
+	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "1", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeigthDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
+	HookEvent("round_start", YADP_Command_Roundstart, EventHookMode_PostNoCopy);
+}
+
+stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBroadcast) {
+	for(int i = 1; i <= MAXPLAYERS; i++) {
+		g_Modes[i] = HealthMode_None;
+	}
+}
+
+public void OnClientPostAdminCheck(int client) {
+	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamgeHook);
+}
+
+public void OnClientDisconnect(int client) {
+	SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamgeHook);
+}
+
+Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage, int &damagetype) {
+	float dmg = damage;
+	if((g_Modes[victim] & HealthMode_HalfDamageR) == HealthMode_HalfDamageR) dmg /= 2.0;
+	if((g_Modes[victim] & HealthMode_DoubleDamageR) == HealthMode_DoubleDamageR) dmg *= 2.0;
+	if((g_Modes[attacker] & HealthMode_HalfDamageG) == HealthMode_HalfDamageG) dmg /= 2.0;
+	if((g_Modes[attacker] & HealthMode_DoubleDamageG) == HealthMode_DoubleDamageG) dmg *= 2.0;
+	damage = dmg;
+	return Plugin_Changed;
 }
 
 public void OnLibraryAdded(const char[] name) {
@@ -74,16 +114,20 @@ public void OnLibraryRemoved(const char[] name) {
 
 static void ModuleInit() {
 	if(GetConVarInt(g_cvEnableHealth) == 1) {
-		g_modIdxHealth = RegisterModule("Health", "desc", GetConVarInt(g_cvWeigthHealth), ModuleTeam_Any);
+		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeigthHealth), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxHealth, HandleDicedHealth);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1) {
-		g_modIdxArmor = RegisterModule("Armor", "desc", GetConVarInt(g_cvWeigthArmor), ModuleTeam_Any);
+		g_modIdxArmor = RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeigthArmor), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxArmor, HandleDicedArmor);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1) {
-		g_modIdxHealthArmor = RegisterModule("Armor", "desc", ((GetConVarInt(g_cvWeigthHealth) + GetConVarInt(g_cvWeigthArmor)) / 2), ModuleTeam_Any);
+		g_modIdxHealthArmor = RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeigthHealth) + GetConVarInt(g_cvWeigthArmor)) / 2), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor);
+	}
+	if(GetConVarInt(g_cvEnableDamage) == 1) {
+		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeigthDamage), ModuleTeam_Any);
+		Register_OnDiced(g_modIdxDamage, HandleDicedDamage);
 	}
 	AutoExecConfig(true, "plugin.YADP.Health");
 }
@@ -97,7 +141,6 @@ static void ModuleConf() {
 
 static void HandleDicedHealth(int client) {
 	if(g_modIdxHealth < 0) return;
-	
 	NotifyPlayer(client, GetPlayerHealth(client), true);
 	SetPlayerHealth(client, RandomHealth());
 }
@@ -114,12 +157,44 @@ static void HandleDicedHealthArmor(int client) {
 	SetPlayerArmor(client, RandomArmor());
 }
 
+static void HandleDicedDamage(int client) {
+	if(g_modIdxDamage < 0) return;
+	HealthMode mode = RandomHealthMode();
+	char phrase[40];
+	HealthModeToString(mode, phrase, sizeof(phrase));
+	g_Modes[client] = mode;
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", phrase, client);
+	SendChatMessage(client, msg);
+}
+
 static int RandomHealth() {
 	return GetRandomInt(g_minHealth, g_maxHealth);
 }
 
 static int RandomArmor() {
 	return GetRandomInt(g_minArmor, g_maxArmor);
+}
+
+static HealthMode RandomHealthMode() {
+	int i = GetRandomInt(0,5);
+	switch(i) {
+		case 0: return HealthMode_HalfDamageR;
+		case 1: return HealthMode_DoubleDamageR;
+		case 2: return HealthMode_HalfDamageG;
+		case 3: return HealthMode_DoubleDamageG;
+	}
+	return HealthMode_HalfDamageG;
+}
+
+static void HealthModeToString(HealthMode mode, char[] str, int maxlength) {
+	switch(mode) {
+		case HealthMode_HalfDamageR: Format(str, maxlength, "%s", "yadp_health_HalfDamageR");
+		case HealthMode_DoubleDamageR: Format(str, maxlength, "%s", "yadp_health_DoubleDamageR");
+		case HealthMode_HalfDamageG: Format(str, maxlength, "%s", "yadp_health_HalfDamageG");
+		case HealthMode_DoubleDamageG: Format(str, maxlength, "%s", "yadp_health_DoubleDamageG");
+		default: return ;
+	}
 }
 
 static void SetPlayerHealth(int client, int val) {

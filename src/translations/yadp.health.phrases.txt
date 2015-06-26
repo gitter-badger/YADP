@@ -10,4 +10,20 @@
 		"#format"	"{1:s}{2:s}"
 		"en"		"you got {1}{2}{default} AP."
 	}
+	"yadp_health_HalfDamageR"
+	{
+		"en"		"you receive {green}0.5x{default} damage."
+	}
+	"yadp_health_DoubleDamageR"
+	{
+		"en"		"you receive {red}2x{default} damage."
+	}
+	"yadp_health_HalfDamageG"
+	{
+		"en"		"you deal {red}0.5x{default} damage."
+	}
+	"yadp_health_DoubleDamageG"
+	{
+		"en"		"you deal {green}2x{default} damage."
+	}
 }
