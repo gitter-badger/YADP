@@ -26,6 +26,8 @@
 
 #define	YADP_VERSION		"$version$"
 #define	YADP_BUILD_DATE		"$date$"
+#define __RELEASE__			$release$
+#define __DEBUG__			$debug$
 
 #if !defined _YADPLIB_INCLUDED
 

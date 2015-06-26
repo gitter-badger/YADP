@@ -20,6 +20,8 @@ function updateFile(file) {
 	var data = fs.readFileSync(file, 'utf8');
 			
 	var res = data;
+	res = updatePlaceholder(res, getTagExp('debug'), (argv.debug ? "1" : "0"));
+	res = updatePlaceholder(res, getTagExp('release'), (argv.release || argv.publish ? "1" : "0"));
 	res = updatePlaceholder(res, getTagExp('version'), version.getVersion());
 	res = updatePlaceholder(res, getTagExp('date'), moment().format('YYYY-MM-DD'));
 	res = updatePlaceholder(res, getTagExp('time'), moment().format('HH:mm:ss'));

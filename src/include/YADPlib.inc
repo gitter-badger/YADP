@@ -34,6 +34,8 @@
 #define	YADPLIB_VERSION		"$version$"
 #define	YADPLIB_BUILD_DATE	"$date$"
 #define YADPLIB_NAME		"yadplib"
+#define __RELEASE__			$release$
+#define __DEBUG__			$debug$
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
