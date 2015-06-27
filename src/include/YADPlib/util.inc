@@ -115,12 +115,10 @@ stock void YADP_Util_ReplaceShellComment(char[] str) {
 	TrimString(str);
 }
 
-stock bool YADP_Util_isValidClient(int client, bool botsAllowed = false) {
+stock bool YADP_Util_IsValidClient(int client, bool botsAllowed = false) {
 	if(client < 1 || client > MaxClients)
 		return false;
 	if(!IsClientConnected(client) || !IsClientAuthorized(client) || !IsClientInGame(client))
-		return false;
-	if(!botsAllowed && !IsFakeClient(client))
 		return false;
 	if(IsClientSourceTV(client) || IsClientReplay(client))
 		return false;
@@ -128,5 +126,14 @@ stock bool YADP_Util_isValidClient(int client, bool botsAllowed = false) {
 		return false;
 	if(IsClientInKickQueue(client))
 		return false;
+	if(!botsAllowed && !IsFakeClient(client))
+		return false;
 	return true;
+}
+
+stock int YADP_Util_IsValidClientNative(Handle plugin, int numParams) {
+	if(numParams != 2) return view_as<int>(false);
+	int client = GetNativeCell(1);
+	bool ignr = GetNativeCell(2);
+	return view_as<int>(YADP_Util_IsValidClient(client, ignr));
 }

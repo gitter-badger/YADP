@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: $version$
+ * Version: 0.0.0.420
  * Authors: Hendrik Reker
  */
 #if defined _YADPLIB_INCLUDED
@@ -31,11 +31,11 @@
 #include <YADPlib/chat>
 #include <YADPlib/command>
 
-#define	YADPLIB_VERSION		"$version$"
-#define	YADPLIB_BUILD_DATE	"$date$"
+#define	YADPLIB_VERSION		"0.0.0.420"
+#define	YADPLIB_BUILD_DATE	"2015-06-27"
 #define YADPLIB_NAME		"yadplib"
-#define __RELEASE__			$release$
-#define __DEBUG__			$debug$
+#define __RELEASE__			1
+#define __DEBUG__			0
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;
@@ -51,6 +51,7 @@ stock void YADP_Create() {
 	CreateNative("RegisterModule", RegModule);
 	CreateNative("SendChatMessage", YADP_Chat_SendToClient);
 	CreateNative("LogModuleMessage", YADP_Debug_LogMessageNative);
+	CreateNative("IsValidClient", YADP_Util_IsValidClientNative);
 	RegPluginLibrary(YADPLIB_NAME);
 	g_CreatedYADP = true;
 }

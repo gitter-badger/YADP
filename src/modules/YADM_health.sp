@@ -67,15 +67,15 @@ static int g_TimerCount[MAXPLAYERS + 1];
 
 public void OnPluginStart() {
 	LoadTranslations("yadp.health.phrases.txt");
-	g_cvEnableHealth = CreateConVar("yadp_health_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableHealth = CreateConVar("yadp_health_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthHealth = CreateConVar("yadp_health_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
 	g_cvHealthMin = CreateConVar("yadp_health_min", "-90", "Minimum health a player can receive.", FCVAR_PLUGIN);
 	g_cvHealthMax = CreateConVar("yadp_health_max", "90", "Maximum health a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "1", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "0", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
 	g_cvArmorMin = CreateConVar("yadp_armor_min", "10", "Minimum armor a player can receive.", FCVAR_PLUGIN);
 	g_cvArmorMax = CreateConVar("yadp_armor_max", "150", "Maximum armor a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "1", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "0", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableFire = CreateConVar("yadp_fire_enable", "1", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
@@ -167,25 +167,25 @@ static void ModuleConf() {
 }
 
 static void HandleDicedHealth(int client) {
-	if(g_modIdxHealth < 0) return;
+	if(g_modIdxHealth < 0 || !IsValidClient(client, true)) return;
 	NotifyPlayer(client, GetPlayerHealth(client), true);
 	SetPlayerHealth(client, RandomHealth());
 }
 
 static void HandleDicedArmor(int client) {
-	if(g_modIdxArmor < 0) return;
+	if(g_modIdxArmor < 0 || !IsValidClient(client, true)) return;
 	NotifyPlayer(client, GetPlayerArmor(client), false);
 	SetPlayerArmor(client, RandomArmor());
 }
 
 static void HandleDicedHealthArmor(int client) {
-	if(g_modIdxHealthArmor < 0) return;
+	if(g_modIdxHealthArmor < 0 || !IsValidClient(client, true)) return;
 	SetPlayerHealth(client, RandomHealth());
 	SetPlayerArmor(client, RandomArmor());
 }
 
 static void HandleDicedDamage(int client) {
-	if(g_modIdxDamage < 0) return;
+	if(g_modIdxDamage < 0 || !IsValidClient(client, true)) return;
 	HealthMode mode = RandomHealthMode();
 	char phrase[40];
 	HealthModeToString(mode, phrase, sizeof(phrase));
@@ -196,7 +196,7 @@ static void HandleDicedDamage(int client) {
 }
 
 static void HandleDicedFire(int client) {
-	if(g_modIdxFire < 0) return;
+	if(g_modIdxFire < 0 || !IsValidClient(client, true)) return;
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", "yadp_health_Fire", client);
 	SendChatMessage(client, msg);
@@ -205,7 +205,7 @@ static void HandleDicedFire(int client) {
 }
 
 static Action FireTimer(Handle timer, any client) {
-	if(g_TimerCount[client] >= 99) {
+	if(g_TimerCount[client] >= 99 || !IsValidClient(client, true)) {
 		KillTimer(timer, false);
 		g_Timers[client] = null;
 		return Plugin_Continue;

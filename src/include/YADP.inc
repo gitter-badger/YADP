@@ -75,5 +75,6 @@ native void Register_OnDiced(int idx, OnDicedCallback f);
 native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
 native void SendChatMessage(int client, char[] msg);
 native void LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);
+native bool IsValidClient(int client, bool botsAllowed);
 
 #pragma newdecls optional
