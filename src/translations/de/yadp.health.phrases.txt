@@ -26,4 +26,8 @@
 	{
 		"de"		"du verursachst {green}2x{default} Schaden."
 	}
+	"yadp_health_Fire"
+	{
+		"de"		"du {red}brennst{default} nun."
+	}
 }

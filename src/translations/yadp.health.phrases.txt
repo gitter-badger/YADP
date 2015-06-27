@@ -26,4 +26,8 @@
 	{
 		"en"		"you deal {green}2x{default} damage."
 	}
+	"yadp_health_Fire"
+	{
+		"en"		"you are now on {red}fire{default}."
+	}
 }
