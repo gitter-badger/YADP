@@ -96,6 +96,18 @@ stock void YADP_Debug_LogMessage(const char[] src, const char[] msg, YADP_Debug_
 	}
 }
 
+stock int YADP_Debug_LogMessageNative(Handle plugin, int numParams) {
+	if(numParams != 3) return 0;
+	char pName[10];
+	char nMsg[256];
+	GetNativeString(1, nMsg, sizeof(nMsg));
+	YADP_Debug_LogMode mode = view_as<YADP_Debug_LogMode>(GetNativeCell(2));
+	YADP_Debug_LogLevel lvl = view_as<YADP_Debug_LogLevel>(GetNativeCell(3));
+	GetPluginFilename(plugin, pName, sizeof(pName));
+	YADP_Debug_LogMessage(pName, nMsg, mode, lvl);
+	return 0;
+}
+
 stock void YADP_Debug_GetLogFilePath(char[] path, int maxlength) {
 	if(maxlength < PLATFORM_MAX_PATH) {
 		char errMsg[40];

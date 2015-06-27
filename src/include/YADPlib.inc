@@ -50,6 +50,7 @@ stock void YADP_Create() {
 	CreateNative("Register_OnDiced", YADP_Module_RegOnDiced);
 	CreateNative("RegisterModule", RegModule);
 	CreateNative("SendChatMessage", YADP_Chat_SendToClient);
+	CreateNative("LogModuleMessage", YADP_Debug_LogMessageNative);
 	RegPluginLibrary(YADPLIB_NAME);
 	g_CreatedYADP = true;
 }

@@ -50,6 +50,23 @@ enum YADP_Module_Team {
 
 #endif
 
+#if !defined _YADPLIB_DEBUG_INCLUDED
+
+enum YADP_Debug_LogMode {
+	LogClient	= 0x01,
+	LogServer	= 0x02,
+	LogFile		= 0x04,
+};
+
+enum YADP_Debug_LogLevel {
+	LevelInfo		= 0x01,
+	LevelWarning	= 0x02,
+	LevelError		= 0x04,
+	LevelCritical	= 0x08,
+};
+
+#endif
+
 typedef ModuleCallback = function void();
 
 native void Register_OnModuleInit(ModuleCallback f);
@@ -57,5 +74,6 @@ native void Register_OnModuleConf(ModuleCallback f);
 native void Register_OnDiced(int idx, OnDicedCallback f);
 native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
 native void SendChatMessage(int client, char[] msg);
+native void LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);
 
 #pragma newdecls optional

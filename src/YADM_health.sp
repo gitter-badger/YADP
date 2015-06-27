@@ -50,15 +50,20 @@ static ConVar g_cvArmorMin;
 static ConVar g_cvArmorMax;
 static ConVar g_cvEnableDamage;
 static ConVar g_cvWeigthDamage;
+static ConVar g_cvEnableFire;
+static ConVar g_cvWeigthFire;
 static int g_modIdxHealth = -1;
 static int g_modIdxArmor = -1;
 static int g_modIdxHealthArmor = -1;
 static int g_modIdxDamage = -1;
+static int g_modIdxFire = -1;
 static int g_minHealth = 0;
 static int g_maxHealth = 0;
 static int g_minArmor = 0;
 static int g_maxArmor = 0;
 static HealthMode g_Modes[MAXPLAYERS + 1];
+static Handle g_Timers[MAXPLAYERS + 1];
+static int g_TimerCount[MAXPLAYERS + 1];
 
 public void OnPluginStart() {
 	LoadTranslations("yadp.health.phrases.txt");
@@ -70,14 +75,34 @@ public void OnPluginStart() {
 	g_cvWeigthArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
 	g_cvArmorMin = CreateConVar("yadp_armor_min", "10", "Minimum armor a player can receive.", FCVAR_PLUGIN);
 	g_cvArmorMax = CreateConVar("yadp_armor_max", "150", "Maximum armor a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "1", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "0", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
-	HookEvent("round_start", YADP_Command_Roundstart, EventHookMode_PostNoCopy);
+	g_cvEnableFire = CreateConVar("yadp_fire_enable", "1", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeigthFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
+	HookEvent("round_start", RoundStartHook, EventHookMode_PostNoCopy);
+	HookEvent("round_end", RoundEndHook, EventHookMode_PostNoCopy);
 }
 
-stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBroadcast) {
-	for(int i = 1; i <= MAXPLAYERS; i++) {
+static Action RoundStartHook(Event event, const char[] name, bool dontBroadcast) {
+	char eName[30];
+	char msg[100];
+	if(event != null) GetEventName(event, eName, sizeof(eName));
+	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
+	LogModuleMessage(msg, LogServer, LevelInfo);
+	for(int i = 1; i < MAXPLAYERS + 1; i++) {
 		g_Modes[i] = HealthMode_None;
+	}
+}
+
+static Action RoundEndHook(Event event, const char[] name, bool dontBroadcast) {
+	char eName[30];
+	char msg[100];
+	if(event != null) GetEventName(event, eName, sizeof(eName));
+	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
+	LogModuleMessage(msg, LogServer, LevelInfo);
+	for(int i = 1; i < MAXPLAYERS + 1; i++) {
+		if(g_Timers[i] != null) CloseHandle(g_Timers[i]);
+		g_TimerCount[i] = 0;
 	}
 }
 
@@ -91,10 +116,18 @@ public void OnClientDisconnect(int client) {
 
 Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage, int &damagetype) {
 	float dmg = damage;
-	if((g_Modes[victim] & HealthMode_HalfDamageR) == HealthMode_HalfDamageR) dmg /= 2.0;
-	if((g_Modes[victim] & HealthMode_DoubleDamageR) == HealthMode_DoubleDamageR) dmg *= 2.0;
-	if((g_Modes[attacker] & HealthMode_HalfDamageG) == HealthMode_HalfDamageG) dmg /= 2.0;
-	if((g_Modes[attacker] & HealthMode_DoubleDamageG) == HealthMode_DoubleDamageG) dmg *= 2.0;
+	if(victim > 0 && victim < MAXPLAYERS + 1) {
+		if((g_Modes[victim] & HealthMode_HalfDamageR) == HealthMode_HalfDamageR) dmg /= 2.0;
+		if((g_Modes[victim] & HealthMode_DoubleDamageR) == HealthMode_DoubleDamageR) dmg *= 2.0;
+		if(g_TimerCount[victim] != 0 && damagetype == DMG_BURN) {
+			damage = 0.0;
+			return Plugin_Changed;
+		}
+	}
+	if(attacker > 0 && attacker < MAXPLAYERS + 1) {
+		if((g_Modes[attacker] & HealthMode_HalfDamageG) == HealthMode_HalfDamageG) dmg /= 2.0;
+		if((g_Modes[attacker] & HealthMode_DoubleDamageG) == HealthMode_DoubleDamageG) dmg *= 2.0;
+	}
 	damage = dmg;
 	return Plugin_Changed;
 }
@@ -110,6 +143,8 @@ public void OnLibraryRemoved(const char[] name) {
 	g_modIdxHealth = -1;
 	g_modIdxArmor = -1;
 	g_modIdxHealthArmor = -1;
+	g_modIdxDamage = -1;
+	g_modIdxFire = -1;
 }
 
 static void ModuleInit() {
@@ -128,6 +163,10 @@ static void ModuleInit() {
 	if(GetConVarInt(g_cvEnableDamage) == 1) {
 		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeigthDamage), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxDamage, HandleDicedDamage);
+	}
+	if(GetConVarInt(g_cvEnableFire) == 1) {
+		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeigthFire), ModuleTeam_Any);
+		Register_OnDiced(g_modIdxFire, HandleDicedFire);
 	}
 	AutoExecConfig(true, "plugin.YADP.Health");
 }
@@ -166,6 +205,23 @@ static void HandleDicedDamage(int client) {
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", phrase, client);
 	SendChatMessage(client, msg);
+}
+
+static void HandleDicedFire(int client) {
+	if(g_modIdxFire < 0) return;
+	g_TimerCount[client] = 0;
+	g_Timers[client] = CreateTimer(0.2, FireTimer, client, TIMER_REPEAT);
+	IgniteEntity(client, 99.0, false, 0.0, true);
+}
+
+static Action FireTimer(Handle timer, any client) {
+	if(g_TimerCount[client] >= 99) {
+		if(timer != null) KillTimer(timer, false);
+		return Plugin_Stop;
+	}
+	g_TimerCount[client]++;
+	SlapPlayer(client, 1, true);
+	return Plugin_Continue;
 }
 
 static int RandomHealth() {
