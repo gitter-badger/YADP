@@ -59,7 +59,7 @@ stock int YADP_Chat_SendToClient(Handle plugin, int numParams) {
 	char pName[50];
 	char cAuth[50];
 	char lmsg[306];
-	if(YADP_Util_isValidClient(clt))
+	if(YADP_Util_isValidClient(clt, false))
 		GetClientAuthId(clt, AuthId_SteamID64, cAuth, sizeof(cAuth), true);
 	else
 		cAuth = "<missing-auth>"

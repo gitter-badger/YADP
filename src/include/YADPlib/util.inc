@@ -115,12 +115,14 @@ stock void YADP_Util_ReplaceShellComment(char[] str) {
 	TrimString(str);
 }
 
-stock bool YADP_Util_isValidClient(int client) {
+stock bool YADP_Util_isValidClient(int client, bool botsAllowed = false) {
 	if(client < 1 || client > MaxClients)
 		return false;
 	if(!IsClientConnected(client) || !IsClientAuthorized(client) || !IsClientInGame(client))
 		return false;
-	if(IsFakeClient(client) || IsClientSourceTV(client) || IsClientReplay(client))
+	if(!botsAllowed && !IsFakeClient(client))
+		return false;
+	if(IsClientSourceTV(client) || IsClientReplay(client))
 		return false;
 	if(IsClientObserver(client))
 		return false;
