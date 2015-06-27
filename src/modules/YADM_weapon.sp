@@ -101,6 +101,7 @@ public void OnPluginStart() {
 	g_cvEnableGrenade = CreateConVar("yadp_grenade_enable", "1", "Players can roll grenades.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightWeapon = CreateConVar("yadp_weapon_weight", "10", "Probability of players getting a weapons.", FCVAR_PLUGIN, true, 0.0);
 	g_cvWeightGrenade = CreateConVar("yadp_grenade_weight", "50", "Probability of players getting a weapons.", FCVAR_PLUGIN, true, 0.0);
+	CreateConVars();
 }
 
 public void OnLibraryAdded(const char[] name) {
@@ -116,7 +117,7 @@ public void OnLibraryRemoved(const char[] name) {
 }
 
 static void ModuleInit() {
-	CreateConVars();
+	AutoExecConfig(true, "plugin.YADP.Weapon");
 	if(GetConVarInt(g_cvEnableWeapon) == 1) {
 		g_modIndexWeapon = RegisterModule("Weapon", "Players get random weapons", GetConVarInt(g_cvWeightWeapon), ModuleTeam_Any);
 		Register_OnDiced(g_modIndexWeapon, HandleDicedWeapon);
@@ -125,7 +126,6 @@ static void ModuleInit() {
 		g_modIndexGrenade = RegisterModule("Grenade", "Players get random grenades", GetConVarInt(g_cvWeightGrenade), ModuleTeam_Any);
 		Register_OnDiced(g_modIndexGrenade, HandleDicedGrenade);
 	}
-	AutoExecConfig(true, "plugin.YADP.Weapon");
 }
 
 static void ModuleConf() {

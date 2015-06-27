@@ -129,6 +129,7 @@ public void OnLibraryRemoved(const char[] name) {
 }
 
 static void ModuleInit() {
+	AutoExecConfig(true, "plugin.YADP.Teleport");
 	if(GetConVarInt(g_cvEnableSwitch) == 1) {
 		g_modIdxSwitch = RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeigthSwitch), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxSwitch, HandleDicedSwitch);
@@ -145,7 +146,6 @@ static void ModuleInit() {
 		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeigthSmoke), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxSmoke, HandleDicedSmoke);
 	}
-	AutoExecConfig(true, "plugin.YADP.Teleport");
 }
 
 static void ModuleConf() {

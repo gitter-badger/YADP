@@ -136,6 +136,7 @@ public void OnLibraryRemoved(const char[] name) {
 }
 
 static void ModuleInit() {
+	AutoExecConfig(true, "plugin.YADP.Health");
 	if(GetConVarInt(g_cvEnableHealth) == 1) {
 		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeigthHealth), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxHealth, HandleDicedHealth);
@@ -156,7 +157,6 @@ static void ModuleInit() {
 		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeigthFire), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxFire, HandleDicedFire);
 	}
-	AutoExecConfig(true, "plugin.YADP.Health");
 }
 
 static void ModuleConf() {
