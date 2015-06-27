@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"yadp_teleport_SwitchPosition"
+	{
+		"#format"	"{1:s}{2:s}"
+		"en"		"du hast die Position mit {1}{2}{default} getauscht."
+	}
+}

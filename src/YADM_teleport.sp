@@ -51,9 +51,9 @@ static TeleportMode g_Modes[MAXPLAYERS + 1];
 
 public void OnPluginStart() {
 	LoadTranslations("yadp.teleport.phrases.txt");
-	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSwitch = CreateConVar("yadp_switch_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSwitchTeam = CreateConVar("yadp_switchTeam_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
@@ -80,8 +80,10 @@ public void OnClientDisconnect(int client) {
 }
 
 Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage, int &damagetype) {
-	if(g_Modes[victim] == TeleportMode_TakeDmg) SwitchPlayers(victim, attacker);
-	if(g_Modes[attacker] == TeleportMode_GiveDmg) SwitchPlayers(attacker, victim);
+	if(g_Modes[victim] == TeleportMode_TakeDmg || g_Modes[attacker] == TeleportMode_GiveDmg) {
+		SwitchPlayers(victim, attacker);
+		NotifyPlayers(victim, attacker);
+	}
 	return Plugin_Continue;
 }
 
@@ -120,10 +122,26 @@ static void ModuleConf() {
 
 static void HandleDicedSwitch(int client) {
 	if(g_modIdxSwitch < 0) return;
+	int idx;
+	if(GetClientCount() > 1) {
+		do {
+			idx = GetRandomInt(1, MAXPLAYERS - 1);
+		} while(!IsClientInGame(idx) || idx == client || GetClientTeam(idx) != GetClientTeam(client));
+		SwitchPlayers(client, idx);
+		NotifyPlayers(client, idx);
+	}
 }
 
 static void HandleDicedSwitchTeam(int client) {
 	if(g_modIdxSwitchTeam < 0) return;
+	int idx;
+	if(GetClientCount() > 1) {
+		do {
+			idx = GetRandomInt(1, MAXPLAYERS - 1);
+		} while(!IsClientInGame(idx) || idx == client);
+		SwitchPlayers(client, idx);
+		NotifyPlayers(client, idx);
+	}
 }
 
 static void HandleDicedSwitchDmg(int client) {
@@ -156,3 +174,17 @@ static void SwitchPlayers(int clFirst, int clSecond) {
 	TeleportEntity(clSecond, clFirstPos, clFirstRot, clFirstVel);
 }
 
+static void NotifyPlayers(int clFirst, int clSecond) {
+	char cName[40];
+	char iName[40];
+	char tcl[10];
+	Format(cName, sizeof(cName), "%N", clFirst);
+	Format(iName, sizeof(iName), "%N", clSecond);
+	char msg[128];
+	Format(tcl, sizeof(tcl), "%s", GetClientTeam(clSecond) == 3 ? "{blue}" : "{red}");
+	Format(msg, sizeof(msg), "%T", "yadp_teleport_SwitchPosition", clFirst, tcl, iName);
+	SendChatMessage(clFirst, msg);
+	Format(tcl, sizeof(tcl), "%s", GetClientTeam(clFirst) == 3 ? "{blue}" : "{red}");
+	Format(msg, sizeof(msg), "%T", "yadp_teleport_SwitchPosition", clSecond, tcl, cName);
+	SendChatMessage(clSecond, msg);
+}
