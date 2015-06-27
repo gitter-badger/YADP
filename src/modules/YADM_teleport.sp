@@ -36,6 +36,7 @@ enum TeleportMode {
 	TeleportMode_None = 0,
 	TeleportMode_TakeDmg = 1,
 	TeleportMode_GiveDmg = 2,
+	TeleportMode_Smoke = 4,
 };
 
 static ConVar g_cvEnableSwitch;
@@ -44,28 +45,53 @@ static ConVar g_cvEnableSwitchTeam;
 static ConVar g_cvWeigthSwitchTeam;
 static ConVar g_cvEnableSwitchDmg;
 static ConVar g_cvWeigthSwitchDmg;
+static ConVar g_cvEnableSmoke;
+static ConVar g_cvWeigthSmoke;
 static int g_modIdxSwitch = -1;
 static int g_modIdxSwitchTeam = -1;
 static int g_modIdxSwitchDmg = -1;
+static int g_modIdxSmoke = -1;
 static TeleportMode g_Modes[MAXPLAYERS + 1];
 
 public void OnPluginStart() {
 	LoadTranslations("yadp.teleport.phrases.txt");
-	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSwitch = CreateConVar("yadp_switch_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSwitchTeam = CreateConVar("yadp_switchTeam_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableSmoke = CreateConVar("yadp_smoke_enable", "1", "Players can roll a teleportation grenade.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeigthSmoke = CreateConVar("yadp_smoke_weight", "50", "Probability of players getting a teleportation grenade.", FCVAR_PLUGIN, true, 0.0);
 	HookEvent("round_start", RoundStartHook, EventHookMode_PostNoCopy);
+	HookEvent("smokegrenade_detonate", SmokeGrenadeDetonateHook);
 }
 
-static Action RoundStartHook(Event event, const char[] name, bool dontBroadcast) {
+static Action SmokeGrenadeDetonateHook(Handle:event, const String:name[], bool:dontBroadcast) {
 	char eName[30];
 	char msg[100];
 	if(event != null) GetEventName(event, eName, sizeof(eName));
 	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
 	LogModuleMessage(msg, LogServer, LevelInfo);
+	
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if(g_Modes[client] != TeleportMode_Smoke) return Plugin_Continue;
+	float a[3];
+	a[0] = GetEventFloat(event, "x");
+	a[1] = GetEventFloat(event, "y");
+	a[2] = GetEventFloat(event, "z");
+	
+	TeleportEntity(client, a, NULL_VECTOR, NULL_VECTOR);
+	return Plugin_Continue;   
+} 
+
+static Action RoundStartHook(Event event, const char[] name, bool dontBroadcast) { 
+	char eName[30];
+	char msg[100];
+	if(event != null) GetEventName(event, eName, sizeof(eName));
+	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
+	LogModuleMessage(msg, LogServer, LevelInfo);
+	
 	for(int i = 1; i < MAXPLAYERS + 1; i++) {
 		g_Modes[i] = TeleportMode_None;
 	}
@@ -80,6 +106,7 @@ public void OnClientDisconnect(int client) {
 }
 
 Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage, int &damagetype) {
+	if(!IsValidClient(victim, true) || !IsValidClient(attacker, true)) return Plugin_Continue;
 	if(g_Modes[victim] == TeleportMode_TakeDmg || g_Modes[attacker] == TeleportMode_GiveDmg) {
 		SwitchPlayers(victim, attacker);
 		NotifyPlayers(victim, attacker);
@@ -98,6 +125,7 @@ public void OnLibraryRemoved(const char[] name) {
 	g_modIdxSwitch = -1;
 	g_modIdxSwitchTeam = -1;
 	g_modIdxSwitchDmg = -1;
+	g_modIdxSmoke = -1;
 }
 
 static void ModuleInit() {
@@ -113,6 +141,10 @@ static void ModuleInit() {
 		g_modIdxSwitchDmg = RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeigthSwitchDmg), ModuleTeam_Any);
 		Register_OnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg);
 	}
+	if(GetConVarInt(g_cvEnableSmoke) == 1) {
+		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeigthSmoke), ModuleTeam_Any);
+		Register_OnDiced(g_modIdxSmoke, HandleDicedSmoke);
+	}
 	AutoExecConfig(true, "plugin.YADP.Teleport");
 }
 
@@ -121,7 +153,7 @@ static void ModuleConf() {
 }
 
 static void HandleDicedSwitch(int client) {
-	if(g_modIdxSwitch < 0) return;
+	if(g_modIdxSwitch < 0 || !IsValidClient(client, true)) return;
 	int idx;
 	if(GetClientCount() > 1) {
 		do {
@@ -133,7 +165,7 @@ static void HandleDicedSwitch(int client) {
 }
 
 static void HandleDicedSwitchTeam(int client) {
-	if(g_modIdxSwitchTeam < 0) return;
+	if(g_modIdxSwitchTeam < 0 || !IsValidClient(client, true)) return;
 	int idx;
 	if(GetClientCount() > 1) {
 		do {
@@ -145,9 +177,18 @@ static void HandleDicedSwitchTeam(int client) {
 }
 
 static void HandleDicedSwitchDmg(int client) {
-	if(g_modIdxSwitchDmg < 0) return;
+	if(g_modIdxSwitchDmg < 0 || !IsValidClient(client, true)) return;
 	int rndInt = GetRandomInt(0, 100);
 	g_Modes[client] = (rndInt < 50 ? TeleportMode_GiveDmg : TeleportMode_TakeDmg);
+}
+
+static void HandleDicedSmoke(int client) {
+	if(g_modIdxSmoke < 0 || !IsValidClient(client, true)) return;
+	g_Modes[client] = TeleportMode_Smoke;
+	GivePlayerItem(client, "weapon_smokegrenade");
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", "yadp_teleport_Smoke", client);
+	SendChatMessage(client, msg);
 }
 
 static void GetPosition(int client, float position[3]) {

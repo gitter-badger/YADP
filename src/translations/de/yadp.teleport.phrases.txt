@@ -5,4 +5,8 @@
 		"#format"	"{1:s}{2:s}"
 		"en"		"du hast die Position mit {1}{2}{default} getauscht."
 	}
+	"yadp_teleport_Smoke"
+	{
+		"en"		"du kannst dich mit Rauchgranaten teleportieren."
+	}
 }
