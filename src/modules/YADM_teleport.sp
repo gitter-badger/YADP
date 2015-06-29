@@ -162,22 +162,22 @@ static void ModuleInit()
 	if(GetConVarInt(g_cvEnableSwitch) == 1)
 	{
 		g_modIdxSwitch = RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeigthSwitch), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSwitch, HandleDicedSwitch);
+		RegOnDiced(g_modIdxSwitch, HandleDicedSwitch, ResetDicedSwitch);
 	}
 	if(GetConVarInt(g_cvEnableSwitchTeam) == 1)
 	{
 		g_modIdxSwitchTeam = RegisterModule("SwitchTeam", "Players switch position.", GetConVarInt(g_cvWeigthSwitchTeam), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSwitchTeam, HandleDicedSwitchTeam);
+		RegOnDiced(g_modIdxSwitchTeam, HandleDicedSwitchTeam, ResetDicedSwitchTeam);
 	}
 	if(GetConVarInt(g_cvEnableSwitchDmg) == 1)
 	{
 		g_modIdxSwitchDmg = RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeigthSwitchDmg), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg);
+		RegOnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg, ResetDicedSwitchDmg);
 	}
 	if(GetConVarInt(g_cvEnableSmoke) == 1)
 	{
 		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeigthSmoke), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSmoke, HandleDicedSmoke);
+		RegOnDiced(g_modIdxSmoke, HandleDicedSmoke, ResetDicedSmoke);
 	}
 }
 
@@ -204,6 +204,14 @@ static void HandleDicedSwitch(int client)
 	}
 }
 
+static void ResetDicedSwitch(int client)
+{
+	if(g_modIdxSwitch < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+}
+
 static void HandleDicedSwitchTeam(int client)
 {
 	if(g_modIdxSwitchTeam < 0 || !IsValidClient(client, true))
@@ -222,6 +230,14 @@ static void HandleDicedSwitchTeam(int client)
 	}
 }
 
+static void ResetDicedSwitchTeam(int client)
+{
+	if(g_modIdxSwitchTeam < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+}
+
 static void HandleDicedSwitchDmg(int client)
 {
 	if(g_modIdxSwitchDmg < 0 || !IsValidClient(client, true))
@@ -230,6 +246,14 @@ static void HandleDicedSwitchDmg(int client)
 	}
 	int rndInt = GetRandomInt(0, 100);
 	g_Modes[client] = (rndInt < 50 ? TeleportMode_GiveDmg : TeleportMode_TakeDmg);
+}
+
+static void ResetDicedSwitchDmg(int client)
+{
+	if(g_modIdxSwitchDmg < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
 }
 
 static void HandleDicedSmoke(int client)
@@ -243,6 +267,14 @@ static void HandleDicedSmoke(int client)
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", "yadp_teleport_Smoke", client);
 	SendChatMessage(client, msg);
+}
+
+static void ResetDicedSmoke(int client)
+{
+	if(g_modIdxSmoke < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
 }
 
 static void GetPosition(int client, float position[3])

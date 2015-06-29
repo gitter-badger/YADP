@@ -131,12 +131,12 @@ static void ModuleInit()
 	if(GetConVarInt(g_cvEnableWeapon) == 1)
 	{
 		g_modIndexWeapon = RegisterModule("Weapon", "Players get random weapons", GetConVarInt(g_cvWeightWeapon), ModuleTeam_Any);
-		RegOnDiced(g_modIndexWeapon, HandleDicedWeapon);
+		RegOnDiced(g_modIndexWeapon, HandleDicedWeapon, ResetDicedWeapon);
 	}
 	if(GetConVarInt(g_cvEnableGrenade) == 1)
 	{
 		g_modIndexGrenade = RegisterModule("Grenade", "Players get random grenades", GetConVarInt(g_cvWeightGrenade), ModuleTeam_Any);
-		RegOnDiced(g_modIndexGrenade, HandleDicedGrenade);
+		RegOnDiced(g_modIndexGrenade, HandleDicedGrenade, ResetDicedGrenade);
 	}
 }
 
@@ -160,20 +160,36 @@ static void ModuleConf()
 
 static void HandleDicedWeapon(int client)
 {
-	if(g_modIndexWeapon < 0)
+	if(g_modIndexWeapon < 0 || !IsValidClient(client, true))
 	{
 		return;
 	}
 	GiveItem(client, GetRandomItem(GetClientTeam(client), true), true);
 }
 
+static void ResetDicedWeapon(int client)
+{
+	if(g_modIndexWeapon < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+}
+
 static void HandleDicedGrenade(int client)
 {
-	if(g_modIndexGrenade < 0)
+	if(g_modIndexGrenade < 0 || !IsValidClient(client, true))
 	{
 		return;
 	}
 	GiveItem(client, GetRandomItem(GetClientTeam(client), false), false);
+}
+
+static void ResetDicedGrenade(int client)
+{
+	if(g_modIndexGrenade < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
 }
 
 static void GiveItem(int client, int idx, bool weapon)

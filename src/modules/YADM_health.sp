@@ -173,27 +173,27 @@ static void ModuleInit()
 	if(GetConVarInt(g_cvEnableHealth) == 1)
 	{
 		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeigthHealth), ModuleTeam_Any);
-		RegOnDiced(g_modIdxHealth, HandleDicedHealth);
+		RegOnDiced(g_modIdxHealth, HandleDicedHealth, ResetDicedHealth);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1)
 	{
 		g_modIdxArmor = RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeigthArmor), ModuleTeam_Any);
-		RegOnDiced(g_modIdxArmor, HandleDicedArmor);
+		RegOnDiced(g_modIdxArmor, HandleDicedArmor, ResetDicedArmor);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1)
 	{
 		g_modIdxHealthArmor = RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeigthHealth) + GetConVarInt(g_cvWeigthArmor)) / 2), ModuleTeam_Any);
-		RegOnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor);
+		RegOnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor, ResetDicedHealthArmor);
 	}
 	if(GetConVarInt(g_cvEnableDamage) == 1)
 	{
 		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeigthDamage), ModuleTeam_Any);
-		RegOnDiced(g_modIdxDamage, HandleDicedDamage);
+		RegOnDiced(g_modIdxDamage, HandleDicedDamage, ResetDicedDamage);
 	}
 	if(GetConVarInt(g_cvEnableFire) == 1)
 	{
 		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeigthFire), ModuleTeam_Any);
-		RegOnDiced(g_modIdxFire, HandleDicedFire);
+		RegOnDiced(g_modIdxFire, HandleDicedFire, ResetDicedFire);
 	}
 }
 
@@ -215,6 +215,16 @@ static void HandleDicedHealth(int client)
 	SetPlayerHealth(client, RandomHealth());
 }
 
+static void ResetDicedHealth(int client)
+{
+	if(g_modIdxHealth < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+	NotifyPlayer(client, GetPlayerHealth(client), true);
+	SetPlayerHealth(client, RandomHealth());
+}
+
 static void HandleDicedArmor(int client)
 {
 	if(g_modIdxArmor < 0 || !IsValidClient(client, true))
@@ -225,6 +235,14 @@ static void HandleDicedArmor(int client)
 	SetPlayerArmor(client, RandomArmor());
 }
 
+static void ResetDicedArmor(int client)
+{
+	if(g_modIdxArmor < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+}
+
 static void HandleDicedHealthArmor(int client)
 {
 	if(g_modIdxHealthArmor < 0 || !IsValidClient(client, true))
@@ -233,6 +251,14 @@ static void HandleDicedHealthArmor(int client)
 	}
 	SetPlayerHealth(client, RandomHealth());
 	SetPlayerArmor(client, RandomArmor());
+}
+
+static void ResetDicedHealthArmor(int client)
+{
+	if(g_modIdxHealthArmor < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
 }
 
 static void HandleDicedDamage(int client)
@@ -250,6 +276,14 @@ static void HandleDicedDamage(int client)
 	SendChatMessage(client, msg);
 }
 
+static void ResetDicedDamage(int client)
+{
+	if(g_modIdxDamage < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+}
+
 static void HandleDicedFire(int client)
 {
 	if(g_modIdxFire < 0 || !IsValidClient(client, true))
@@ -261,6 +295,14 @@ static void HandleDicedFire(int client)
 	SendChatMessage(client, msg);
 	g_TimerCount[client] = 0;
 	g_Timers[client] = CreateTimer(0.2, FireTimer, client, TIMER_REPEAT);
+}
+
+static void ResetDicedFire(int client)
+{
+	if(g_modIdxFire < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
 }
 
 static Action FireTimer(Handle timer, any client)

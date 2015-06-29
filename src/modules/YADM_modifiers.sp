@@ -54,7 +54,7 @@ public void OnLibraryRemoved(const char[] name)
 static void ModuleInit()
 {
 	g_modIndex = RegisterModule("name", "desc", 50, ModuleTeam_Any);
-	RegOnDiced(g_modIndex, HandleDiced);
+	RegOnDiced(g_modIndex, HandleDiced, ResetDiced);
 }
 
 static void ModuleConf()
@@ -64,7 +64,15 @@ static void ModuleConf()
 
 static void HandleDiced(int client)
 {
-	if(g_modIndex < 0)
+	if(g_modIndex < 0 || !IsValidClient(client, true))
+	{
+		return;
+	}
+}
+
+static void ResetDiced(int client)
+{
+	if(g_modIndex < 0 || !IsValidClient(client, true))
 	{
 		return;
 	}
