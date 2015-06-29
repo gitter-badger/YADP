@@ -31,25 +31,39 @@ static int g_DiceAttepmts[MAXPLAYERS + 1];
 static Handle g_ckDisable;
 static Handle g_ckAuto;
 
-stock void YADP_Initialize_Command() {
+stock void YADP_Initialize_Command()
+{
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
 	HookEvent("round_start", YADP_Command_Roundstart, EventHookMode_PostNoCopy);
 	YADP_Debug_LogMessage("command", msg, LogServer, LevelInfo);
 }
 
-stock void YADP_Configure_Command() {
+stock void YADP_Configure_Command()
+{
 	g_ckDisable = RegClientCookie("yadp_disable", "YADP disable dice.", CookieAccess_Protected);
 	g_ckAuto = RegClientCookie("yadp_auto", "YADP automated rolling.", CookieAccess_Protected);
 }
 
-stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBroadcast) {
-	for(int i = 1; i <= MAXPLAYERS; i++) {
-		if(!YADP_Util_IsValidClient(i, true)) continue;
-		if(g_DiceAttepmts[i] < 1) g_DiceAttepmts[i]++;
-		if(HasDiceDisabled(i)) continue;
+stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBroadcast)
+{
+	for(int i = 1; i <= MAXPLAYERS; i++)
+	{
+		if(!YADP_Util_IsValidClient(i, true))
+		{
+			continue;
+		}
+		if(g_DiceAttepmts[i] < 1)
+		{
+			g_DiceAttepmts[i]++;
+		}
+		if(HasDiceDisabled(i))
+		{
+			continue;
+		}
 		char msg[100];
-		if(HasDiceAuto(i) || IsFakeClient(i)){
+		if(HasDiceAuto(i) || IsFakeClient(i))
+		{
 			YADP_Command_HandleRequest(i, 0);
 		} else {
 			char cmd[15];
@@ -57,22 +71,29 @@ stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBr
 			Format(msg, sizeof(msg), "%T", "yadp_main_RollTheDice", i, cmd);
 			YADP_Chat_PrintToChat(i, msg);
 		}
-		if(g_DiceAttepmts[i] > 1) {
+		if(g_DiceAttepmts[i] > 1)
+		{
 			Format(msg, sizeof(msg), "%T", "yadp_main_NumberOfAttempts", i, g_DiceAttepmts[i]);
 			YADP_Chat_PrintToChat(i, msg);
 		}
 	}
 }
 
-stock Action YADP_Command_HandleRequest(int client, int args) {
-	if(!YADP_Util_IsValidClient(client, true)) return Plugin_Handled;
-	if(g_DiceAttepmts[client] < 1) {
+stock Action YADP_Command_HandleRequest(int client, int args)
+{
+	if(!YADP_Util_IsValidClient(client, true))
+	{
+		return Plugin_Handled;
+	}
+	if(g_DiceAttepmts[client] < 1)
+	{
 		char msg[100];
 		Format(msg, sizeof(msg), "%T", "yadp_main_NoAttemptsLeft", client);
 		YADP_Chat_ReplyToCommand(client, msg);
 		return Plugin_Handled;
 	}
-	if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root))){
+	if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root)))
+	{
 		g_DiceAttepmts[client]--;
 	}
 	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
@@ -82,9 +103,14 @@ stock Action YADP_Command_HandleRequest(int client, int args) {
 	return Plugin_Handled;
 }
 
-stock bool HasDiceDisabled(int client) {
-	if(!YADP_Util_IsValidClient(client, false)) return true;
-	if(!AreClientCookiesCached(client)) {
+stock bool HasDiceDisabled(int client)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return true;
+	}
+	if(!AreClientCookiesCached(client))
+	{
 		SetDiceAuto(client, false);
 		SetDiceDisabled(client, false);
 		return false;
@@ -94,16 +120,25 @@ stock bool HasDiceDisabled(int client) {
 	return val[0] == '1';
 }
 
-stock void SetDiceDisabled(int client, bool value) {
-	if(!YADP_Util_IsValidClient(client, false)) return;
+stock void SetDiceDisabled(int client, bool value)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return;
+	}
 	char val[2];
 	val	= value ? "1" : "0";
 	SetClientCookie(client, g_ckDisable, val);
 }
 
-stock bool HasDiceAuto(int client) {
-	if(!YADP_Util_IsValidClient(client, false)) return false;
-	if(!AreClientCookiesCached(client)) {
+stock bool HasDiceAuto(int client)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return false;
+	}
+	if(!AreClientCookiesCached(client))
+	{
 		SetDiceAuto(client, false);
 		SetDiceDisabled(client, false);
 		return false;
@@ -113,15 +148,23 @@ stock bool HasDiceAuto(int client) {
 	return val[0] == '1';
 }
 
-stock void SetDiceAuto(int client, bool value) {
-	if(!YADP_Util_IsValidClient(client, false)) return;
+stock void SetDiceAuto(int client, bool value)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return;
+	}
 	char val[2];
 	val = value ? "1" : "0";
 	SetClientCookie(client, g_ckAuto, val);
 }
 
-stock Action YADP_Command_HandleDisable(int client, int args) {
-	if(!YADP_Util_IsValidClient(client, false)) return Plugin_Handled;
+stock Action YADP_Command_HandleDisable(int client, int args)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return Plugin_Handled;
+	}
 	bool disable = !HasDiceDisabled(client);
 	SetDiceDisabled(client, disable);
 	char msg[80];
@@ -130,8 +173,12 @@ stock Action YADP_Command_HandleDisable(int client, int args) {
 	return Plugin_Handled;
 }
 
-stock Action YADP_Command_HandleAuto(int client, int args) {
-	if(!YADP_Util_IsValidClient(client, false)) return Plugin_Handled;
+stock Action YADP_Command_HandleAuto(int client, int args)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return Plugin_Handled;
+	}
 	bool auto = !HasDiceAuto(client);
 	SetDiceAuto(client, auto);
 	char msg[80];
@@ -140,8 +187,11 @@ stock Action YADP_Command_HandleAuto(int client, int args) {
 	return Plugin_Handled;
 }
 
-stock Action YADP_Command_HandleMenu(int client, int args) {
-	if(!YADP_Util_IsValidClient(client, false)) return Plugin_Handled;
-	
+stock Action YADP_Command_HandleMenu(int client, int args)
+{
+	if(!YADP_Util_IsValidClient(client, false))
+	{
+		return Plugin_Handled;
+	}
 	return Plugin_Handled;
 }

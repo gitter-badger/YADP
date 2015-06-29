@@ -32,26 +32,40 @@ public Plugin myinfo = {
 
 static int g_modIndex = -1;
 
-public void OnLibraryAdded(const char[] name) {
-	if (!StrEqual(name, YADPLIB_NAME)) return;
+public void OnLibraryAdded(const char[] name)
+{
+	if (!StrEqual(name, YADPLIB_NAME))
+	{
+		return;
+	}
 	RegOnModuleInit(ModuleInit);
 	RegOnModuleConf(ModuleConf);
 }
 
-public void OnLibraryRemoved(const char[] name) {
-	if (StrEqual(name, YADPLIB_NAME)) return;
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, YADPLIB_NAME))
+	{
+		return;
+	}
 	g_modIndex = -1;
 }
 
-static void ModuleInit() {
+static void ModuleInit()
+{
 	g_modIndex = RegisterModule("name", "desc", 50, ModuleTeam_Any);
 	RegOnDiced(g_modIndex, HandleDiced);
 }
 
-static void ModuleConf() {
+static void ModuleConf()
+{
 
 }
 
-static void HandleDiced(int client) {
-	if(g_modIndex < 0) return;
+static void HandleDiced(int client)
+{
+	if(g_modIndex < 0)
+	{
+		return;
+	}
 }

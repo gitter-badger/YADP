@@ -30,10 +30,12 @@ public Plugin myinfo = {
 	url = "https://github.com/reker-/YADP"
 };
 
-public void OnPluginStart() {
+public void OnPluginStart()
+{
 	YADP_Initialize();
 	YADP_Configure();
-	if(!YADP_Ready()) {
+	if(!YADP_Ready())
+	{
 		char errMsg[40];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConfigFailed", LANG_SERVER);
 		YADP_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
@@ -41,12 +43,13 @@ public void OnPluginStart() {
 	}
 }
 
-public void OnAllPluginsLoaded() {
+public void OnAllPluginsLoaded()
+{
 	YADP_EnableModules();
 }
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
+{
 	YADP_Create();
 	return APLRes_Success;
 }
-

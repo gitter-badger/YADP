@@ -25,14 +25,16 @@
 
 static Handle g_hCmdArray = null;
 
-stock void YADP_Initialize_Config() {
+stock void YADP_Initialize_Config()
+{
 	char msg[40];
 	RegisterCommands();
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
 	YADP_Debug_LogMessage("config", msg, LogServer, LevelInfo);
 }
 
-stock void YADP_Configure_Config() {
+stock void YADP_Configure_Config()
+{
 	char cmd[50];
 	cmd = "sm_yadp";
 	RegConsoleCmd(cmd, YADP_Command_HandleRequest, "YADP roll the dice");
@@ -44,12 +46,14 @@ stock void YADP_Configure_Config() {
 	RegConsoleCmd(cmd, YADP_Command_HandleMenu, "YADP menu");
 }
 
-stock void YADP_Config_GetRandomCmd(char[] buffer, int maxlength) {
+stock void YADP_Config_GetRandomCmd(char[] buffer, int maxlength)
+{
 	GetArrayString(g_hCmdArray, GetRandomInt(0, GetArraySize(g_hCmdArray) - 1), buffer, maxlength);
 	ReplaceString(buffer, maxlength, "sm_", "!", false);
 }
 
-static void ProcessLine(const char[] line) {
+static void ProcessLine(const char[] line)
+{
 	char txt[50];
 	RegConsoleCmd(line, YADP_Command_HandleRequest, "YADP roll the dice");
 	Format(txt, sizeof(txt), "%s_stop", line);
@@ -62,7 +66,8 @@ static void ProcessLine(const char[] line) {
 	YADP_Debug_LogMessage("config", txt, LogServer, LevelInfo);
 }
 
-static void RegisterCommands() {
+static void RegisterCommands()
+{
 	char srcPath[26];
 	srcPath = "configs/YADP/";
 	YADP_Util_RequireDir(srcPath);
@@ -70,11 +75,15 @@ static void RegisterCommands() {
 	YADP_Util_RequireFile(srcPath);
 	
 	int cmdCnt = YADP_Util_CountLines(srcPath);
-	if(cmdCnt < 1) return;
+	if(cmdCnt < 1)
+	{
+		return;
+	}
 	g_hCmdArray = CreateArray(cmdCnt);
 	YADP_Util_ReadAllLines(srcPath, g_hCmdArray);
 	char buffer[20];
-	for(int i = 0; i < GetArraySize(g_hCmdArray); i++) {
+	for(int i = 0; i < GetArraySize(g_hCmdArray); i++)
+	{
 		GetArrayString(g_hCmdArray, i, buffer, 20);
 		ProcessLine(buffer);
     }

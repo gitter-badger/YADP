@@ -30,29 +30,37 @@
 static ConVar g_cvChatName;
 static char g_chatName[10];
 
-stock void YADP_Initialize_Chat() {
+stock void YADP_Initialize_Chat()
+{
 	g_cvChatName = CreateConVar("yadp_chatName", "YADP", "The identifier used by YADP in chat messages.", FCVAR_PLUGIN);
 }
 
-stock void YADP_Configure_Chat() {
+stock void YADP_Configure_Chat()
+{
 	GetConVarString(g_cvChatName, g_chatName, sizeof(g_chatName));
 }
 
-stock void YADP_Chat_PrintToChat(int client, const char[] message) {
+stock void YADP_Chat_PrintToChat(int client, const char[] message)
+{
 	char msg[256];
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CPrintToChat(client, msg);
 }
 
-stock void YADP_Chat_ReplyToCommand(int client, const char[] message) {
+stock void YADP_Chat_ReplyToCommand(int client, const char[] message)
+{
 	char msg[256];
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CReplyToCommand(client, msg);
 }
 
 
-stock int YADP_Chat_SendToClient(Handle plugin, int numParams) {
-	if(numParams != 2 || !YADP_Initialized()) return 0;
+stock int YADP_Chat_SendToClient(Handle plugin, int numParams)
+{
+	if(numParams != 2 || !YADP_Initialized())
+	{
+		return 0;
+	}
 	int clt = GetNativeCell(1);
 	char msg[256];
 	GetNativeString(2, msg, sizeof(msg));
@@ -60,9 +68,11 @@ stock int YADP_Chat_SendToClient(Handle plugin, int numParams) {
 	char cAuth[50];
 	char lmsg[306];
 	if(YADP_Util_IsValidClient(clt, false))
+	{
 		GetClientAuthId(clt, AuthId_SteamID64, cAuth, sizeof(cAuth), true);
-	else
+	} else {
 		cAuth = "<missing-auth>"
+	}
 	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(lmsg, sizeof(lmsg), "%T", "yadp_main_ModMsg", LANG_SERVER, pName, cAuth, msg);
 	YADP_Debug_LogMessage("global", lmsg, LogFile, LevelInfo);

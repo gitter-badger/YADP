@@ -46,10 +46,12 @@ static bool g_CanRegister = false;
 static Handle g_hOnModuleInit;
 static Handle g_hOnModuleConf;
 
-stock void YADP_Initialize_Module() {
+stock void YADP_Initialize_Module()
+{
 	g_hOnModuleInit = CreateForward(ET_Ignore);
 	g_hOnModuleConf = CreateForward(ET_Ignore);
-	for(int i= 0; i < MAXMODULES; i++) {
+	for(int i= 0; i < MAXMODULES; i++)
+	{
 		g_modCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
 	}
 	char msg[40];
@@ -57,31 +59,38 @@ stock void YADP_Initialize_Module() {
 	YADP_Debug_LogMessage("module", msg, LogServer, LevelInfo);
 }
 
-stock void YADP_Configure_Module() {
+stock void YADP_Configure_Module()
+{
 }
 
 
-stock void YADP_Module_RegisterEnable() {
+stock void YADP_Module_RegisterEnable()
+{
 	g_CanRegister = true;
 }
 
-stock void YADP_Module_RegisterDisable() {
+stock void YADP_Module_RegisterDisable()
+{
 	g_CanRegister = false;
 }
 
-stock int YADP_Module_Register(const char[] name, const char[] desc, int weight, YADP_Module_Team team) {
+stock int YADP_Module_Register(const char[] name, const char[] desc, int weight, YADP_Module_Team team)
+{
 	char errMsg[128];
 	char mName[MAXMODULENAME];
 	char mDesc[MAXMODULEDESC];
 	strcopy(mName, sizeof(mName), name);
 	strcopy(mDesc, sizeof(mDesc), desc);
-	if(g_modIdx >= MAXMODULES || !g_CanRegister) {
+	if(g_modIdx >= MAXMODULES || !g_CanRegister)
+	{
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegModFail", LANG_SERVER, mName);
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		if(!g_CanRegister)
+		{
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegModLate", LANG_SERVER);
-		else
+		} else {
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegModMax", LANG_SERVER, MAXMODULES);
+		}
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return -1;
 	}
@@ -95,34 +104,44 @@ stock int YADP_Module_Register(const char[] name, const char[] desc, int weight,
 	return g_modIdx;
 }
 
-stock void YADP_Module_GetName(int idx, char[] bufferModName, int bufferModNameMaxLength) {
-	if((idx < 0 || idx > g_modIdx) || bufferModNameMaxLength < MAXMODULENAME){
+stock void YADP_Module_GetName(int idx, char[] bufferModName, int bufferModNameMaxLength)
+{
+	if((idx < 0 || idx > g_modIdx) || bufferModNameMaxLength < MAXMODULENAME)
+	{
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
+		{
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		else
+		} else {
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModNameBuffer", LANG_SERVER, MAXMODULENAME);
+		}
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
 	strcopy(bufferModName, bufferModNameMaxLength, g_modNames[idx]);
 }
 
-stock void YADP_Module_GetDescription(int idx, char[] bufferModDesc, int bufferModDescMaxLength) {
-	if((idx < 0 || idx > g_modIdx) || bufferModDescMaxLength < MAXMODULEDESC){
+stock void YADP_Module_GetDescription(int idx, char[] bufferModDesc, int bufferModDescMaxLength)
+{
+	if((idx < 0 || idx > g_modIdx) || bufferModDescMaxLength < MAXMODULEDESC)
+	{
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
+		{
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		else
+		} else {
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDescBuffer", LANG_SERVER, MAXMODULEDESC);
+		}
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
 	strcopy(bufferModDesc, bufferModDescMaxLength, g_modDescs[idx]);
 }
 
-stock int YADP_Module_GetWeight(int idx) {
-	if((idx < 0 || idx > g_modIdx)){
+stock int YADP_Module_GetWeight(int idx)
+{
+	if((idx < 0 || idx > g_modIdx))
+	{
 		char errMsg[80];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
@@ -131,8 +150,10 @@ stock int YADP_Module_GetWeight(int idx) {
 	return g_modWghts[idx];
 }
 
-stock YADP_Module_Team YADP_Module_GetTeam(int idx) {
-	if((idx < 0 || idx > g_modIdx)){
+stock YADP_Module_Team YADP_Module_GetTeam(int idx)
+{
+	if((idx < 0 || idx > g_modIdx))
+	{
 		char errMsg[80];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
@@ -141,8 +162,10 @@ stock YADP_Module_Team YADP_Module_GetTeam(int idx) {
 	return g_modTeam[idx];
 }
 
-stock Handle YADP_Module_GetHandle(int idx) {
-	if((idx < 0 || idx > g_modIdx)){
+stock Handle YADP_Module_GetHandle(int idx)
+{
+	if((idx < 0 || idx > g_modIdx))
+	{
 		char errMsg[80];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
@@ -151,13 +174,17 @@ stock Handle YADP_Module_GetHandle(int idx) {
 	return g_modCallbacks[idx];
 }
 
-stock bool YADP_Module_StartInvoking(int idx) {
-	if(g_modIdxInvoking != -1 || (idx < 0 || idx > g_modIdx)) {
+stock bool YADP_Module_StartInvoking(int idx)
+{
+	if(g_modIdxInvoking != -1 || (idx < 0 || idx > g_modIdx))
+	{
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
+		{
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		else
+		} else {
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModInvokeInProgress", LANG_SERVER, idx, g_modIdxInvoking);
+		}
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return false;
 	}
@@ -166,15 +193,19 @@ stock bool YADP_Module_StartInvoking(int idx) {
 	return true;
 }
 
-stock bool YADP_Module_StopInvoking(int idx) {
-	if(g_modIdxInvoking == -1 || (idx < 0 || idx > g_modIdx) || (idx != g_modIdxInvoking)) {
+stock bool YADP_Module_StopInvoking(int idx)
+{
+	if(g_modIdxInvoking == -1 || (idx < 0 || idx > g_modIdx) || (idx != g_modIdxInvoking))
+	{
 		char errMsg[80];
 		if((idx < 0 || idx > g_modIdx))
+		{
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		else if(g_modIdxInvoking == -1)
+		} else if(g_modIdxInvoking == -1) {
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModNoInvokeInProgress", LANG_SERVER);
-		else
+		} else {
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModInvokeStopWrongMod", LANG_SERVER, idx, g_modIdxInvoking);
+		}
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return false;
 	}
@@ -183,8 +214,12 @@ stock bool YADP_Module_StopInvoking(int idx) {
 	return true;
 }
 
-stock int YADP_Module_RegOnInit(Handle plugin, int numParams) {
-	if(numParams != 1 || !YADP_Initialized()) return 0;
+stock int YADP_Module_RegOnInit(Handle plugin, int numParams)
+{
+	if(numParams != 1 || !YADP_Initialized())
+	{
+		return 0;
+	}
 	char pName[50];
 	char msg[128];
 	GetPluginFilename(plugin, pName, sizeof(pName));
@@ -194,8 +229,12 @@ stock int YADP_Module_RegOnInit(Handle plugin, int numParams) {
 	return 0;
 }
 
-stock int YADP_Module_RegOnConf(Handle plugin, int numParams) {
-	if(numParams != 1 || !YADP_Initialized()) return 0;
+stock int YADP_Module_RegOnConf(Handle plugin, int numParams)
+{
+	if(numParams != 1 || !YADP_Initialized())
+	{
+		return 0;
+	}
 	char pName[50];
 	char msg[128];
 	GetPluginFilename(plugin, pName, sizeof(pName));
@@ -205,8 +244,12 @@ stock int YADP_Module_RegOnConf(Handle plugin, int numParams) {
 	return 0;
 }
 
-stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams) {
-	if(numParams != 2 || !YADP_Initialized()) return 0;
+stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams)
+{
+	if(numParams != 2 || !YADP_Initialized())
+	{
+		return 0;
+	}
 	int modIdx = GetNativeCell(1);
 	Handle fwd = YADP_Module_GetHandle(modIdx);
 	if(fwd == null) return -1;
@@ -219,29 +262,47 @@ stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams) {
 	return 0;
 }
 
-stock void YADP_Module_SendOnInit() {
-	if(!YADP_Initialized()) return;
+stock void YADP_Module_SendOnInit()
+{
+	if(!YADP_Initialized())
+	{
+		return;
+	}
 	Call_StartForward(g_hOnModuleInit);
 	Call_Finish();
 }
 
-stock void YADP_Module_SendOnConf() {
-	if(!YADP_Initialized()) return;
+stock void YADP_Module_SendOnConf()
+{
+	if(!YADP_Initialized())
+	{
+		return;
+	}
 	Call_StartForward(g_hOnModuleConf);
 	Call_Finish();
 }
 
-stock int YADP_Module_ChooseRandom(YADP_Module_Team team) {
+stock int YADP_Module_ChooseRandom(YADP_Module_Team team)
+{
 	int sumWght = 0;
-	for(int i = 0; i <= g_modIdx; i++) {
-		if(g_modTeam[i] != team && g_modTeam[i] != ModuleTeam_Any) continue;
+	for(int i = 0; i <= g_modIdx; i++)
+	{
+		if(g_modTeam[i] != team && g_modTeam[i] != ModuleTeam_Any)
+		{
+			continue;
+		}
 		sumWght += g_modWghts[i];
 	}
 	int rndIdx = GetRandomInt(0, sumWght);
 	int selIdx = 0;
-	for(int i = 0; i <= g_modIdx; i++) {
-		if(g_modTeam[i] != team && g_modTeam[i] != ModuleTeam_Any) continue;
-		if(rndIdx < g_modWghts[i]) {
+	for(int i = 0; i <= g_modIdx; i++)
+	{
+		if(g_modTeam[i] != team && g_modTeam[i] != ModuleTeam_Any)
+		{
+			continue;
+		}
+		if(rndIdx < g_modWghts[i])
+		{
 			selIdx = i;
 			break;
 		}

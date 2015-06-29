@@ -39,55 +39,78 @@ enum YADP_Debug_LogLevel {
 static YADP_Debug_LogLevel g_LogLevel = LevelInfo;
 static ConVar g_cvLoglevel;
 
-stock void YADP_Initialize_Debug() {
+stock void YADP_Initialize_Debug()
+{
 	char msg[40];
 	CreateConfig();
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
 	YADP_Debug_LogMessage("debug", "initialized.", LogServer, LevelInfo);
 }
 
-stock void YADP_Configure_Debug() {
+stock void YADP_Configure_Debug()
+{
 	ApplyConfig();
 }
 
-static void CreateConfig() {
+static void CreateConfig()
+{
 	g_cvLoglevel = CreateConVar("yadp_loglevel", "1", "Determines what messages will be ignored. (1,2,4 or 8)", (FCVAR_PLUGIN), true, float(view_as<int>(LevelInfo)), true, float(view_as<int>(LevelCritical)));
 }
 
-static void ApplyConfig() {
+static void ApplyConfig()
+{
 	int lvl = GetConVarInt(g_cvLoglevel);
-	switch(lvl) {
+	switch(lvl)
+	{
 		case LevelInfo:
+		{
 			g_LogLevel = LevelInfo;
+		}
 		case LevelWarning:
+		{
 			g_LogLevel = LevelWarning;
+		}
 		case LevelError:
+		{
 			g_LogLevel = LevelError;
+		}
 		case LevelCritical:
+		{
 			g_LogLevel = LevelCritical;
+		}
 		default:
+		{		
 			g_LogLevel = LevelInfo;
+		}
 	}
 }
 
-stock void YADP_Debug_LogMessage(const char[] src, const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level) {
-	if(level < g_LogLevel) return;
+stock void YADP_Debug_LogMessage(const char[] src, const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level)
+{
+	if(level < g_LogLevel)
+	{
+		return;
+	}
 	char msgStr[256];
 	char timeStr[20];
 	char srcStr[8];
 	FormatTime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", -1);
 	strcopy(srcStr, 8, src);
 	Format(msgStr, sizeof(msgStr), "[YADP][%s][%s]: %s", timeStr, srcStr, msg);
-	if((mode & LogClient) == LogClient) {
+	if((mode & LogClient) == LogClient)
+	{
 		YADP_Util_PrintToConsoleAll(msgStr);
 	}
-	if((mode & LogServer) == LogServer) {
+	if((mode & LogServer) == LogServer)
+	{
 		PrintToServer(msgStr);
 	}
-	if((mode & LogFile) == LogFile) {
+	if((mode & LogFile) == LogFile)
+	{
 		char logPath[PLATFORM_MAX_PATH];
 		YADP_Debug_GetLogFilePath(logPath, PLATFORM_MAX_PATH);
-		if(!YADP_Util_AppendToFile(logPath, msgStr)) {
+		if(!YADP_Util_AppendToFile(logPath, msgStr))
+		{
 			char errMsg[40];
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_LogFileFailed", LANG_SERVER)
 			YADP_Debug_LogMessage("debug", errMsg, LogServer, LevelError);
@@ -96,8 +119,12 @@ stock void YADP_Debug_LogMessage(const char[] src, const char[] msg, YADP_Debug_
 	}
 }
 
-stock int YADP_Debug_LogMessageNative(Handle plugin, int numParams) {
-	if(numParams != 3) return 0;
+stock int YADP_Debug_LogMessageNative(Handle plugin, int numParams)
+{
+	if(numParams != 3)
+	{
+		return 0;
+	}
 	char pName[10];
 	char nMsg[256];
 	GetNativeString(1, nMsg, sizeof(nMsg));
@@ -108,8 +135,10 @@ stock int YADP_Debug_LogMessageNative(Handle plugin, int numParams) {
 	return 0;
 }
 
-stock void YADP_Debug_GetLogFilePath(char[] path, int maxlength) {
-	if(maxlength < PLATFORM_MAX_PATH) {
+stock void YADP_Debug_GetLogFilePath(char[] path, int maxlength)
+{
+	if(maxlength < PLATFORM_MAX_PATH)
+	{
 		char errMsg[40];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_LogFileBuffer", LANG_SERVER);
 		YADP_Debug_LogMessage("debug", errMsg, LogServer, LevelError);

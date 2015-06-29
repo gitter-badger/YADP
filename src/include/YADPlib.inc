@@ -43,7 +43,8 @@ static bool g_InitializedYADP = false;
 static bool g_ConfiguredYADP = false;
 static bool g_CreatedYADP = false;
 
-stock void YADP_Create() {
+stock void YADP_Create()
+{
 	if(g_CreatedYADP) return;
 	CreateNative("RegOnModuleInit", YADP_Module_RegOnInit);
 	CreateNative("RegOnModuleConf", YADP_Module_RegOnConf);
@@ -56,12 +57,14 @@ stock void YADP_Create() {
 	g_CreatedYADP = true;
 }
 
-stock bool YADP_Initialize() {
+stock bool YADP_Initialize()
+{
 	LoadTranslations("yadp.phrases.txt");
 	char msgStr[128];
 	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
-	if(g_cvEnabled == null || g_cvVersion == null) {
+	if(g_cvEnabled == null || g_cvVersion == null)
+	{
 		char errMsg[40];
 		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ConVarFailed", LANG_SERVER);
 		YADP_Debug_LogMessage("global", errMsg, (LogServer | LogFile), LevelCritical);
@@ -77,7 +80,10 @@ stock bool YADP_Initialize() {
 
 	AutoExecConfig(true, "plugin.YADP");
 	
-	if(GetConVarInt(g_cvEnabled) != 1) return false;
+	if(GetConVarInt(g_cvEnabled) != 1)
+	{ 
+		return false; 
+	}
 	g_InitializedYADP = true;
 	
 	Format(msgStr, sizeof(msgStr), "%T", "yadp_main_InitVersion", LANG_SERVER, YADPLIB_VERSION, YADPLIB_BUILD_DATE);
@@ -85,8 +91,12 @@ stock bool YADP_Initialize() {
 	return g_InitializedYADP;
 }
 
-stock bool YADP_Configure() {
-	if(!g_InitializedYADP) return false;
+stock bool YADP_Configure()
+{
+	if(!g_InitializedYADP)
+	{
+		return false;
+	}
 	YADP_Configure_Util();
 	YADP_Configure_Debug();
 	YADP_Configure_Config();
@@ -97,27 +107,35 @@ stock bool YADP_Configure() {
 	return g_ConfiguredYADP;
 }
 
-stock void YADP_EnableModules() {
+stock void YADP_EnableModules()
+{
 	YADP_Module_RegisterEnable();
 	YADP_Module_SendOnInit();
 	YADP_Module_RegisterDisable();
 	YADP_Module_SendOnConf();
 }
 
-stock bool YADP_Initialized() {
+stock bool YADP_Initialized()
+{
 	return g_InitializedYADP;
 }
 
-stock bool YADP_Configured() {
+stock bool YADP_Configured()
+{
 	return g_ConfiguredYADP;
 }
 
-stock bool YADP_Ready() {
+stock bool YADP_Ready()
+{
 	return g_InitializedYADP && g_ConfiguredYADP;
 }
 
-static int RegModule(Handle plugin, int numParams) {
-	if(numParams != 4 || !g_InitializedYADP) return 0;
+static int RegModule(Handle plugin, int numParams)
+{
+	if(numParams != 4 || !g_InitializedYADP)
+	{	
+		return 0;
+	}
 	char mName[MAXMODULENAME];
 	char mDesc[MAXMODULEDESC];
 	GetNativeString(1, mName, sizeof(mName));

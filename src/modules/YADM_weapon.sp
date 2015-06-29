@@ -95,7 +95,8 @@ static ConVar g_cvEnableGrenade;
 static ConVar g_cvWeightWeapon;
 static ConVar g_cvWeightGrenade;
 
-public void OnPluginStart() {
+public void OnPluginStart()
+{
 	LoadTranslations("yadp.weapon.phrases.txt");
 	g_cvEnableWeapon = CreateConVar("yadp_weapon_enable", "1", "Players can roll weapons.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvEnableGrenade = CreateConVar("yadp_grenade_enable", "1", "Players can roll grenades.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
@@ -104,40 +105,52 @@ public void OnPluginStart() {
 	CreateConVars();
 }
 
-public void OnLibraryAdded(const char[] name) {
-	if (!StrEqual(name, YADPLIB_NAME)) return;
+public void OnLibraryAdded(const char[] name)
+{
+	if (!StrEqual(name, YADPLIB_NAME))
+	{
+		return;
+	}
 	RegOnModuleInit(ModuleInit);
 	RegOnModuleConf(ModuleConf);
 }
 
-public void OnLibraryRemoved(const char[] name) {
-	if (StrEqual(name, YADPLIB_NAME)) return;
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, YADPLIB_NAME))
+	{
+		return;
+	}
 	g_modIndexWeapon = -1;
 	g_modIndexGrenade = -1;
 }
 
-static void ModuleInit() {
+static void ModuleInit()
+{
 	AutoExecConfig(true, "plugin.YADP.Weapon");
-	if(GetConVarInt(g_cvEnableWeapon) == 1) {
+	if(GetConVarInt(g_cvEnableWeapon) == 1)
+	{
 		g_modIndexWeapon = RegisterModule("Weapon", "Players get random weapons", GetConVarInt(g_cvWeightWeapon), ModuleTeam_Any);
 		RegOnDiced(g_modIndexWeapon, HandleDicedWeapon);
 	}
-	if(GetConVarInt(g_cvEnableGrenade) == 1) {
+	if(GetConVarInt(g_cvEnableGrenade) == 1)
+	{
 		g_modIndexGrenade = RegisterModule("Grenade", "Players get random grenades", GetConVarInt(g_cvWeightGrenade), ModuleTeam_Any);
 		RegOnDiced(g_modIndexGrenade, HandleDicedGrenade);
 	}
 }
 
-static void ModuleConf() {
-	for(int i = 0; i < MAXWEAPONS; i++) {
-		char cvVal[10];
-		IntToString(i * 10, cvVal, sizeof(cvVal));
+static void ModuleConf()
+{
+	for(int i = 0; i < MAXWEAPONS; i++)
+	{
 		g_optWeapons[i][0] = GetConVarInt(g_cVarsWeapons[i][0]);
 		g_optWeapons[i][1] = GetConVarInt(g_cVarsWeapons[i][1]);
 		g_optWeapons[i][2] = GetConVarInt(g_cVarsWeapons[i][2]);
 		g_optWeapons[i][3] = GetConVarInt(g_cVarsWeapons[i][3]);
 	}
-	for(int i = 0; i < MAXGRENADES; i++) {
+	for(int i = 0; i < MAXGRENADES; i++)
+	{
 		g_optGrenades[i][0] = GetConVarInt(g_cVarsGrenades[i][0]);
 		g_optGrenades[i][1] = GetConVarInt(g_cVarsGrenades[i][1]);
 		g_optGrenades[i][2] = GetConVarInt(g_cVarsGrenades[i][2]);
@@ -145,22 +158,35 @@ static void ModuleConf() {
 	}
 }
 
-static void HandleDicedWeapon(int client) {
-	if(g_modIndexWeapon < 0) return;
+static void HandleDicedWeapon(int client)
+{
+	if(g_modIndexWeapon < 0)
+	{
+		return;
+	}
 	GiveItem(client, GetRandomItem(GetClientTeam(client), true), true);
 }
 
-static void HandleDicedGrenade(int client) {
-	if(g_modIndexGrenade < 0) return;
+static void HandleDicedGrenade(int client)
+{
+	if(g_modIndexGrenade < 0)
+	{
+		return;
+	}
 	GiveItem(client, GetRandomItem(GetClientTeam(client), false), false);
 }
 
-static void GiveItem(int client, int idx, bool weapon) {
-	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES))) return;
+static void GiveItem(int client, int idx, bool weapon)
+{
+	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES)))
+	{
+		return;
+	}
 	char wType[40];
 	char wName[80];
 	int amount = 1;
-	if(weapon) {
+	if(weapon)
+	{
 		Format(wType, sizeof(wType), "weapon_%s", g_wNames[idx][0]);
 		Format(wName, sizeof(wName), "%T", "yadp_weapon_GotWeapon", client, g_wNames[idx][1]);
 	} else {
@@ -168,22 +194,27 @@ static void GiveItem(int client, int idx, bool weapon) {
 		Format(wType, sizeof(wType), "weapon_%s", g_gNames[idx][0]);
 		Format(wName, sizeof(wName), "%T", "yadp_weapon_GotGrenade", client, amount, g_gNames[idx][1]);
 	}
-	for(int i = 0; i < amount; i++) {
+	for(int i = 0; i < amount; i++)
+	{
 		GivePlayerItem(client, wType);
 	}
 	SendChatMessage(client, wName);
 }
 
-static int GetMaxGrenadeAmount() {
+static int GetMaxGrenadeAmount()
+{
 	return GetConVarInt(g_cvGrenadeMax);
 }
 
-static int GetMinGrenadeAmount() {
+static int GetMinGrenadeAmount()
+{
 	return GetConVarInt(g_cvGrenadeMin);
 }
 
-static void CreateConVars() {
-	for(int i = 0; i < MAXWEAPONS; i++) {
+static void CreateConVars()
+{
+	for(int i = 0; i < MAXWEAPONS; i++)
+	{
 		char cvVal[10];
 		IntToString(i * 10, cvVal, sizeof(cvVal));
 		g_cVarsWeapons[i][0] = CreateItemConVarEnable(g_wNames[i][0], g_wNames[i][1], true, true, "1");
@@ -191,7 +222,8 @@ static void CreateConVars() {
 		g_cVarsWeapons[i][2] = CreateItemConVarWeight(g_wNames[i][0], g_wNames[i][1], true, true, "100");
 		g_cVarsWeapons[i][3] = CreateItemConVarWeight(g_wNames[i][0], g_wNames[i][1], true, false, cvVal);
 	}
-	for(int i = 0; i < MAXGRENADES; i++) {
+	for(int i = 0; i < MAXGRENADES; i++)
+	{
 		g_cVarsGrenades[i][0] = CreateItemConVarEnable(g_gNames[i][0], g_gNames[i][1], false, true, "1");
 		g_cVarsGrenades[i][1] = CreateItemConVarEnable(g_gNames[i][0], g_gNames[i][1], false, false, "1");
 		g_cVarsGrenades[i][2] = CreateItemConVarWeight(g_gNames[i][0], g_gNames[i][1], false, true, "100");
@@ -201,7 +233,8 @@ static void CreateConVars() {
 	g_cvGrenadeMin = CreateConVar("yadp_grenade_min", "1", "Lower bound of grenades a player might get.", FCVAR_PLUGIN, true, 1.0);
 }
 
-static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal) {
+static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal)
+{
 	char cvName[50];
 	char cvDesc[128];
 	Format(cvName, sizeof(cvName), "yadp_%s_%s_enable_%s", (weapon?"weapon":"grenade"), (ct?"ct":"t"), name);
@@ -210,7 +243,8 @@ static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool
 }
 
 
-static ConVar CreateItemConVarWeight(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal) {
+static ConVar CreateItemConVarWeight(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal)
+{
 	char cvName[50];
 	char cvDesc[128];
 	Format(cvName, sizeof(cvName), "yadp_%s_%s_weight_%s", (weapon?"weapon":"grenade"), (ct?"ct":"t"), name);
@@ -218,33 +252,55 @@ static ConVar CreateItemConVarWeight(const char[] name, const char[] lName, bool
 	return CreateConVar(cvName, defVal, cvDesc, FCVAR_PLUGIN, true, 0.0);
 }
 
-static bool CanGetItem(int idx, int team, bool weapon) {
-	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES))) return false;
+static bool CanGetItem(int idx, int team, bool weapon)
+{
+	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES)))
+	{
+		return false;
+	}
 	if(weapon)
+	{
 		return g_optWeapons[idx][(team == 3 ? 0 : 1)] == 1;
-	else
+	} else {
 		return g_optGrenades[idx][(team == 3 ? 0 : 1)] == 1; 
+	}
 }
 
-static int GetWeightItem(int idx, int team, bool weapon) {
-	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES))) return false;
+static int GetWeightItem(int idx, int team, bool weapon)
+{
+	if((weapon && (idx < 0 || idx > MAXWEAPONS)) || (!weapon && (idx < 0 || idx > MAXGRENADES)))
+	{
+		return false;
+	}
 	if(weapon)
+	{
 		return g_optWeapons[idx][(team == 3 ? 2 : 3)];
-	else
-		return g_optGrenades[idx][(team == 3 ? 2 : 3)]; 
+	} else {
+		return g_optGrenades[idx][(team == 3 ? 2 : 3)];
+	}
 }
 
-static int GetRandomItem(int team, bool weapon) {
+static int GetRandomItem(int team, bool weapon)
+{
 	int sumWght = 0;
-	for(int i = 0; i < (weapon ? MAXWEAPONS : MAXGRENADES); i++) {
-		if(!CanGetItem(i, team, weapon)) continue;
+	for(int i = 0; i < (weapon ? MAXWEAPONS : MAXGRENADES); i++)
+	{
+		if(!CanGetItem(i, team, weapon))
+		{
+			continue;
+		}
 		sumWght += GetWeightItem(i, team, weapon);
 	}
 	int rndIdx = GetRandomInt(0, sumWght);
 	int selIdx = 0;
-	for(int i = 0; i < (weapon ? MAXWEAPONS : MAXGRENADES); i++) {
-		if(!CanGetItem(i, team, weapon)) continue;
-		if(rndIdx < GetWeightItem(i, team, weapon)) {
+	for(int i = 0; i < (weapon ? MAXWEAPONS : MAXGRENADES); i++)
+	{
+		if(!CanGetItem(i, team, weapon))
+		{
+			continue;
+		}
+		if(rndIdx < GetWeightItem(i, team, weapon))
+		{
 			selIdx = i;
 			break;
 		}
