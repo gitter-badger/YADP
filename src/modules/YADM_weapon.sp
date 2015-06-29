@@ -169,10 +169,6 @@ static void HandleDicedWeapon(int client)
 
 static void ResetDicedWeapon(int client)
 {
-	if(g_modIndexWeapon < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
 }
 
 static void HandleDicedGrenade(int client)
@@ -186,10 +182,6 @@ static void HandleDicedGrenade(int client)
 
 static void ResetDicedGrenade(int client)
 {
-	if(g_modIndexGrenade < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
 }
 
 static void GiveItem(int client, int idx, bool weapon)
