@@ -122,8 +122,8 @@ Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage,
 
 public void OnLibraryAdded(const char[] name) {
 	if (!StrEqual(name, YADPLIB_NAME)) return;
-	Register_OnModuleInit(ModuleInit);
-	Register_OnModuleConf(ModuleConf);
+	RegOnModuleInit(ModuleInit);
+	RegOnModuleConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name) {
@@ -139,23 +139,23 @@ static void ModuleInit() {
 	AutoExecConfig(true, "plugin.YADP.Health");
 	if(GetConVarInt(g_cvEnableHealth) == 1) {
 		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeigthHealth), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxHealth, HandleDicedHealth);
+		RegOnDiced(g_modIdxHealth, HandleDicedHealth);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1) {
 		g_modIdxArmor = RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeigthArmor), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxArmor, HandleDicedArmor);
+		RegOnDiced(g_modIdxArmor, HandleDicedArmor);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1) {
 		g_modIdxHealthArmor = RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeigthHealth) + GetConVarInt(g_cvWeigthArmor)) / 2), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor);
+		RegOnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor);
 	}
 	if(GetConVarInt(g_cvEnableDamage) == 1) {
 		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeigthDamage), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxDamage, HandleDicedDamage);
+		RegOnDiced(g_modIdxDamage, HandleDicedDamage);
 	}
 	if(GetConVarInt(g_cvEnableFire) == 1) {
 		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeigthFire), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxFire, HandleDicedFire);
+		RegOnDiced(g_modIdxFire, HandleDicedFire);
 	}
 }
 

@@ -45,9 +45,9 @@ static bool g_CreatedYADP = false;
 
 stock void YADP_Create() {
 	if(g_CreatedYADP) return;
-	CreateNative("Register_OnModuleInit", YADP_Module_RegOnInit);
-	CreateNative("Register_OnModuleConf", YADP_Module_RegOnConf);
-	CreateNative("Register_OnDiced", YADP_Module_RegOnDiced);
+	CreateNative("RegOnModuleInit", YADP_Module_RegOnInit);
+	CreateNative("RegOnModuleConf", YADP_Module_RegOnConf);
+	CreateNative("RegOnDiced", YADP_Module_RegOnDiced);
 	CreateNative("RegisterModule", RegModule);
 	CreateNative("SendChatMessage", YADP_Chat_SendToClient);
 	CreateNative("LogModuleMessage", YADP_Debug_LogMessageNative);

@@ -40,7 +40,7 @@
 #define MAXMODULENAME	10
 #define MAXMODULEDESC	100
 
-typedef OnDicedCallback = function void(int client);
+typedef GeneralCallback = function void(int client);
 
 enum YADP_Module_Team {
 	ModuleTeam_Any	= 0x1,
@@ -69,9 +69,9 @@ enum YADP_Debug_LogLevel {
 
 typedef ModuleCallback = function void();
 
-native void Register_OnModuleInit(ModuleCallback f);
-native void Register_OnModuleConf(ModuleCallback f);
-native void Register_OnDiced(int idx, OnDicedCallback f);
+native void RegOnModuleInit(ModuleCallback f);
+native void RegOnModuleConf(ModuleCallback f);
+native void RegOnDiced(int idx, GeneralCallback f);
 native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
 native void SendChatMessage(int client, char[] msg);
 native void LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);

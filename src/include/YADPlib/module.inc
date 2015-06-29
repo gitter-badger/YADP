@@ -27,7 +27,7 @@
 #define MAXMODULENAME	10
 #define MAXMODULEDESC	100
 
-typedef OnDicedCallback = function void(int client);
+typedef GeneralCallback = function void(int client);
 
 enum YADP_Module_Team {
 	ModuleTeam_Any	= 0x1,

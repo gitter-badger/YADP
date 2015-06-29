@@ -116,8 +116,8 @@ Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage,
 
 public void OnLibraryAdded(const char[] name) {
 	if (!StrEqual(name, YADPLIB_NAME)) return;
-	Register_OnModuleInit(ModuleInit);
-	Register_OnModuleConf(ModuleConf);
+	RegOnModuleInit(ModuleInit);
+	RegOnModuleConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name) {
@@ -132,19 +132,19 @@ static void ModuleInit() {
 	AutoExecConfig(true, "plugin.YADP.Teleport");
 	if(GetConVarInt(g_cvEnableSwitch) == 1) {
 		g_modIdxSwitch = RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeigthSwitch), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxSwitch, HandleDicedSwitch);
+		RegOnDiced(g_modIdxSwitch, HandleDicedSwitch);
 	}
 	if(GetConVarInt(g_cvEnableSwitchTeam) == 1) {
 		g_modIdxSwitchTeam = RegisterModule("SwitchTeam", "Players switch position.", GetConVarInt(g_cvWeigthSwitchTeam), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxSwitchTeam, HandleDicedSwitchTeam);
+		RegOnDiced(g_modIdxSwitchTeam, HandleDicedSwitchTeam);
 	}
 	if(GetConVarInt(g_cvEnableSwitchDmg) == 1) {
 		g_modIdxSwitchDmg = RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeigthSwitchDmg), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg);
+		RegOnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg);
 	}
 	if(GetConVarInt(g_cvEnableSmoke) == 1) {
 		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeigthSmoke), ModuleTeam_Any);
-		Register_OnDiced(g_modIdxSmoke, HandleDicedSmoke);
+		RegOnDiced(g_modIdxSmoke, HandleDicedSmoke);
 	}
 }
 

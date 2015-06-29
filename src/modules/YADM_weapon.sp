@@ -106,8 +106,8 @@ public void OnPluginStart() {
 
 public void OnLibraryAdded(const char[] name) {
 	if (!StrEqual(name, YADPLIB_NAME)) return;
-	Register_OnModuleInit(ModuleInit);
-	Register_OnModuleConf(ModuleConf);
+	RegOnModuleInit(ModuleInit);
+	RegOnModuleConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name) {
@@ -120,11 +120,11 @@ static void ModuleInit() {
 	AutoExecConfig(true, "plugin.YADP.Weapon");
 	if(GetConVarInt(g_cvEnableWeapon) == 1) {
 		g_modIndexWeapon = RegisterModule("Weapon", "Players get random weapons", GetConVarInt(g_cvWeightWeapon), ModuleTeam_Any);
-		Register_OnDiced(g_modIndexWeapon, HandleDicedWeapon);
+		RegOnDiced(g_modIndexWeapon, HandleDicedWeapon);
 	}
 	if(GetConVarInt(g_cvEnableGrenade) == 1) {
 		g_modIndexGrenade = RegisterModule("Grenade", "Players get random grenades", GetConVarInt(g_cvWeightGrenade), ModuleTeam_Any);
-		Register_OnDiced(g_modIndexGrenade, HandleDicedGrenade);
+		RegOnDiced(g_modIndexGrenade, HandleDicedGrenade);
 	}
 }
 
