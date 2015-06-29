@@ -64,7 +64,6 @@ public void OnPluginStart()
 	g_cvWeigthSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableSmoke = CreateConVar("yadp_smoke_enable", "1", "Players can roll a teleportation grenade.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthSmoke = CreateConVar("yadp_smoke_weight", "50", "Probability of players getting a teleportation grenade.", FCVAR_PLUGIN, true, 0.0);
-	HookEvent("round_start", RoundStartHook, EventHookMode_PostNoCopy);
 	HookEvent("smokegrenade_detonate", SmokeGrenadeDetonateHook);
 }
 
@@ -92,23 +91,6 @@ static Action SmokeGrenadeDetonateHook(Handle:event, const String:name[], bool:d
 	TeleportEntity(client, a, NULL_VECTOR, NULL_VECTOR);
 	return Plugin_Continue;   
 } 
-
-static Action RoundStartHook(Event event, const char[] name, bool dontBroadcast)
-{ 
-	char eName[30];
-	char msg[100];
-	if(event != null)
-	{
-		GetEventName(event, eName, sizeof(eName));
-	}
-	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
-	LogModuleMessage(msg, LogServer, LevelInfo);
-	
-	for(int i = 1; i < MAXPLAYERS + 1; i++)
-	{
-		g_Modes[i] = TeleportMode_None;
-	}
-}
 
 public void OnClientPostAdminCheck(int client)
 {
@@ -206,10 +188,6 @@ static void HandleDicedSwitch(int client)
 
 static void ResetDicedSwitch(int client)
 {
-	if(g_modIdxSwitch < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
 }
 
 static void HandleDicedSwitchTeam(int client)
@@ -232,10 +210,6 @@ static void HandleDicedSwitchTeam(int client)
 
 static void ResetDicedSwitchTeam(int client)
 {
-	if(g_modIdxSwitchTeam < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
 }
 
 static void HandleDicedSwitchDmg(int client)
@@ -250,10 +224,7 @@ static void HandleDicedSwitchDmg(int client)
 
 static void ResetDicedSwitchDmg(int client)
 {
-	if(g_modIdxSwitchDmg < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
+	g_Modes[client] = TeleportMode_None;
 }
 
 static void HandleDicedSmoke(int client)
@@ -271,10 +242,7 @@ static void HandleDicedSmoke(int client)
 
 static void ResetDicedSmoke(int client)
 {
-	if(g_modIdxSmoke < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
+	g_Modes[client] = TeleportMode_None;
 }
 
 static void GetPosition(int client, float position[3])
