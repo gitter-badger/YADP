@@ -53,6 +53,7 @@ stock void YADP_Initialize_Module()
 	for(int i= 0; i < MAXMODULES; i++)
 	{
 		g_modDicedCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
+		g_modResetCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
 	}
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
@@ -106,16 +107,14 @@ stock int YADP_Module_Register(const char[] name, const char[] desc, int weight,
 
 stock void YADP_Module_GetName(int idx, char[] bufferModName, int bufferModNameMaxLength)
 {
-	if((idx < 0 || idx > g_modIdx) || bufferModNameMaxLength < MAXMODULENAME)
+	if(!YADP_Module_IsValid(idx) || bufferModNameMaxLength < MAXMODULENAME)
 	{
-		char errMsg[80];
-		if((idx < 0 || idx > g_modIdx))
+		if(bufferModNameMaxLength < MAXMODULENAME)
 		{
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		} else {
+			char errMsg[80];
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModNameBuffer", LANG_SERVER, MAXMODULENAME);
+			YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		}
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
 	strcopy(bufferModName, bufferModNameMaxLength, g_modNames[idx]);
@@ -123,16 +122,14 @@ stock void YADP_Module_GetName(int idx, char[] bufferModName, int bufferModNameM
 
 stock void YADP_Module_GetDescription(int idx, char[] bufferModDesc, int bufferModDescMaxLength)
 {
-	if((idx < 0 || idx > g_modIdx) || bufferModDescMaxLength < MAXMODULEDESC)
+	if(!YADP_Module_IsValid(idx) || bufferModDescMaxLength < MAXMODULEDESC)
 	{
-		char errMsg[80];
-		if((idx < 0 || idx > g_modIdx))
+		if(bufferModDescMaxLength < MAXMODULEDESC)
 		{
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		} else {
+			char errMsg[80];
 			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDescBuffer", LANG_SERVER, MAXMODULEDESC);
+			YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		}
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return;
 	}
 	strcopy(bufferModDesc, bufferModDescMaxLength, g_modDescs[idx]);
@@ -140,11 +137,8 @@ stock void YADP_Module_GetDescription(int idx, char[] bufferModDesc, int bufferM
 
 stock int YADP_Module_GetWeight(int idx)
 {
-	if((idx < 0 || idx > g_modIdx))
+	if(!YADP_Module_IsValid(idx))
 	{
-		char errMsg[80];
-		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return -1;
 	}
 	return g_modWghts[idx];
@@ -152,11 +146,8 @@ stock int YADP_Module_GetWeight(int idx)
 
 stock YADP_Module_Team YADP_Module_GetTeam(int idx)
 {
-	if((idx < 0 || idx > g_modIdx))
+	if(!YADP_Module_IsValid(idx))
 	{
-		char errMsg[80];
-		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return 1;
 	}
 	return g_modTeam[idx];
@@ -164,11 +155,8 @@ stock YADP_Module_Team YADP_Module_GetTeam(int idx)
 
 stock Handle YADP_Module_GetHandle(int idx, bool diced)
 {
-	if((idx < 0 || idx > g_modIdx))
+	if(!YADP_Module_IsValid(idx))
 	{
-		char errMsg[80];
-		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return null;
 	}
 	return diced ? g_modDicedCallbacks[idx] : g_modResetCallbacks[idx];
@@ -249,7 +237,7 @@ stock void YADP_Module_SendOnConf()
 
 stock void YADP_Module_SendOnDiced(int idx, int client)
 {
-	if(!YADP_Ready() || !IsValidModule(idx))
+	if(!YADP_Ready() || !YADP_Module_IsValid(idx))
 	{
 		return;
 	}
@@ -260,7 +248,7 @@ stock void YADP_Module_SendOnDiced(int idx, int client)
 
 stock void YADP_Module_SendOnReset(int idx, int client)
 {
-	if(!YADP_Ready() || !IsValidModule(idx))
+	if(!YADP_Ready() || !YADP_Module_IsValid(idx))
 	{
 		return;
 	}
@@ -298,7 +286,14 @@ stock int YADP_Module_ChooseRandom(YADP_Module_Team team)
 	return selIdx;
 }
 
-stock bool IsValidModule(int idx)
+stock bool YADP_Module_IsValid(int idx)
 {
-
+	if(idx < 0 || idx > g_modIdx)
+	{
+		char errMsg[80];
+		Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
+		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
+		return false;
+	}
+	return true;
 }

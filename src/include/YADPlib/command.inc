@@ -27,15 +27,16 @@
 #pragma newdecls required
 
 
-static int g_DiceAttepmts[MAXPLAYERS + 1];
+static int g_DiceState[MAXPLAYERS + 1][2];
 static Handle g_ckDisable;
 static Handle g_ckAuto;
-
+static bool g_canRoll = false;
 stock void YADP_Initialize_Command()
 {
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
 	HookEvent("round_start", YADP_Command_Roundstart, EventHookMode_PostNoCopy);
+	HookEvent("round_end", YADP_Command_Roundend, EventHookMode_PostNoCopy);
 	YADP_Debug_LogMessage("command", msg, LogServer, LevelInfo);
 }
 
@@ -47,15 +48,18 @@ stock void YADP_Configure_Command()
 
 stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBroadcast)
 {
+	g_canRoll = true;
 	for(int i = 1; i <= MAXPLAYERS; i++)
 	{
 		if(!YADP_Util_IsValidClient(i, true))
 		{
+			g_DiceState[i][0] = 0;
+			g_DiceState[i][1] = -1;
 			continue;
 		}
-		if(g_DiceAttepmts[i] < 1)
+		if(g_DiceState[i][0] < 1)
 		{
-			g_DiceAttepmts[i]++;
+			g_DiceState[i][0]++;
 		}
 		if(HasDiceDisabled(i))
 		{
@@ -71,21 +75,34 @@ stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBr
 			Format(msg, sizeof(msg), "%T", "yadp_main_RollTheDice", i, cmd);
 			YADP_Chat_PrintToChat(i, msg);
 		}
-		if(g_DiceAttepmts[i] > 1)
+		if(g_DiceState[i][0] > 1)
 		{
-			Format(msg, sizeof(msg), "%T", "yadp_main_NumberOfAttempts", i, g_DiceAttepmts[i]);
+			Format(msg, sizeof(msg), "%T", "yadp_main_NumberOfAttempts", i, g_DiceState[i][0]);
 			YADP_Chat_PrintToChat(i, msg);
 		}
 	}
 }
 
+stock Action YADP_Command_Roundend(Event event, const char[] name, bool dontBroadcast)
+{
+	g_canRoll = false;
+	for(int i = 1; i <= MAXPLAYERS; i++)
+	{
+		if(!YADP_Util_IsValidClient(i, true) || g_DiceState[i][1] < 0)
+		{
+			continue;
+		}
+		YADP_Module_SendOnReset(g_DiceState[i][1], i);
+	}
+}
+
 stock Action YADP_Command_HandleRequest(int client, int args)
 {
-	if(!YADP_Util_IsValidClient(client, true))
+	if(!g_canRoll || !YADP_Util_IsValidClient(client, true))
 	{
 		return Plugin_Handled;
 	}
-	if(g_DiceAttepmts[client] < 1)
+	if(g_DiceState[client][0] < 1)
 	{
 		char msg[100];
 		Format(msg, sizeof(msg), "%T", "yadp_main_NoAttemptsLeft", client);
@@ -94,9 +111,10 @@ stock Action YADP_Command_HandleRequest(int client, int args)
 	}
 	if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root)))
 	{
-		g_DiceAttepmts[client]--;
+		g_DiceState[client][0]--;
 	}
 	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
+	g_DiceState[client][1] = mod;
 	YADP_Module_SendOnDiced(mod, client);
 	return Plugin_Handled;
 }
