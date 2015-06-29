@@ -71,7 +71,7 @@ typedef ModuleCallback = function void();
 
 native void RegOnModuleInit(ModuleCallback f);
 native void RegOnModuleConf(ModuleCallback f);
-native void RegOnDiced(int idx, GeneralCallback f);
+native void RegOnDiced(int idx, GeneralCallback OnDiced, GeneralCallback OnReset);
 native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
 native void SendChatMessage(int client, char[] msg);
 native void LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);

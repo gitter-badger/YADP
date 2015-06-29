@@ -38,10 +38,10 @@ enum YADP_Module_Team {
 static char g_modNames[MAXMODULES][MAXMODULENAME];
 static char g_modDescs[MAXMODULES][MAXMODULEDESC];
 static char g_modWghts[MAXMODULES];
-static Handle g_modCallbacks[MAXMODULES];
+static Handle g_modDicedCallbacks[MAXMODULES];
+static Handle g_modResetCallbacks[MAXMODULES];
 static YADP_Module_Team g_modTeam[MAXMODULES];
 static int g_modIdx = -1;
-static int g_modIdxInvoking = -1;
 static bool g_CanRegister = false;
 static Handle g_hOnModuleInit;
 static Handle g_hOnModuleConf;
@@ -52,7 +52,7 @@ stock void YADP_Initialize_Module()
 	g_hOnModuleConf = CreateForward(ET_Ignore);
 	for(int i= 0; i < MAXMODULES; i++)
 	{
-		g_modCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
+		g_modDicedCallbacks[i] = CreateForward(ET_Ignore, Param_Cell);
 	}
 	char msg[40];
 	Format(msg, sizeof(msg), "%T", "yadp_main_Init", LANG_SERVER);
@@ -61,8 +61,8 @@ stock void YADP_Initialize_Module()
 
 stock void YADP_Configure_Module()
 {
-}
 
+}
 
 stock void YADP_Module_RegisterEnable()
 {
@@ -162,7 +162,7 @@ stock YADP_Module_Team YADP_Module_GetTeam(int idx)
 	return g_modTeam[idx];
 }
 
-stock Handle YADP_Module_GetHandle(int idx)
+stock Handle YADP_Module_GetHandle(int idx, bool diced)
 {
 	if((idx < 0 || idx > g_modIdx))
 	{
@@ -171,47 +171,7 @@ stock Handle YADP_Module_GetHandle(int idx)
 		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
 		return null;
 	}
-	return g_modCallbacks[idx];
-}
-
-stock bool YADP_Module_StartInvoking(int idx)
-{
-	if(g_modIdxInvoking != -1 || (idx < 0 || idx > g_modIdx))
-	{
-		char errMsg[80];
-		if((idx < 0 || idx > g_modIdx))
-		{
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		} else {
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModInvokeInProgress", LANG_SERVER, idx, g_modIdxInvoking);
-		}
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
-		return false;
-	}
-	g_modIdxInvoking = idx;
-	Call_StartForward(g_modCallbacks[g_modIdxInvoking]);
-	return true;
-}
-
-stock bool YADP_Module_StopInvoking(int idx)
-{
-	if(g_modIdxInvoking == -1 || (idx < 0 || idx > g_modIdx) || (idx != g_modIdxInvoking))
-	{
-		char errMsg[80];
-		if((idx < 0 || idx > g_modIdx))
-		{
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModDoesNotExist", LANG_SERVER, idx);
-		} else if(g_modIdxInvoking == -1) {
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModNoInvokeInProgress", LANG_SERVER);
-		} else {
-			Format(errMsg, sizeof(errMsg), "%T", "yadp_main_ModInvokeStopWrongMod", LANG_SERVER, idx, g_modIdxInvoking);
-		}
-		YADP_Debug_LogMessage("module", errMsg, (LogServer | LogFile), LevelError);
-		return false;
-	}
-	Call_Finish();
-	g_modIdxInvoking = -1;
-	return true;
+	return diced ? g_modDicedCallbacks[idx] : g_modResetCallbacks[idx];
 }
 
 stock int YADP_Module_RegOnInit(Handle plugin, int numParams)
@@ -246,25 +206,30 @@ stock int YADP_Module_RegOnConf(Handle plugin, int numParams)
 
 stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams)
 {
-	if(numParams != 2 || !YADP_Initialized())
+	if(numParams != 3 || !YADP_Initialized())
 	{
 		return 0;
 	}
 	int modIdx = GetNativeCell(1);
-	Handle fwd = YADP_Module_GetHandle(modIdx);
-	if(fwd == null) return -1;
+	Handle hDiced = YADP_Module_GetHandle(modIdx, true);
+	Handle hReset = YADP_Module_GetHandle(modIdx, false);
+	if(hDiced == null || hReset == null)
+	{
+		return -1;
+	}
+	AddToForward(hDiced, plugin, GetNativeFunction(2)); 
+	AddToForward(hReset, plugin, GetNativeFunction(3)); 
 	char pName[50];
 	char msg[128];
 	GetPluginFilename(plugin, pName, sizeof(pName));
 	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
-	AddToForward(fwd, plugin, GetNativeFunction(2)); 
 	return 0;
 }
 
 stock void YADP_Module_SendOnInit()
 {
-	if(!YADP_Initialized())
+	if(!YADP_Ready())
 	{
 		return;
 	}
@@ -274,11 +239,33 @@ stock void YADP_Module_SendOnInit()
 
 stock void YADP_Module_SendOnConf()
 {
-	if(!YADP_Initialized())
+	if(!YADP_Ready())
 	{
 		return;
 	}
 	Call_StartForward(g_hOnModuleConf);
+	Call_Finish();
+}
+
+stock void YADP_Module_SendOnDiced(int idx, int client)
+{
+	if(!YADP_Ready() || !IsValidModule(idx))
+	{
+		return;
+	}
+	Call_StartForward(g_modDicedCallbacks[idx]);
+	Call_PushCell(client);
+	Call_Finish();
+}
+
+stock void YADP_Module_SendOnReset(int idx, int client)
+{
+	if(!YADP_Ready() || !IsValidModule(idx))
+	{
+		return;
+	}
+	Call_StartForward(g_modResetCallbacks[idx]);
+	Call_PushCell(client);
 	Call_Finish();
 }
 
@@ -309,4 +296,9 @@ stock int YADP_Module_ChooseRandom(YADP_Module_Team team)
 		rndIdx -= g_modWghts[i];
 	}
 	return selIdx;
+}
+
+stock bool IsValidModule(int idx)
+{
+
 }
