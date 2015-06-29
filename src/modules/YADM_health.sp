@@ -80,25 +80,6 @@ public void OnPluginStart()
 	g_cvWeigthDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableFire = CreateConVar("yadp_fire_enable", "1", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeigthFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
-	HookEvent("round_start", RoundStartHook, EventHookMode_PostNoCopy);
-}
-
-static Action RoundStartHook(Event event, const char[] name, bool dontBroadcast)
-{
-	char eName[30];
-	char msg[100];
-	if(event != null) GetEventName(event, eName, sizeof(eName));
-	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
-	LogModuleMessage(msg, LogServer, LevelInfo);
-	for(int i = 1; i < MAXPLAYERS + 1; i++)
-	{
-		g_Modes[i] = HealthMode_None;
-		g_TimerCount[i] = 0;
-		if(g_Timers[i] != null)
-		{
-			KillTimer(g_Timers[i], false);
-		}
-	}
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -217,12 +198,6 @@ static void HandleDicedHealth(int client)
 
 static void ResetDicedHealth(int client)
 {
-	if(g_modIdxHealth < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
-	NotifyPlayer(client, GetPlayerHealth(client), true);
-	SetPlayerHealth(client, RandomHealth());
 }
 
 static void HandleDicedArmor(int client)
@@ -237,10 +212,6 @@ static void HandleDicedArmor(int client)
 
 static void ResetDicedArmor(int client)
 {
-	if(g_modIdxArmor < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
 }
 
 static void HandleDicedHealthArmor(int client)
@@ -255,10 +226,6 @@ static void HandleDicedHealthArmor(int client)
 
 static void ResetDicedHealthArmor(int client)
 {
-	if(g_modIdxHealthArmor < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
 }
 
 static void HandleDicedDamage(int client)
@@ -278,10 +245,7 @@ static void HandleDicedDamage(int client)
 
 static void ResetDicedDamage(int client)
 {
-	if(g_modIdxDamage < 0 || !IsValidClient(client, true))
-	{
-		return;
-	}
+	g_Modes[client] = HealthMode_None;
 }
 
 static void HandleDicedFire(int client)
@@ -299,9 +263,10 @@ static void HandleDicedFire(int client)
 
 static void ResetDicedFire(int client)
 {
-	if(g_modIdxFire < 0 || !IsValidClient(client, true))
+	g_TimerCount[client] = 0;
+	if(g_Timers[client] != null)
 	{
-		return;
+		KillTimer(g_Timers[client], false);
 	}
 }
 
