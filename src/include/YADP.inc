@@ -76,5 +76,7 @@ native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team
 native void SendChatMessage(int client, char[] msg);
 native void LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);
 native bool IsValidClient(int client, bool botsAllowed);
+native void SetAttempts(int client, int number);
+native int GetAttempts(int client);
 
 #pragma newdecls optional

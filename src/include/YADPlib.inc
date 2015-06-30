@@ -53,6 +53,8 @@ stock void YADP_Create()
 	CreateNative("SendChatMessage", YADP_Chat_SendToClient);
 	CreateNative("LogModuleMessage", YADP_Debug_LogMessageNative);
 	CreateNative("IsValidClient", YADP_Util_IsValidClientNative);
+	CreateNative("SetAttempts", YADP_Command_SetAttemptsNative);
+	CreateNative("GetAttempts", YADP_Command_GetAttemptsNative);
 	RegPluginLibrary(YADPLIB_NAME);
 	g_CreatedYADP = true;
 }

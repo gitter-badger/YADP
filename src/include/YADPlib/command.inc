@@ -211,3 +211,32 @@ stock Action YADP_Command_HandleMenu(int client, int args)
 	}
 	return Plugin_Handled;
 }
+
+stock int YADP_Command_SetAttemptsNative(Handle plugin, int numParams)
+{
+	if(numParams != 2 || !YADP_Initialized())
+	{
+		return 0;
+	}
+	int client = GetNativeCell(1);
+	if(!YADP_Util_IsValidClient(client, true))
+	{
+		return 0;
+	}
+	g_DiceState[client][0] = GetNativeCell(2);
+	return 0;
+}
+
+stock int YADP_Command_GetAttemptsNative(Handle plugin, int numParams)
+{
+	if(numParams != 1 || !YADP_Initialized())
+	{
+		return 0;
+	}
+	int client = GetNativeCell(1);
+	if(!YADP_Util_IsValidClient(client, true))
+	{
+		return 0;
+	}
+	return g_DiceState[client][0];
+}
