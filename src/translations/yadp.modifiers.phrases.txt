@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"yadp_modifiers_Longjump"
+	{
+		"en"		"you got {red}Longjump{default}."
+	}
+	"yadp_modifiers_LongjumpExtreme"
+	{
+		"en"		"you got {orange}extreme {red}Longjump{default}."
+	}
+}
