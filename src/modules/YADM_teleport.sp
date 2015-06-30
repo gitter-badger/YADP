@@ -40,13 +40,13 @@ enum TeleportMode {
 };
 
 static ConVar g_cvEnableSwitch;
-static ConVar g_cvWeigthSwitch;
+static ConVar g_cvWeightSwitch;
 static ConVar g_cvEnableSwitchTeam;
-static ConVar g_cvWeigthSwitchTeam;
+static ConVar g_cvWeightSwitchTeam;
 static ConVar g_cvEnableSwitchDmg;
-static ConVar g_cvWeigthSwitchDmg;
+static ConVar g_cvWeightSwitchDmg;
 static ConVar g_cvEnableSmoke;
-static ConVar g_cvWeigthSmoke;
+static ConVar g_cvWeightSmoke;
 static int g_modIdxSwitch = -1;
 static int g_modIdxSwitchTeam = -1;
 static int g_modIdxSwitchDmg = -1;
@@ -56,14 +56,14 @@ static TeleportMode g_Modes[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.teleport.phrases.txt");
-	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthSwitch = CreateConVar("yadp_switch_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthSwitchTeam = CreateConVar("yadp_switchTeam_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "0", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightSwitch = CreateConVar("yadp_switch_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightSwitchTeam = CreateConVar("yadp_switchTeam_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableSmoke = CreateConVar("yadp_smoke_enable", "1", "Players can roll a teleportation grenade.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthSmoke = CreateConVar("yadp_smoke_weight", "50", "Probability of players getting a teleportation grenade.", FCVAR_PLUGIN, true, 0.0);
+	g_cvWeightSmoke = CreateConVar("yadp_smoke_weight", "50", "Probability of players getting a teleportation grenade.", FCVAR_PLUGIN, true, 0.0);
 	HookEvent("smokegrenade_detonate", SmokeGrenadeDetonateHook);
 }
 
@@ -143,22 +143,22 @@ static void ModuleInit()
 	AutoExecConfig(true, "plugin.YADP.Teleport");
 	if(GetConVarInt(g_cvEnableSwitch) == 1)
 	{
-		g_modIdxSwitch = RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeigthSwitch), ModuleTeam_Any);
+		g_modIdxSwitch = RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeightSwitch), ModuleTeam_Any);
 		RegOnDiced(g_modIdxSwitch, HandleDicedSwitch, ResetDicedSwitch);
 	}
 	if(GetConVarInt(g_cvEnableSwitchTeam) == 1)
 	{
-		g_modIdxSwitchTeam = RegisterModule("SwitchTeam", "Players switch position.", GetConVarInt(g_cvWeigthSwitchTeam), ModuleTeam_Any);
+		g_modIdxSwitchTeam = RegisterModule("SwitchTeam", "Players switch position.", GetConVarInt(g_cvWeightSwitchTeam), ModuleTeam_Any);
 		RegOnDiced(g_modIdxSwitchTeam, HandleDicedSwitchTeam, ResetDicedSwitchTeam);
 	}
 	if(GetConVarInt(g_cvEnableSwitchDmg) == 1)
 	{
-		g_modIdxSwitchDmg = RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeigthSwitchDmg), ModuleTeam_Any);
+		g_modIdxSwitchDmg = RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeightSwitchDmg), ModuleTeam_Any);
 		RegOnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg, ResetDicedSwitchDmg);
 	}
 	if(GetConVarInt(g_cvEnableSmoke) == 1)
 	{
-		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeigthSmoke), ModuleTeam_Any);
+		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeightSmoke), ModuleTeam_Any);
 		RegOnDiced(g_modIdxSmoke, HandleDicedSmoke, ResetDicedSmoke);
 	}
 }

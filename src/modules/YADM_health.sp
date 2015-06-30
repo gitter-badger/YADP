@@ -41,17 +41,17 @@ enum HealthMode {
 };
 
 static ConVar g_cvEnableHealth;
-static ConVar g_cvWeigthHealth;
+static ConVar g_cvWeightHealth;
 static ConVar g_cvHealthMin;
 static ConVar g_cvHealthMax;
 static ConVar g_cvEnableArmor;
-static ConVar g_cvWeigthArmor;
+static ConVar g_cvWeightArmor;
 static ConVar g_cvArmorMin;
 static ConVar g_cvArmorMax;
 static ConVar g_cvEnableDamage;
-static ConVar g_cvWeigthDamage;
+static ConVar g_cvWeightDamage;
 static ConVar g_cvEnableFire;
-static ConVar g_cvWeigthFire;
+static ConVar g_cvWeightFire;
 static int g_modIdxHealth = -1;
 static int g_modIdxArmor = -1;
 static int g_modIdxHealthArmor = -1;
@@ -68,18 +68,18 @@ static int g_TimerCount[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.health.phrases.txt");
-	g_cvEnableHealth = CreateConVar("yadp_health_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthHealth = CreateConVar("yadp_health_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableHealth = CreateConVar("yadp_health_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightHealth = CreateConVar("yadp_health_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
 	g_cvHealthMin = CreateConVar("yadp_health_min", "-90", "Minimum health a player can receive.", FCVAR_PLUGIN);
 	g_cvHealthMax = CreateConVar("yadp_health_max", "90", "Maximum health a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "0", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "1", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
 	g_cvArmorMin = CreateConVar("yadp_armor_min", "10", "Minimum armor a player can receive.", FCVAR_PLUGIN);
 	g_cvArmorMax = CreateConVar("yadp_armor_max", "150", "Maximum armor a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "0", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "1", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableFire = CreateConVar("yadp_fire_enable", "1", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeigthFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
+	g_cvWeightFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -153,27 +153,27 @@ static void ModuleInit()
 	AutoExecConfig(true, "plugin.YADP.Health");
 	if(GetConVarInt(g_cvEnableHealth) == 1)
 	{
-		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeigthHealth), ModuleTeam_Any);
+		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeightHealth), ModuleTeam_Any);
 		RegOnDiced(g_modIdxHealth, HandleDicedHealth, ResetDicedHealth);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1)
 	{
-		g_modIdxArmor = RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeigthArmor), ModuleTeam_Any);
+		g_modIdxArmor = RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeightArmor), ModuleTeam_Any);
 		RegOnDiced(g_modIdxArmor, HandleDicedArmor, ResetDicedArmor);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1)
 	{
-		g_modIdxHealthArmor = RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeigthHealth) + GetConVarInt(g_cvWeigthArmor)) / 2), ModuleTeam_Any);
+		g_modIdxHealthArmor = RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeightHealth) + GetConVarInt(g_cvWeightArmor)) / 2), ModuleTeam_Any);
 		RegOnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor, ResetDicedHealthArmor);
 	}
 	if(GetConVarInt(g_cvEnableDamage) == 1)
 	{
-		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeigthDamage), ModuleTeam_Any);
+		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeightDamage), ModuleTeam_Any);
 		RegOnDiced(g_modIdxDamage, HandleDicedDamage, ResetDicedDamage);
 	}
 	if(GetConVarInt(g_cvEnableFire) == 1)
 	{
-		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeigthFire), ModuleTeam_Any);
+		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeightFire), ModuleTeam_Any);
 		RegOnDiced(g_modIdxFire, HandleDicedFire, ResetDicedFire);
 	}
 }

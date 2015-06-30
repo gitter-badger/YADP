@@ -54,7 +54,6 @@ stock void YADP_Chat_ReplyToCommand(int client, const char[] message)
 	CReplyToCommand(client, msg);
 }
 
-
 stock int YADP_Chat_SendToClient(Handle plugin, int numParams)
 {
 	if(numParams != 2 || !YADP_Initialized())
