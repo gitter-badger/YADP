@@ -21,6 +21,7 @@
 #include <sourcemod>
 #include <sdktools_functions>
 #include <sdkhooks>
+#include <smlib>
 #pragma newdecls required
 #include <YADP>
 
@@ -38,6 +39,7 @@ enum HealthMode {
 	HealthMode_DoubleDamageR = 2,
 	HealthMode_HalfDamageG = 4,
 	HealthMode_DoubleDamageG = 8,
+	HealthMode_BombSquad = 16,
 };
 
 static ConVar g_cvEnableHealth;
@@ -52,11 +54,14 @@ static ConVar g_cvEnableDamage;
 static ConVar g_cvWeightDamage;
 static ConVar g_cvEnableFire;
 static ConVar g_cvWeightFire;
+static ConVar g_cvEnableSquad;
+static ConVar g_cvWeightSquad;
 static int g_modIdxHealth = -1;
 static int g_modIdxArmor = -1;
 static int g_modIdxHealthArmor = -1;
 static int g_modIdxDamage = -1;
 static int g_modIdxFire = -1;
+static int g_modIdxSquad = -1;
 static int g_minHealth = 0;
 static int g_maxHealth = 0;
 static int g_minArmor = 0;
@@ -68,28 +73,32 @@ static int g_TimerCount[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.health.phrases.txt");
-	g_cvEnableHealth = CreateConVar("yadp_health_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableHealth = CreateConVar("yadp_health_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightHealth = CreateConVar("yadp_health_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
 	g_cvHealthMin = CreateConVar("yadp_health_min", "-90", "Minimum health a player can receive.", FCVAR_PLUGIN);
 	g_cvHealthMax = CreateConVar("yadp_health_max", "90", "Maximum health a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "1", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "0", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
 	g_cvArmorMin = CreateConVar("yadp_armor_min", "10", "Minimum armor a player can receive.", FCVAR_PLUGIN);
 	g_cvArmorMax = CreateConVar("yadp_armor_max", "150", "Maximum armor a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "1", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "0", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableFire = CreateConVar("yadp_fire_enable", "1", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableFire = CreateConVar("yadp_fire_enable", "0", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableSquad = CreateConVar("yadp_squad_enable", "1", "Players can roll Bomb Squad.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightSquad = CreateConVar("yadp_squad_weight", "50", "Probability of players getting Bomb Squad.", FCVAR_PLUGIN, true, 0.0);
 }
 
 public void OnClientPostAdminCheck(int client)
 {
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamgeHook);
+	SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUseHook);
 }
 
 public void OnClientDisconnect(int client)
 {
 	SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamgeHook);
+	SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUseHook);
 }
 
 Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
@@ -109,6 +118,10 @@ Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage,
 		{
 			dmg *= 2.0;
 		}
+		if((g_Modes[victim] & HealthMode_BombSquad) == HealthMode_BombSquad)
+		{
+			dmg *= 0.2;
+		}
 	}
 	if(attacker > 0 && attacker < MAXPLAYERS + 1)
 	{
@@ -120,9 +133,27 @@ Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage,
 		{
 			dmg *= 2.0;
 		}
+		if((g_Modes[attacker] & HealthMode_BombSquad) == HealthMode_BombSquad)
+		{
+			dmg *= 0.5;
+		}
 	}
 	damage = dmg;
 	return Plugin_Changed;
+}
+
+
+static Action OnWeaponCanUseHook(int client, int weapon)
+{
+	if(g_modIdxSquad < 0 || !YADP_IsValidClient(client, true))
+	{
+		return Plugin_Continue; 
+	}
+	if(g_Modes[client] == HealthMode_BombSquad)
+	{
+		return Plugin_Handled;
+	}
+	return Plugin_Continue; 
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -146,6 +177,7 @@ public void OnLibraryRemoved(const char[] name)
 	g_modIdxHealthArmor = -1;
 	g_modIdxDamage = -1;
 	g_modIdxFire = -1;
+	g_modIdxSquad = -1;
 }
 
 static void ModuleInit()
@@ -176,6 +208,11 @@ static void ModuleInit()
 		g_modIdxFire = YADP_RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeightFire), ModuleTeam_Any);
 		YADP_RegisterOnDice(g_modIdxFire, HandleDicedFire, ResetDicedFire);
 	}
+	if(GetConVarInt(g_cvEnableSquad) == 1)
+	{
+		g_modIdxSquad = YADP_RegisterModule("Bomb Squad", "Players may get Bomb Squad.", GetConVarInt(g_cvWeightSquad), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxSquad, HandleDicedSquad, ResetDicedSquad);
+	}
 }
 
 static void ModuleConf()
@@ -198,6 +235,7 @@ static void HandleDicedHealth(int client)
 
 static void ResetDicedHealth(int client)
 {
+	g_Modes[client] = HealthMode_None;
 }
 
 static void HandleDicedArmor(int client)
@@ -212,6 +250,7 @@ static void HandleDicedArmor(int client)
 
 static void ResetDicedArmor(int client)
 {
+	g_Modes[client] = HealthMode_None;
 }
 
 static void HandleDicedHealthArmor(int client)
@@ -226,6 +265,7 @@ static void HandleDicedHealthArmor(int client)
 
 static void ResetDicedHealthArmor(int client)
 {
+	g_Modes[client] = HealthMode_None;
 }
 
 static void HandleDicedDamage(int client)
@@ -268,6 +308,26 @@ static void ResetDicedFire(int client)
 	{
 		KillTimer(g_Timers[client], false);
 	}
+}
+
+static void HandleDicedSquad(int client)
+{
+	if(g_modIdxSquad < 0 || !YADP_IsValidClient(client, true))
+	{
+		return;
+	}
+	SetPlayerHealth(client, 150);
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", "yadp_health_BombSquad", client);
+	YADP_SendChatMessage(client, msg);
+	Client_RemoveAllWeapons(client, "", true);
+	GivePlayerItem(client, "weapon_knife", 0);
+	g_Modes[client] = HealthMode_BombSquad;
+}
+
+static void ResetDicedSquad(int client)
+{
+	g_Modes[client] = HealthMode_None;
 }
 
 static Action FireTimer(Handle timer, any client)

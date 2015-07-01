@@ -30,4 +30,8 @@
 	{
 		"en"		"you are now on {red}fire{default}."
 	}
+	"yadp_health_BombSquad"
+	{
+		"en"		"you got an {red}EOD suit{default}."
+	}
 }

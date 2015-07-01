@@ -88,11 +88,12 @@ stock Action YADP_Command_Roundend(Event event, const char[] name, bool dontBroa
 	g_canRoll = false;
 	for(int i = 1; i <= MAXPLAYERS; i++)
 	{
-		if(!YADP_Util_YADP_IsValidClient(i, true) || g_DiceState[i][1] < 0)
+		if(g_DiceState[i][1] < 0)
 		{
 			continue;
 		}
 		YADP_Module_SendOnReset(g_DiceState[i][1], i);
+		g_DiceState[i][1] = -1;
 	}
 }
 

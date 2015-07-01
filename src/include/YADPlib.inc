@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: $version$
+ * Version: 0.0.0.517
  * Authors: Hendrik Reker
  */
 #if defined _YADPLIB_INCLUDED
@@ -35,11 +35,11 @@
 #include <smlib>
 #pragma newdecls required
 
-#define	YADPLIB_VERSION		"$version$"
-#define	YADPLIB_BUILD_DATE	"$date$"
+#define	YADPLIB_VERSION		"0.0.0.517"
+#define	YADPLIB_BUILD_DATE	"2015-07-02"
 #define YADPLIB_NAME		"yadplib"
-#define __RELEASE__			$release$
-#define __DEBUG__			$debug$
+#define __RELEASE__			1
+#define __DEBUG__			0
 
 static ConVar g_cvVersion;
 static ConVar g_cvEnabled;

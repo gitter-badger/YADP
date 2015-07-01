@@ -30,4 +30,8 @@
 	{
 		"de"		"du {red}brennst{default} nun."
 	}
+	"yadp_health_BombSquad"
+	{
+		"de"		"du hast einen {red}EOD Anzug{default} bekommen."
+	}
 }
