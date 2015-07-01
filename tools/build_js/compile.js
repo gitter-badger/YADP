@@ -71,6 +71,7 @@ function _compile() {
 	var sicPath = path.join(srcPath, "include/");
 	var tlrPath = path.join(srcPath, "translations/");
 	var cmpPath = path.join(__dirname, settings.PATH_COMPILER);
+	var smlibPath = path.join(srcPath, "include/smlib/scripting/include");
 	
 	var srcFiles = glob.sync(srcPath + "*.sp", null);
 	var incFiles = glob.sync(sicPath + "*.inc", null);
@@ -86,7 +87,7 @@ function _compile() {
 	for (var i in srcFiles) {
 		var file = srcFiles[i];
 		var fileRes =  path.basename(file, '.sp') + '.smx'
-		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + settings.COMP_FLAGS + " " + file;
+		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + ("-i" + smlibPath) + " " + settings.COMP_FLAGS + " " + file;
 		
 		try {
 			var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});

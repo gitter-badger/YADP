@@ -31,10 +31,14 @@
 #include <YADPlib/chat>
 #include <YADPlib/command>
 
+#pragma newdecls optional
+#include <smlib>
+#pragma newdecls required
+
 #define	YADPLIB_VERSION		"$version$"
 #define	YADPLIB_BUILD_DATE	"$date$"
 #define YADPLIB_NAME		"yadplib"
-#define __RELEASE__			$version$
+#define __RELEASE__			$release$
 #define __DEBUG__			$debug$
 
 static ConVar g_cvVersion;
