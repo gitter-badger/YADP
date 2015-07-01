@@ -43,9 +43,13 @@ static bool g_InitializedYADP = false;
 static bool g_ConfiguredYADP = false;
 static bool g_CreatedYADP = false;
 
-stock void YADP_Create()
+stock APLRes YADP_Create(char[] err, int errmax)
 {
-	if(g_CreatedYADP) return;
+	if(LibraryExists(YADPLIB_NAME) || g_CreatedYADP)
+    {
+        strcopy(err, errmax, "YADPlib already exists, aborting.");
+        return APLRes_Failure;
+    }
 	CreateNative("YADP_RegisterOnInit", YADP_Module_RegOnInit);
 	CreateNative("YADP_RegisterOnConf", YADP_Module_RegOnConf);
 	CreateNative("YADP_RegisterOnDice", YADP_Module_RegOnDiced);
@@ -57,6 +61,7 @@ stock void YADP_Create()
 	CreateNative("YADP_GetAttempts", YADP_Command_YADP_GetAttemptsNative);
 	RegPluginLibrary(YADPLIB_NAME);
 	g_CreatedYADP = true;
+	return APLRes_Success;
 }
 
 stock bool YADP_Initialize()

@@ -50,6 +50,5 @@ public void OnAllPluginsLoaded()
 
 public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
 {
-	YADP_Create();
-	return APLRes_Success;
+	return YADP_Create(error, err_max);
 }
