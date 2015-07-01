@@ -51,7 +51,7 @@ stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBr
 	g_canRoll = true;
 	for(int i = 1; i <= MAXPLAYERS; i++)
 	{
-		if(!YADP_Util_IsValidClient(i, true))
+		if(!YADP_Util_YADP_IsValidClient(i, true))
 		{
 			g_DiceState[i][0] = 0;
 			g_DiceState[i][1] = -1;
@@ -88,7 +88,7 @@ stock Action YADP_Command_Roundend(Event event, const char[] name, bool dontBroa
 	g_canRoll = false;
 	for(int i = 1; i <= MAXPLAYERS; i++)
 	{
-		if(!YADP_Util_IsValidClient(i, true) || g_DiceState[i][1] < 0)
+		if(!YADP_Util_YADP_IsValidClient(i, true) || g_DiceState[i][1] < 0)
 		{
 			continue;
 		}
@@ -98,7 +98,7 @@ stock Action YADP_Command_Roundend(Event event, const char[] name, bool dontBroa
 
 stock Action YADP_Command_HandleRequest(int client, int args)
 {
-	if(!g_canRoll || !YADP_Util_IsValidClient(client, true))
+	if(!g_canRoll || !YADP_Util_YADP_IsValidClient(client, true))
 	{
 		return Plugin_Handled;
 	}
@@ -121,7 +121,7 @@ stock Action YADP_Command_HandleRequest(int client, int args)
 
 stock bool HasDiceDisabled(int client)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return true;
 	}
@@ -138,7 +138,7 @@ stock bool HasDiceDisabled(int client)
 
 stock void SetDiceDisabled(int client, bool value)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return;
 	}
@@ -149,7 +149,7 @@ stock void SetDiceDisabled(int client, bool value)
 
 stock bool HasDiceAuto(int client)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return false;
 	}
@@ -166,7 +166,7 @@ stock bool HasDiceAuto(int client)
 
 stock void SetDiceAuto(int client, bool value)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return;
 	}
@@ -177,7 +177,7 @@ stock void SetDiceAuto(int client, bool value)
 
 stock Action YADP_Command_HandleDisable(int client, int args)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return Plugin_Handled;
 	}
@@ -191,7 +191,7 @@ stock Action YADP_Command_HandleDisable(int client, int args)
 
 stock Action YADP_Command_HandleAuto(int client, int args)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return Plugin_Handled;
 	}
@@ -205,21 +205,21 @@ stock Action YADP_Command_HandleAuto(int client, int args)
 
 stock Action YADP_Command_HandleMenu(int client, int args)
 {
-	if(!YADP_Util_IsValidClient(client, false))
+	if(!YADP_Util_YADP_IsValidClient(client, false))
 	{
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
 }
 
-stock int YADP_Command_SetAttemptsNative(Handle plugin, int numParams)
+stock int YADP_Command_YADP_SetAttemptsNative(Handle plugin, int numParams)
 {
 	if(numParams != 2 || !YADP_Initialized())
 	{
 		return 0;
 	}
 	int client = GetNativeCell(1);
-	if(!YADP_Util_IsValidClient(client, true))
+	if(!YADP_Util_YADP_IsValidClient(client, true))
 	{
 		return 0;
 	}
@@ -227,14 +227,14 @@ stock int YADP_Command_SetAttemptsNative(Handle plugin, int numParams)
 	return 0;
 }
 
-stock int YADP_Command_GetAttemptsNative(Handle plugin, int numParams)
+stock int YADP_Command_YADP_GetAttemptsNative(Handle plugin, int numParams)
 {
 	if(numParams != 1 || !YADP_Initialized())
 	{
 		return 0;
 	}
 	int client = GetNativeCell(1);
-	if(!YADP_Util_IsValidClient(client, true))
+	if(!YADP_Util_YADP_IsValidClient(client, true))
 	{
 		return 0;
 	}

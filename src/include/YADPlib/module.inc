@@ -210,7 +210,7 @@ stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams)
 	char pName[50];
 	char msg[128];
 	GetPluginFilename(plugin, pName, sizeof(pName));
-	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
+	Format(msg, sizeof(msg), "%T", "yadp_main_YADP_RegisterOnDice", LANG_SERVER, modIdx, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	return 0;
 }

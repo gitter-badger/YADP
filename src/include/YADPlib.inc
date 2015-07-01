@@ -34,7 +34,7 @@
 #define	YADPLIB_VERSION		"$version$"
 #define	YADPLIB_BUILD_DATE	"$date$"
 #define YADPLIB_NAME		"yadplib"
-#define __RELEASE__			$release$
+#define __RELEASE__			$version$
 #define __DEBUG__			$debug$
 
 static ConVar g_cvVersion;
@@ -46,15 +46,15 @@ static bool g_CreatedYADP = false;
 stock void YADP_Create()
 {
 	if(g_CreatedYADP) return;
-	CreateNative("RegOnModuleInit", YADP_Module_RegOnInit);
-	CreateNative("RegOnModuleConf", YADP_Module_RegOnConf);
-	CreateNative("RegOnDiced", YADP_Module_RegOnDiced);
-	CreateNative("RegisterModule", RegModule);
-	CreateNative("SendChatMessage", YADP_Chat_SendToClient);
-	CreateNative("LogModuleMessage", YADP_Debug_LogMessageNative);
-	CreateNative("IsValidClient", YADP_Util_IsValidClientNative);
-	CreateNative("SetAttempts", YADP_Command_SetAttemptsNative);
-	CreateNative("GetAttempts", YADP_Command_GetAttemptsNative);
+	CreateNative("YADP_RegisterOnInit", YADP_Module_RegOnInit);
+	CreateNative("YADP_RegisterOnConf", YADP_Module_RegOnConf);
+	CreateNative("YADP_RegisterOnDice", YADP_Module_RegOnDiced);
+	CreateNative("YADP_RegisterModule", RegModule);
+	CreateNative("YADP_SendChatMessage", YADP_Chat_SendToClient);
+	CreateNative("YADP_LogModuleMessage", YADP_Debug_LogMessageNative);
+	CreateNative("YADP_IsValidClient", YADP_Util_YADP_IsValidClientNative);
+	CreateNative("YADP_SetAttempts", YADP_Command_YADP_SetAttemptsNative);
+	CreateNative("YADP_GetAttempts", YADP_Command_YADP_GetAttemptsNative);
 	RegPluginLibrary(YADPLIB_NAME);
 	g_CreatedYADP = true;
 }

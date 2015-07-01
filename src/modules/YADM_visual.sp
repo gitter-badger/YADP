@@ -38,8 +38,8 @@ public void OnLibraryAdded(const char[] name)
 	{
 		return;
 	}
-	RegOnModuleInit(ModuleInit);
-	RegOnModuleConf(ModuleConf);
+	YADP_RegisterOnInit(ModuleInit);
+	YADP_RegisterOnConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -53,8 +53,8 @@ public void OnLibraryRemoved(const char[] name)
 
 static void ModuleInit()
 {
-	g_modIndex = RegisterModule("name", "desc", 50, ModuleTeam_Any);
-	RegOnDiced(g_modIndex, HandleDiced, ResetDiced);
+	g_modIndex = YADP_RegisterModule("name", "desc", 50, ModuleTeam_Any);
+	YADP_RegisterOnDice(g_modIndex, HandleDiced, ResetDiced);
 }
 
 static void ModuleConf()
@@ -64,7 +64,7 @@ static void ModuleConf()
 
 static void HandleDiced(int client)
 {
-	if(g_modIndex < 0 || !IsValidClient(client, true))
+	if(g_modIndex < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -72,7 +72,7 @@ static void HandleDiced(int client)
 
 static void ResetDiced(int client)
 {
-	if(g_modIndex < 0 || !IsValidClient(client, true))
+	if(g_modIndex < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}

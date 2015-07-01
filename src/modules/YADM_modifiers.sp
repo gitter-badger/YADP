@@ -59,8 +59,8 @@ public void OnLibraryAdded(const char[] name)
 	{
 		return;
 	}
-	RegOnModuleInit(ModuleInit);
-	RegOnModuleConf(ModuleConf);
+	YADP_RegisterOnInit(ModuleInit);
+	YADP_RegisterOnConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -77,13 +77,13 @@ static void ModuleInit()
 {
 	if(GetConVarInt(g_cvEnableLongjump) == 1)
 	{
-		g_modIndexLongjump = RegisterModule("Longjump", "Players get Longjump.", GetConVarInt(g_cvWeightLongjump), ModuleTeam_Any);
-		RegOnDiced(g_modIndexLongjump, HandleDicedLongjump, ResetDicedLongjump);
+		g_modIndexLongjump = YADP_RegisterModule("Longjump", "Players get Longjump.", GetConVarInt(g_cvWeightLongjump), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexLongjump, HandleDicedLongjump, ResetDicedLongjump);
 	}
 	if(GetConVarInt(g_cvEnableLongjumpExtreme) == 1)
 	{
-		g_modIndexLongjumpExtreme = RegisterModule("Longjump Extreme", "Players get extreme Longjump.", GetConVarInt(g_cvWeightLongjumpExtreme), ModuleTeam_Any);
-		RegOnDiced(g_modIndexLongjumpExtreme, HandleDicedLongjumpExtreme, ResetDicedLongjumpExtreme);
+		g_modIndexLongjumpExtreme = YADP_RegisterModule("Longjump Extreme", "Players get extreme Longjump.", GetConVarInt(g_cvWeightLongjumpExtreme), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexLongjumpExtreme, HandleDicedLongjumpExtreme, ResetDicedLongjumpExtreme);
 	}
 	HookEvent("player_jump", PlayerJumpHook, EventHookMode_Post);
 }
@@ -95,14 +95,14 @@ static void ModuleConf()
 
 static void HandleDicedLongjump(int client)
 {
-	if(g_modIndexLongjump < 0 || !IsValidClient(client, true))
+	if(g_modIndexLongjump < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
 	g_Modifiers[client] = Modifier_Longjump;
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", "yadp_modifiers_Longjump", client);
-	SendChatMessage(client, msg);
+	YADP_SendChatMessage(client, msg);
 }
 
 static void ResetDicedLongjump(int client)
@@ -112,14 +112,14 @@ static void ResetDicedLongjump(int client)
 
 static void HandleDicedLongjumpExtreme(int client)
 {
-	if(g_modIndexLongjumpExtreme < 0 || !IsValidClient(client, true))
+	if(g_modIndexLongjumpExtreme < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
 	g_Modifiers[client] = Modifier_LongjumpExtreme;
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", "yadp_modifiers_LongjumpExtreme", client);
-	SendChatMessage(client, msg);
+	YADP_SendChatMessage(client, msg);
 }
 
 static void ResetDicedLongjumpExtreme(int client)
@@ -130,7 +130,7 @@ static void ResetDicedLongjumpExtreme(int client)
 static Action PlayerJumpHook(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid", -1));
-	if(!IsValidClient(client, true) || (g_Modifiers[client] != Modifier_Longjump && g_Modifiers[client] != Modifier_LongjumpExtreme))
+	if(!YADP_IsValidClient(client, true) || (g_Modifiers[client] != Modifier_Longjump && g_Modifiers[client] != Modifier_LongjumpExtreme))
 	{
 		return;
 	}

@@ -69,14 +69,14 @@ enum YADP_Debug_LogLevel {
 
 typedef ModuleCallback = function void();
 
-native void RegOnModuleInit(ModuleCallback f);
-native void RegOnModuleConf(ModuleCallback f);
-native void RegOnDiced(int idx, GeneralCallback OnDiced, GeneralCallback OnReset);
-native int RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
-native void SendChatMessage(int client, char[] msg);
-native void LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);
-native bool IsValidClient(int client, bool botsAllowed);
-native void SetAttempts(int client, int number);
-native int GetAttempts(int client);
+native void YADP_RegisterOnInit(ModuleCallback f);
+native void YADP_RegisterOnConf(ModuleCallback f);
+native void YADP_RegisterOnDice(int idx, GeneralCallback OnDiced, GeneralCallback OnReset);
+native int YADP_RegisterModule(char[] name, char[] desc, int weight, YADP_Module_Team team);
+native void YADP_SendChatMessage(int client, char[] msg);
+native void YADP_LogModuleMessage(const char[] msg, YADP_Debug_LogMode mode, YADP_Debug_LogLevel level);
+native bool YADP_IsValidClient(int client, bool botsAllowed);
+native void YADP_SetAttempts(int client, int number);
+native int YADP_GetAttempts(int client);
 
 #pragma newdecls optional

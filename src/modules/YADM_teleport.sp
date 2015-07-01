@@ -76,7 +76,7 @@ static Action SmokeGrenadeDetonateHook(Handle:event, const String:name[], bool:d
 		GetEventName(event, eName, sizeof(eName));
 	}
 	Format(msg, sizeof(msg), "event fired: %s - %s - %s", eName, name, (dontBroadcast ? "TRUE" : "FALSE"));
-	LogModuleMessage(msg, LogServer, LevelInfo);
+	YADP_LogModuleMessage(msg, LogServer, LevelInfo);
 	
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if(g_Modes[client] != TeleportMode_Smoke)
@@ -104,7 +104,7 @@ public void OnClientDisconnect(int client)
 
 Action OnTakeDamgeHook(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	if(!IsValidClient(victim, true) || !IsValidClient(attacker, true))
+	if(!YADP_IsValidClient(victim, true) || !YADP_IsValidClient(attacker, true))
 	{
 		return Plugin_Continue;
 	}
@@ -122,8 +122,8 @@ public void OnLibraryAdded(const char[] name)
 	{
 		return;
 	}
-	RegOnModuleInit(ModuleInit);
-	RegOnModuleConf(ModuleConf);
+	YADP_RegisterOnInit(ModuleInit);
+	YADP_RegisterOnConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -143,23 +143,23 @@ static void ModuleInit()
 	AutoExecConfig(true, "plugin.YADP.Teleport");
 	if(GetConVarInt(g_cvEnableSwitch) == 1)
 	{
-		g_modIdxSwitch = RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeightSwitch), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSwitch, HandleDicedSwitch, ResetDicedSwitch);
+		g_modIdxSwitch = YADP_RegisterModule("Switch", "Players switch position.", GetConVarInt(g_cvWeightSwitch), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxSwitch, HandleDicedSwitch, ResetDicedSwitch);
 	}
 	if(GetConVarInt(g_cvEnableSwitchTeam) == 1)
 	{
-		g_modIdxSwitchTeam = RegisterModule("SwitchTeam", "Players switch position.", GetConVarInt(g_cvWeightSwitchTeam), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSwitchTeam, HandleDicedSwitchTeam, ResetDicedSwitchTeam);
+		g_modIdxSwitchTeam = YADP_RegisterModule("SwitchTeam", "Players switch position.", GetConVarInt(g_cvWeightSwitchTeam), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxSwitchTeam, HandleDicedSwitchTeam, ResetDicedSwitchTeam);
 	}
 	if(GetConVarInt(g_cvEnableSwitchDmg) == 1)
 	{
-		g_modIdxSwitchDmg = RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeightSwitchDmg), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSwitchDmg, HandleDicedSwitchDmg, ResetDicedSwitchDmg);
+		g_modIdxSwitchDmg = YADP_RegisterModule("SwitchDmg", "Players switch position.", GetConVarInt(g_cvWeightSwitchDmg), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxSwitchDmg, HandleDicedSwitchDmg, ResetDicedSwitchDmg);
 	}
 	if(GetConVarInt(g_cvEnableSmoke) == 1)
 	{
-		g_modIdxSmoke = RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeightSmoke), ModuleTeam_Any);
-		RegOnDiced(g_modIdxSmoke, HandleDicedSmoke, ResetDicedSmoke);
+		g_modIdxSmoke = YADP_RegisterModule("SmokePort", "Players switch position.", GetConVarInt(g_cvWeightSmoke), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxSmoke, HandleDicedSmoke, ResetDicedSmoke);
 	}
 }
 
@@ -170,7 +170,7 @@ static void ModuleConf()
 
 static void HandleDicedSwitch(int client)
 {
-	if(g_modIdxSwitch < 0 || !IsValidClient(client, true))
+	if(g_modIdxSwitch < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -192,7 +192,7 @@ static void ResetDicedSwitch(int client)
 
 static void HandleDicedSwitchTeam(int client)
 {
-	if(g_modIdxSwitchTeam < 0 || !IsValidClient(client, true))
+	if(g_modIdxSwitchTeam < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -214,7 +214,7 @@ static void ResetDicedSwitchTeam(int client)
 
 static void HandleDicedSwitchDmg(int client)
 {
-	if(g_modIdxSwitchDmg < 0 || !IsValidClient(client, true))
+	if(g_modIdxSwitchDmg < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -229,7 +229,7 @@ static void ResetDicedSwitchDmg(int client)
 
 static void HandleDicedSmoke(int client)
 {
-	if(g_modIdxSmoke < 0 || !IsValidClient(client, true))
+	if(g_modIdxSmoke < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -237,7 +237,7 @@ static void HandleDicedSmoke(int client)
 	GivePlayerItem(client, "weapon_smokegrenade");
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", "yadp_teleport_Smoke", client);
-	SendChatMessage(client, msg);
+	YADP_SendChatMessage(client, msg);
 }
 
 static void ResetDicedSmoke(int client)
@@ -283,8 +283,8 @@ static void NotifyPlayers(int clFirst, int clSecond)
 	char msg[128];
 	Format(tcl, sizeof(tcl), "%s", GetClientTeam(clSecond) == 3 ? "{blue}" : "{red}");
 	Format(msg, sizeof(msg), "%T", "yadp_teleport_SwitchPosition", clFirst, tcl, iName);
-	SendChatMessage(clFirst, msg);
+	YADP_SendChatMessage(clFirst, msg);
 	Format(tcl, sizeof(tcl), "%s", GetClientTeam(clFirst) == 3 ? "{blue}" : "{red}");
 	Format(msg, sizeof(msg), "%T", "yadp_teleport_SwitchPosition", clSecond, tcl, cName);
-	SendChatMessage(clSecond, msg);
+	YADP_SendChatMessage(clSecond, msg);
 }

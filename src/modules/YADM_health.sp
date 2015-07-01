@@ -131,8 +131,8 @@ public void OnLibraryAdded(const char[] name)
 	{
 		return;
 	}
-	RegOnModuleInit(ModuleInit);
-	RegOnModuleConf(ModuleConf);
+	YADP_RegisterOnInit(ModuleInit);
+	YADP_RegisterOnConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -153,28 +153,28 @@ static void ModuleInit()
 	AutoExecConfig(true, "plugin.YADP.Health");
 	if(GetConVarInt(g_cvEnableHealth) == 1)
 	{
-		g_modIdxHealth = RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeightHealth), ModuleTeam_Any);
-		RegOnDiced(g_modIdxHealth, HandleDicedHealth, ResetDicedHealth);
+		g_modIdxHealth = YADP_RegisterModule("Health", "Players get random health.", GetConVarInt(g_cvWeightHealth), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxHealth, HandleDicedHealth, ResetDicedHealth);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1)
 	{
-		g_modIdxArmor = RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeightArmor), ModuleTeam_Any);
-		RegOnDiced(g_modIdxArmor, HandleDicedArmor, ResetDicedArmor);
+		g_modIdxArmor = YADP_RegisterModule("Armor", "Players get random armor.", GetConVarInt(g_cvWeightArmor), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxArmor, HandleDicedArmor, ResetDicedArmor);
 	}
 	if(GetConVarInt(g_cvEnableArmor) == 1)
 	{
-		g_modIdxHealthArmor = RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeightHealth) + GetConVarInt(g_cvWeightArmor)) / 2), ModuleTeam_Any);
-		RegOnDiced(g_modIdxHealthArmor, HandleDicedHealthArmor, ResetDicedHealthArmor);
+		g_modIdxHealthArmor = YADP_RegisterModule("Health&Armor", "Players get random health & armor", ((GetConVarInt(g_cvWeightHealth) + GetConVarInt(g_cvWeightArmor)) / 2), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxHealthArmor, HandleDicedHealthArmor, ResetDicedHealthArmor);
 	}
 	if(GetConVarInt(g_cvEnableDamage) == 1)
 	{
-		g_modIdxDamage = RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeightDamage), ModuleTeam_Any);
-		RegOnDiced(g_modIdxDamage, HandleDicedDamage, ResetDicedDamage);
+		g_modIdxDamage = YADP_RegisterModule("Damage", "Players get random damage modifiers.", GetConVarInt(g_cvWeightDamage), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxDamage, HandleDicedDamage, ResetDicedDamage);
 	}
 	if(GetConVarInt(g_cvEnableFire) == 1)
 	{
-		g_modIdxFire = RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeightFire), ModuleTeam_Any);
-		RegOnDiced(g_modIdxFire, HandleDicedFire, ResetDicedFire);
+		g_modIdxFire = YADP_RegisterModule("Fire", "Players get randomly lit on fire.", GetConVarInt(g_cvWeightFire), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIdxFire, HandleDicedFire, ResetDicedFire);
 	}
 }
 
@@ -188,7 +188,7 @@ static void ModuleConf()
 
 static void HandleDicedHealth(int client)
 {
-	if(g_modIdxHealth < 0 || !IsValidClient(client, true))
+	if(g_modIdxHealth < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -202,7 +202,7 @@ static void ResetDicedHealth(int client)
 
 static void HandleDicedArmor(int client)
 {
-	if(g_modIdxArmor < 0 || !IsValidClient(client, true))
+	if(g_modIdxArmor < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -216,7 +216,7 @@ static void ResetDicedArmor(int client)
 
 static void HandleDicedHealthArmor(int client)
 {
-	if(g_modIdxHealthArmor < 0 || !IsValidClient(client, true))
+	if(g_modIdxHealthArmor < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -230,7 +230,7 @@ static void ResetDicedHealthArmor(int client)
 
 static void HandleDicedDamage(int client)
 {
-	if(g_modIdxDamage < 0 || !IsValidClient(client, true))
+	if(g_modIdxDamage < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -240,7 +240,7 @@ static void HandleDicedDamage(int client)
 	g_Modes[client] = mode;
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", phrase, client);
-	SendChatMessage(client, msg);
+	YADP_SendChatMessage(client, msg);
 }
 
 static void ResetDicedDamage(int client)
@@ -250,13 +250,13 @@ static void ResetDicedDamage(int client)
 
 static void HandleDicedFire(int client)
 {
-	if(g_modIdxFire < 0 || !IsValidClient(client, true))
+	if(g_modIdxFire < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", "yadp_health_Fire", client);
-	SendChatMessage(client, msg);
+	YADP_SendChatMessage(client, msg);
 	g_TimerCount[client] = 0;
 	g_Timers[client] = CreateTimer(0.2, FireTimer, client, TIMER_REPEAT);
 }
@@ -272,7 +272,7 @@ static void ResetDicedFire(int client)
 
 static Action FireTimer(Handle timer, any client)
 {
-	if(g_TimerCount[client] >= 99 || !IsValidClient(client, true))
+	if(g_TimerCount[client] >= 99 || !YADP_IsValidClient(client, true))
 	{
 		KillTimer(timer, false);
 		g_Timers[client] = null;
@@ -377,5 +377,5 @@ static void NotifyPlayer(int client, int val, bool health)
 	Format(valStr, sizeof(valStr), "%s%d", (val<0?"":"+"), val); 
 	char msg[80];
 	Format(msg, sizeof(msg), "%T", (health?"yadp_health_ChangeHealth":"yadp_health_ChangeArmor"), client, (val<0?"{red}":"{green}"), valStr);
-	SendChatMessage(client, msg);
+	YADP_SendChatMessage(client, msg);
 }

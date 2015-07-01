@@ -111,8 +111,8 @@ public void OnLibraryAdded(const char[] name)
 	{
 		return;
 	}
-	RegOnModuleInit(ModuleInit);
-	RegOnModuleConf(ModuleConf);
+	YADP_RegisterOnInit(ModuleInit);
+	YADP_RegisterOnConf(ModuleConf);
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -130,13 +130,13 @@ static void ModuleInit()
 	AutoExecConfig(true, "plugin.YADP.Weapon");
 	if(GetConVarInt(g_cvEnableWeapon) == 1)
 	{
-		g_modIndexWeapon = RegisterModule("Weapon", "Players get random weapons", GetConVarInt(g_cvWeightWeapon), ModuleTeam_Any);
-		RegOnDiced(g_modIndexWeapon, HandleDicedWeapon, ResetDicedWeapon);
+		g_modIndexWeapon = YADP_RegisterModule("Weapon", "Players get random weapons", GetConVarInt(g_cvWeightWeapon), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexWeapon, HandleDicedWeapon, ResetDicedWeapon);
 	}
 	if(GetConVarInt(g_cvEnableGrenade) == 1)
 	{
-		g_modIndexGrenade = RegisterModule("Grenade", "Players get random grenades", GetConVarInt(g_cvWeightGrenade), ModuleTeam_Any);
-		RegOnDiced(g_modIndexGrenade, HandleDicedGrenade, ResetDicedGrenade);
+		g_modIndexGrenade = YADP_RegisterModule("Grenade", "Players get random grenades", GetConVarInt(g_cvWeightGrenade), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexGrenade, HandleDicedGrenade, ResetDicedGrenade);
 	}
 }
 
@@ -160,7 +160,7 @@ static void ModuleConf()
 
 static void HandleDicedWeapon(int client)
 {
-	if(g_modIndexWeapon < 0 || !IsValidClient(client, true))
+	if(g_modIndexWeapon < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -173,7 +173,7 @@ static void ResetDicedWeapon(int client)
 
 static void HandleDicedGrenade(int client)
 {
-	if(g_modIndexGrenade < 0 || !IsValidClient(client, true))
+	if(g_modIndexGrenade < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
@@ -206,7 +206,7 @@ static void GiveItem(int client, int idx, bool weapon)
 	{
 		GivePlayerItem(client, wType);
 	}
-	SendChatMessage(client, wName);
+	YADP_SendChatMessage(client, wName);
 }
 
 static int GetMaxGrenadeAmount()

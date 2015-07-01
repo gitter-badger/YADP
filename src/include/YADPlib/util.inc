@@ -144,7 +144,7 @@ stock void YADP_Util_ReplaceShellComment(char[] str)
 	TrimString(str);
 }
 
-stock bool YADP_Util_IsValidClient(int client, bool botsAllowed = false)
+stock bool YADP_Util_YADP_IsValidClient(int client, bool botsAllowed = false)
 {
 	if(client < 1 || client > MaxClients)
 	{
@@ -173,7 +173,7 @@ stock bool YADP_Util_IsValidClient(int client, bool botsAllowed = false)
 	return true;
 }
 
-stock int YADP_Util_IsValidClientNative(Handle plugin, int numParams)
+stock int YADP_Util_YADP_IsValidClientNative(Handle plugin, int numParams)
 {
 	if(numParams != 2)
 	{
@@ -181,5 +181,5 @@ stock int YADP_Util_IsValidClientNative(Handle plugin, int numParams)
 	}
 	int client = GetNativeCell(1);
 	bool ignr = GetNativeCell(2);
-	return view_as<int>(YADP_Util_IsValidClient(client, ignr));
+	return view_as<int>(YADP_Util_YADP_IsValidClient(client, ignr));
 }
