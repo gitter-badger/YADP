@@ -1,0 +1,3 @@
+[submodule "src/include/smlib"]
+	path = src/include/smlib
+	url = git@github.com:bcserv/smlib.git
