@@ -13,4 +13,9 @@
 		"#format"	"{1:.2f}"
 		"en"		"you got {blue}{1}{default}%%%% gravity."
 	}
+	"yadp_modifiers_Speed"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"you got {blue}{1}{default}%%%% speed."
+	}
 }

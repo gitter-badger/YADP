@@ -11,6 +11,11 @@
 	"yadp_modifiers_Gravity"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"du erfährst {blue}{1}{default}%%%% Gravitation."
+		"de"		"du erfährst {blue}{1}{default}%%%% Gravitation."
+	}
+	"yadp_modifiers_Speed"
+	{
+		"#format"	"{1:.2f}"
+		"de"		"du bewegst dich mit {blue}{1}{default}%%%% der Normalgeschwindigkeit."
 	}
 }
