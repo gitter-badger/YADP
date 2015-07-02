@@ -19,6 +19,7 @@
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
+#include <smlib>
 #pragma newdecls required
 #include <YADP>
 
@@ -37,20 +38,31 @@ enum Modifier {
 };
 
 static Modifier g_Modifiers[MAXPLAYERS + 1];
+static float g_GravityMin;
+static float g_GravityMax;
 static int g_modIndexLongjump = -1;
 static int g_modIndexLongjumpExtreme = -1;
+static int g_modIndexGravity = -1;
 static ConVar g_cvEnableLongjump;
 static ConVar g_cvWeightLongjump;
 static ConVar g_cvEnableLongjumpExtreme;
 static ConVar g_cvWeightLongjumpExtreme;
+static ConVar g_cvEnableGravity;
+static ConVar g_cvWeightGravity;
+static ConVar g_cvGravityMin;
+static ConVar g_cvGravityMax;
 
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.modifiers.phrases.txt");
-	g_cvEnableLongjump = CreateConVar("yadp_longjump_enable", "0", "Players can roll Longjump.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableLongjump = CreateConVar("yadp_longjump_enable", "1", "Players can roll Longjump.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightLongjump = CreateConVar("yadp_longjump_weight", "50", "Probability of players getting Longjump.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableLongjumpExtreme = CreateConVar("yadp_longjumpex_enable", "1", "Players can roll Longjump Extreme.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightLongjumpExtreme = CreateConVar("yadp_longjumpex_weight", "50", "Probability of players getting Longjump Extreme.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableGravity = CreateConVar("yadp_gravity_enable", "1", "Players can roll a gravity change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightGravity = CreateConVar("yadp_gravity_weight", "50", "Probability of players getting a gravity change.", FCVAR_PLUGIN, true, 0.0);
+	g_cvGravityMin = CreateConVar("yadp_gravity_min", "0.1", "Minimum gravity.", FCVAR_PLUGIN, true, 0.1, true, 1.0);
+	g_cvGravityMax = CreateConVar("yadp_gravity_max", "3.0", "Maximum gravity.", FCVAR_PLUGIN, true, 1.0, true, 3.0);
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -75,6 +87,7 @@ public void OnLibraryRemoved(const char[] name)
 
 static void ModuleInit()
 {
+	AutoExecConfig(true, "plugin.YADP.Modifiers");
 	if(GetConVarInt(g_cvEnableLongjump) == 1)
 	{
 		g_modIndexLongjump = YADP_RegisterModule("Longjump", "Players get Longjump.", GetConVarInt(g_cvWeightLongjump), ModuleTeam_Any);
@@ -85,12 +98,18 @@ static void ModuleInit()
 		g_modIndexLongjumpExtreme = YADP_RegisterModule("Longjump Extreme", "Players get extreme Longjump.", GetConVarInt(g_cvWeightLongjumpExtreme), ModuleTeam_Any);
 		YADP_RegisterOnDice(g_modIndexLongjumpExtreme, HandleDicedLongjumpExtreme, ResetDicedLongjumpExtreme);
 	}
+	if(GetConVarInt(g_cvEnableGravity) == 1)
+	{
+		g_modIndexGravity = YADP_RegisterModule("Gravity", "Players get random gravity.", GetConVarInt(g_cvWeightGravity), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexGravity, HandleDicedGravity, ResetDicedGravity);
+	}
 	HookEvent("player_jump", PlayerJumpHook, EventHookMode_Post);
 }
 
 static void ModuleConf()
 {
-
+	g_GravityMin = GetConVarFloat(g_cvGravityMin);
+	g_GravityMax = GetConVarFloat(g_cvGravityMax);
 }
 
 static void HandleDicedLongjump(int client)
@@ -125,6 +144,27 @@ static void HandleDicedLongjumpExtreme(int client)
 static void ResetDicedLongjumpExtreme(int client)
 {
 	g_Modifiers[client] = Modifier_None;
+}
+
+static void HandleDicedGravity(int client)
+{
+	if(g_modIndexGravity < 0 || !YADP_IsValidClient(client, true))
+	{
+		return;
+	}
+	float val = Math_GetRandomFloat(g_GravityMin, g_GravityMax);
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", "yadp_modifiers_Gravity", client, val * 100);
+	YADP_SendChatMessage(client, msg)
+	SetEntityGravity(client, val);
+}
+
+static void ResetDicedGravity(int client)
+{
+	if(YADP_IsValidClient(client, true))
+	{
+		SetEntityGravity(client, 1.0);
+	}
 }
 
 static Action PlayerJumpHook(Event event, const char[] name, bool dontBroadcast)

@@ -8,4 +8,9 @@
 	{
 		"en"		"you got {orange}extreme {red}Longjump{default}."
 	}
+	"yadp_modifiers_Gravity"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"you got {blue}{1}{default}%%%% gravity."
+	}
 }
