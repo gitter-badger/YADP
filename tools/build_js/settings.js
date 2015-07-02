@@ -4,5 +4,6 @@ module.exports = {
 	PATH_SP_SRC			: "../../src/",
 	PATH_SP_BIN			: "../../bin/",
 	PATH_SP_REL			: "../../release/",
+	PATH_SP_DEP			: "../../dependencies/",
 	COMP_FLAGS			: ""
 };

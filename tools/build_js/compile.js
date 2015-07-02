@@ -63,15 +63,37 @@ function emptyDir(dir) {
 	}
 }
 
+function getDependencyOrigins(dep_path) {
+	var dependencies = require(path.join(dep_path, "./config.js")).dependencies;
+	var res = "";
+	console.log();
+	console.log("Loading dependencies:");
+	for(var dependency in dependencies) {
+		if(dependencies.hasOwnProperty(dependency)) {
+			for(var dpath in dependencies[dependency]) {
+				if(dpath == "path_inc" && dependencies[dependency].hasOwnProperty(dpath)) {
+					if(dependencies[dependency][dpath].hasOwnProperty("org")) {
+						var pth = path.join(dep_path, dependencies[dependency][dpath]["org"]);
+						res += "-i " + pth + " ";
+						console.log(pth);
+					}
+				}
+			}
+		}
+	}
+	console.log();
+	return res;
+}
+
 function _compile() {
 	var srcPath = path.join(__dirname, settings.PATH_SP_SRC);
 	var binPath = path.join(__dirname, settings.PATH_SP_BIN);
 	var relPath = path.join(__dirname, settings.PATH_SP_REL);
+	var depPath = path.join(__dirname, settings.PATH_SP_DEP);
 	var incPath = path.join(__dirname, settings.PATH_SP_INCLUDE);
 	var sicPath = path.join(srcPath, "include/");
 	var tlrPath = path.join(srcPath, "translations/");
 	var cmpPath = path.join(__dirname, settings.PATH_COMPILER);
-	var smlibPath = path.join(srcPath, "include/smlib/scripting/include");
 	
 	var srcFiles = glob.sync(srcPath + "*.sp", null);
 	var incFiles = glob.sync(sicPath + "*.inc", null);
@@ -87,7 +109,7 @@ function _compile() {
 	for (var i in srcFiles) {
 		var file = srcFiles[i];
 		var fileRes =  path.basename(file, '.sp') + '.smx'
-		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + ("-i" + smlibPath) + " " + settings.COMP_FLAGS + " " + file;
+		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + getDependencyOrigins(depPath) + " " + settings.COMP_FLAGS + " " + file;
 		
 		try {
 			var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});
