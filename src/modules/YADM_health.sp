@@ -73,17 +73,17 @@ static int g_TimerCount[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.health.phrases.txt");
-	g_cvEnableHealth = CreateConVar("yadp_health_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableHealth = CreateConVar("yadp_health_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightHealth = CreateConVar("yadp_health_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
 	g_cvHealthMin = CreateConVar("yadp_health_min", "-90", "Minimum health a player can receive.", FCVAR_PLUGIN);
 	g_cvHealthMax = CreateConVar("yadp_health_max", "90", "Maximum health a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "0", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableArmor = CreateConVar("yadp_armor_enable", "1", "Players can roll armor.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightArmor = CreateConVar("yadp_armor_weight", "50", "Probability of players getting armor.", FCVAR_PLUGIN, true, 0.0);
 	g_cvArmorMin = CreateConVar("yadp_armor_min", "10", "Minimum armor a player can receive.", FCVAR_PLUGIN);
 	g_cvArmorMax = CreateConVar("yadp_armor_max", "150", "Maximum armor a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "0", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableDamage = CreateConVar("yadp_damage_enable", "1", "Players can roll damage.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightDamage = CreateConVar("yadp_damage_weight", "50", "Probability of players getting damage.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableFire = CreateConVar("yadp_fire_enable", "0", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableFire = CreateConVar("yadp_fire_enable", "1", "Players can roll fire.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightFire = CreateConVar("yadp_fire_weight", "50", "Probability of players getting lit on fire.", FCVAR_PLUGIN, true, 0.0);
 	g_cvEnableSquad = CreateConVar("yadp_squad_enable", "1", "Players can roll Bomb Squad.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightSquad = CreateConVar("yadp_squad_weight", "50", "Probability of players getting Bomb Squad.", FCVAR_PLUGIN, true, 0.0);

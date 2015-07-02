@@ -99,8 +99,8 @@ public void OnPluginStart()
 {
 	LoadTranslations("yadp.weapon.phrases.txt");
 	g_cvEnableWeapon = CreateConVar("yadp_weapon_enable", "1", "Players can roll weapons.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvEnableGrenade = CreateConVar("yadp_grenade_enable", "1", "Players can roll grenades.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightWeapon = CreateConVar("yadp_weapon_weight", "10", "Probability of players getting a weapons.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableGrenade = CreateConVar("yadp_grenade_enable", "1", "Players can roll grenades.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightGrenade = CreateConVar("yadp_grenade_weight", "50", "Probability of players getting a weapons.", FCVAR_PLUGIN, true, 0.0);
 	CreateConVars();
 }
