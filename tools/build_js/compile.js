@@ -39,10 +39,6 @@ function updateVersion() {
 	version.saveVersion();
 }
 
-function getReleasePath(base) {
-	return path.join(base, version.getVersion());
-}
-
 function preprocessFile(file) {
 	fsx.copySync(file, file + ".tmp");
 	updateFile(file);
@@ -83,6 +79,24 @@ function getDependencyOrigins(dep_path) {
 	}
 	console.log();
 	return res;
+}
+
+function deployDependencies(dep_path, rel_path) {
+	var dependencies = require(path.join(dep_path, "./config.js")).dependencies;
+	for(var dependency in dependencies) {
+		if(dependencies.hasOwnProperty(dependency)) {
+			for(var dpath in dependencies[dependency]) {
+				if(dependencies[dependency].hasOwnProperty(dpath)) {
+					if(dependencies[dependency][dpath].hasOwnProperty("org") && dependencies[dependency][dpath].hasOwnProperty("dst")) {
+						if(dependencies[dependency][dpath]["org"].trim() == "" || dependencies[dependency][dpath]["dst"].trim() == "") continue;
+						var org_pth = path.join(dep_path, dependencies[dependency][dpath]["org"]);
+						var dst_pth = path.join(rel_path, dependencies[dependency][dpath]["dst"]);
+						fsx.copySync(org_pth, dst_pth);
+					}
+				}
+			}
+		}
+	}
 }
 
 function _compile() {
@@ -128,7 +142,7 @@ function _compile() {
 		fs.renameSync(srcPath + file, binPath + file);
 	}
 	if(srcFiles.length == cmpFiles.length && argv.publish) {
-		var cpath = getReleasePath(relPath);
+		var cpath = path.join(relPath, version.getVersion());
 		for (var i in srcFiles) {
 			var file = srcFiles[i];	
 			fsx.copySync(file, path.join(cpath, "addons/sourcemod/scripting/")  + path.basename(file));
@@ -148,10 +162,15 @@ function _compile() {
 		for (var i in tmpFiles) {
 			fsx.deleteSync(tmpFiles[i]);
 		}
+		deployDependencies(depPath, cpath);
 		console.log("Created Version " + version.getVersion());
 	}
 	for (var i in allFiles) {
-		clearPreprocessor(allFiles[i]);
+		try {
+			clearPreprocessor(allFiles[i]);
+		} catch(e) {
+			console.log(e);
+		}
 	}
 	
 }
