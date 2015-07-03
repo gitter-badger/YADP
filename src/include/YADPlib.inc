@@ -30,6 +30,7 @@
 #include <YADPlib/module>
 #include <YADPlib/chat>
 #include <YADPlib/command>
+#include <YADPlib/database>
 
 #pragma newdecls optional
 #include <smlib>
@@ -85,6 +86,7 @@ stock bool YADP_Initialize()
 	YADP_Initialize_Util();
 	YADP_Initialize_Debug();
 	YADP_Initialize_Config();
+	YADP_Initialize_Database();
 	YADP_Initialize_Module();
 	YADP_Initialize_Chat();
 	YADP_Initialize_Command();
@@ -111,6 +113,7 @@ stock bool YADP_Configure()
 	YADP_Configure_Util();
 	YADP_Configure_Debug();
 	YADP_Configure_Config();
+	YADP_Configure_Database();
 	YADP_Configure_Module();
 	YADP_Configure_Chat();
 	YADP_Configure_Command();
