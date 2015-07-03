@@ -61,21 +61,20 @@ stock Action YADP_Command_Roundstart(Event event, const char[] name, bool dontBr
 		{
 			g_DiceState[i][0]++;
 		}
-		if(HasDiceDisabled(i))
-		{
-			continue;
-		}
 		char msg[100];
-		if(HasDiceAuto(i) || IsFakeClient(i))
+		if(!HasDiceDisabled(i))
 		{
-			YADP_Command_HandleRequest(i, 0);
-		} else {
-			char cmd[15];
-			YADP_Config_GetRandomCmd(cmd, sizeof(cmd));
-			Format(msg, sizeof(msg), "%T", "yadp_main_RollTheDice", i, cmd);
-			YADP_Chat_PrintToChat(i, msg);
-		}
-		if(g_DiceState[i][0] > 1)
+			if(HasDiceAuto(i) || IsFakeClient(i))
+			{
+				YADP_Command_HandleRequest(i, 0);
+			} else {
+				char cmd[15];
+				YADP_Config_GetRandomCmd(cmd, sizeof(cmd));
+				Format(msg, sizeof(msg), "%T", "yadp_main_RollTheDice", i, cmd);
+				YADP_Chat_PrintToChat(i, msg);
+			}
+		}		
+		if(g_DiceState[i][0] > 1 || g_DiceState[i][0] < 0)
 		{
 			Format(msg, sizeof(msg), "%T", "yadp_main_NumberOfAttempts", i, g_DiceState[i][0]);
 			YADP_Chat_PrintToChat(i, msg);
@@ -107,13 +106,13 @@ stock Action YADP_Command_HandleRequest(int client, int args)
 	{
 		char msg[100];
 		Format(msg, sizeof(msg), "%T", "yadp_main_NoAttemptsLeft", client);
-		YADP_Chat_ReplyToCommand(client, msg);
+		YADP_Chat_PrintToChat(client, msg);
 		return Plugin_Handled;
 	}
-	if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root)))
-	{
-		g_DiceState[client][0]--;
-	}
+	//if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root)))
+	//{
+	g_DiceState[client][0]--;
+	//}
 	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
 	g_DiceState[client][1] = mod;
 	YADP_Module_SendOnDiced(mod, client);

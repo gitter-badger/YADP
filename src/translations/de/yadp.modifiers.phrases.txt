@@ -18,4 +18,9 @@
 		"#format"	"{1:.2f}"
 		"de"		"du bewegst dich mit {blue}{1}{default}%%%% der Normalgeschwindigkeit."
 	}
+	"yadp_modifiers_Attempts"
+	{
+		"#format"	"{1:s}{2:d}"
+		"en"		"du hast {1}{2}{default} Versuche bekommen."
+	}
 }

@@ -42,14 +42,14 @@ stock void YADP_Configure_Chat()
 
 stock void YADP_Chat_PrintToChat(int client, const char[] message)
 {
-	char msg[256];
+	char msg[200];
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CPrintToChat(client, msg);
 }
 
 stock void YADP_Chat_ReplyToCommand(int client, const char[] message)
 {
-	char msg[256];
+	char msg[200];
 	Format(msg, sizeof(msg), "{orange}[{blue}%s{orange}]:{default} %s", g_chatName, message);
 	CReplyToCommand(client, msg);
 }
@@ -61,7 +61,7 @@ stock int YADP_Chat_SendToClient(Handle plugin, int numParams)
 		return 0;
 	}
 	int clt = GetNativeCell(1);
-	char msg[256];
+	char msg[180];
 	GetNativeString(2, msg, sizeof(msg));
 	char pName[50];
 	char cAuth[50];

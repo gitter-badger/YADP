@@ -18,4 +18,9 @@
 		"#format"	"{1:.2f}"
 		"en"		"you got {blue}{1}{default}%%%% speed."
 	}
+	"yadp_modifiers_Attempts"
+	{
+		"#format"	"{1:s}{2:d}"
+		"en"		"you got {1}{2}{default} attempts."
+	}
 }
