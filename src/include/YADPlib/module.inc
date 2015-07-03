@@ -37,7 +37,8 @@ enum YADP_Module_Team {
 
 static char g_modNames[MAXMODULES][MAXMODULENAME];
 static char g_modDescs[MAXMODULES][MAXMODULEDESC];
-static char g_modWghts[MAXMODULES];
+static int g_modWghts[MAXMODULES];
+static bool g_modRegistered[MAXMODULES];
 static Handle g_modDicedCallbacks[MAXMODULES];
 static Handle g_modResetCallbacks[MAXMODULES];
 static YADP_Module_Team g_modTeam[MAXMODULES];
@@ -100,6 +101,7 @@ stock int YADP_Module_Register(const char[] name, const char[] desc, int weight,
 	g_modDescs[g_modIdx] = mDesc;
 	g_modWghts[g_modIdx] = weight;
 	g_modTeam[g_modIdx] = team;
+	g_modRegistered[g_modIdx] = false;
 	Format(errMsg, sizeof(errMsg), "%T", "yadp_main_RegMod", LANG_SERVER, mName);
 	YADP_Debug_LogMessage("module", errMsg, LogServer, LevelInfo);
 	return g_modIdx;
@@ -192,25 +194,38 @@ stock int YADP_Module_RegOnConf(Handle plugin, int numParams)
 	return 0;
 }
 
-stock int  YADP_Module_RegOnDiced(Handle plugin, int numParams)
+stock int YADP_Module_RegOnDiced(Handle plugin, int numParams)
 {
 	if(numParams != 3 || !YADP_Initialized())
 	{
 		return 0;
 	}
 	int modIdx = GetNativeCell(1);
+	if(!YADP_Module_IsValid(modIdx))
+	{
+		return -1;
+	}
+	char msg[128];
+	if(g_modRegistered[modIdx])
+	{
+		Format(msg, sizeof(msg), "%T", "yadp_main_AlreadyRegOnDiced", LANG_SERVER, modIdx);
+		YADP_Debug_LogMessage("global", msg, (LogFile | LogServer), LevelError);
+		return -1;
+	}
 	Handle hDiced = YADP_Module_GetHandle(modIdx, true);
 	Handle hReset = YADP_Module_GetHandle(modIdx, false);
 	if(hDiced == null || hReset == null)
 	{
+		Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDicedUnexpected", LANG_SERVER, modIdx);
+		YADP_Debug_LogMessage("global", msg, (LogFile | LogServer), LevelError);
 		return -1;
 	}
 	AddToForward(hDiced, plugin, GetNativeFunction(2)); 
 	AddToForward(hReset, plugin, GetNativeFunction(3)); 
+	g_modRegistered[modIdx] = true;
 	char pName[50];
-	char msg[128];
 	GetPluginFilename(plugin, pName, sizeof(pName));
-	Format(msg, sizeof(msg), "%T", "yadp_main_YADP_RegisterOnDice", LANG_SERVER, modIdx, pName);
+	Format(msg, sizeof(msg), "%T", "yadp_main_RegOnDiced", LANG_SERVER, modIdx, pName);
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	return 0;
 }

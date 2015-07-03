@@ -126,7 +126,17 @@
 	"yadp_main_RegOnDiced"
 	{
 		"#format"	"{1:d}{2:s}"
-		"en"		"registered OnDiced for module {1} by plugin '{2}'."
+		"en"		"registered OnDice for module {1} by plugin '{2}'."
+	}
+	"yadp_main_AlreadyRegOnDiced"
+	{
+		"#format"	"{1:d}"
+		"en"		"module {1} already registered OnDice."
+	}
+	"yadp_main_RegOnDicedUnexpected"
+	{
+		"#format"	"{1:d}"
+		"en"		"can not register OnDice for module {1}. <indeterminate error>"
 	}
 	"yadp_main_ModMsg"
 	{
