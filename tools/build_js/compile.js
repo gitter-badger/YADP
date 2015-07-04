@@ -18,7 +18,7 @@ function getTagExp(tag) {
 
 function updateFile(file) {
 	var data = fs.readFileSync(file, 'utf8');
-			
+	
 	var res = data;
 	res = updatePlaceholder(res, getTagExp('debug'), (argv.debug ? "1" : "0"));
 	res = updatePlaceholder(res, getTagExp('release'), (argv.release || argv.publish ? "1" : "0"));
@@ -26,7 +26,7 @@ function updateFile(file) {
 	res = updatePlaceholder(res, getTagExp('date'), moment().format('YYYY-MM-DD'));
 	res = updatePlaceholder(res, getTagExp('time'), moment().format('HH:mm:ss'));
 	res = updatePlaceholder(res, getTagExp('datetime'), moment().format('YYYY-MM-DD HH:mm:ss'));
-		
+	
 	fs.writeFileSync(file, res, 'utf8');
 }
 
@@ -99,6 +99,71 @@ function deployDependencies(dep_path, rel_path) {
 	}
 }
 
+function executePreprocessor(fileArr) {
+	for (var i in fileArr) {
+		preprocessFile(fileArr[i]);
+	}
+}
+
+function buildProject(sourceFiles, sourcePath, includePath, sourceIncludePath, dependencyPath) {
+	var compiledFiles = [];
+	for (var i in sourceFiles) {
+		var fileRes =  path.basename(sourceFiles[i], '.sp') + '.smx';
+		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + getDependencyOrigins(dependencyPath) + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
+		
+		try {
+			var proc = cprocess.execSync(path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg, {cwd: sourcePath, encoding: 'utf8'});
+			process.stdout.write(proc);
+		} catch(e) {
+			if(e && e.stdout)
+				process.stdout.write(e.stdout);
+		}
+		
+		if(fs.existsSync(sourcePath + fileRes)){
+			compiledFiles.push(fileRes);
+		}
+	}
+	return compiledFiles;
+}
+
+function moveBinaries(files, sourcePath, binaryPath) {
+	for (var i in files) {
+		fs.renameSync(sourcePath + files[i], binaryPath + files[i]);
+	}
+}
+
+function copySources(files, releasePath) {
+	for (var i in files) {
+		fsx.copySync(files[i], path.join(releasePath, "addons/sourcemod/scripting/")  + path.basename(files[i]));
+	}
+}
+
+function copyBinaries(files, binaryPath, releasePath) {
+	for (var i in files) {
+		fsx.copySync(binaryPath + files[i], path.join(releasePath, "addons/sourcemod/plugins/")  + files[i]);
+	}
+}
+
+function copyAdditionalFiles(releasePath, sourceIncludePath, translationPath) {
+	fsx.copySync(sourceIncludePath, path.join(releasePath, "addons/sourcemod/scripting/include/"));
+	fsx.copySync(translationPath, path.join(releasePath, "addons/sourcemod/translations/"));
+}
+
+function updateReleaseFiles(releasePath) {
+	var relFiles = glob.sync(path.join(releasePath, "addons/") + "**/*.sp", null);
+	relFiles = relFiles.concat(glob.sync(path.join(releasePath, "addons/") + "**/*.inc", null));
+	for (var i in relFiles) {
+		preprocessFile(relFiles[i]);
+	}
+}
+
+function removeTemporaryReleaseFiles(releasePath) {
+	var tmpFiles = glob.sync(path.join(releasePath, "addons/") + "**/*.tmp", null);
+	for (var i in tmpFiles) {
+		fsx.deleteSync(tmpFiles[i]);
+	}
+}
+
 function _compile() {
 	var srcPath = path.join(__dirname, settings.PATH_SP_SRC);
 	var binPath = path.join(__dirname, settings.PATH_SP_BIN);
@@ -107,63 +172,26 @@ function _compile() {
 	var incPath = path.join(__dirname, settings.PATH_SP_INCLUDE);
 	var sicPath = path.join(srcPath, "include/");
 	var tlrPath = path.join(srcPath, "translations/");
-	var cmpPath = path.join(__dirname, settings.PATH_COMPILER);
 	
 	var srcFiles = glob.sync(srcPath + "*.sp", null);
 	var incFiles = glob.sync(sicPath + "*.inc", null);
 	var allFiles = srcFiles.concat(incFiles);
-	var cmpFiles = [];
 	
 	updateVersion();
 	console.log("Current Version: " + version.getVersion());
 	emptyDir(binPath);
-	for (var i in allFiles) {
-		preprocessFile(allFiles[i]);
-	}
-	for (var i in srcFiles) {
-		var file = srcFiles[i];
-		var fileRes =  path.basename(file, '.sp') + '.smx'
-		var arg = ("-i" + incPath) + " " + ("-i" + sicPath) + " " + getDependencyOrigins(depPath) + " " + settings.COMP_FLAGS + " " + file;
-		
-		try {
-			var proc = cprocess.execSync(cmpPath + ' ' + arg, {cwd: binPath, encoding: 'utf8'});
-			process.stdout.write(proc);
-		} catch(e) {
-			if(e && e.stdout)
-				process.stdout.write(e.stdout);
-		}
-		
-		if(fs.existsSync(srcPath + fileRes)){
-			cmpFiles.push(fileRes);
-		}
-	}
-	for (var i in cmpFiles) {
-		var file = cmpFiles[i];	
-		fs.renameSync(srcPath + file, binPath + file);
-	}
+	executePreprocessor(allFiles);
+	var cmpFiles = buildProject(srcFiles, srcPath, incPath, sicPath, depPath);
+	moveBinaries(cmpFiles, srcPath, binPath);
 	if(srcFiles.length == cmpFiles.length && argv.publish) {
 		var cpath = path.join(relPath, version.getVersion());
-		for (var i in srcFiles) {
-			var file = srcFiles[i];	
-			fsx.copySync(file, path.join(cpath, "addons/sourcemod/scripting/")  + path.basename(file));
-		}
-		for (var i in cmpFiles) {
-			var file = cmpFiles[i];
-			fsx.copySync(binPath + file, path.join(cpath, "addons/sourcemod/plugins/")  + file);
-		}
-		fsx.copySync(sicPath, path.join(cpath, "addons/sourcemod/scripting/include/"));
-		fsx.copySync(tlrPath, path.join(cpath, "addons/sourcemod/translations/"));
-		var relFiles = glob.sync(path.join(cpath, "addons/") + "**/*.sp", null);
-		relFiles = relFiles.concat(glob.sync(path.join(cpath, "addons/") + "**/*.inc", null));
-		for (var i in relFiles) {
-			preprocessFile(relFiles[i]);
-		}
-		var tmpFiles = glob.sync(path.join(cpath, "addons/") + "**/*.tmp", null);
-		for (var i in tmpFiles) {
-			fsx.deleteSync(tmpFiles[i]);
-		}
+		copySources(srcFiles, cpath);
+		copyBinaries(cmpFiles, binPath, cpath);
+		copyAdditionalFiles(cpath, sicPath, tlrPath);
+		updateReleaseFiles(cpath);
+		removeTemporaryReleaseFiles(cpath);
 		deployDependencies(depPath, cpath);
-		console.log("Created Version " + version.getVersion());
+		console.log("Created Release " + version.getVersion());
 	}
 	for (var i in allFiles) {
 		try {
@@ -172,7 +200,6 @@ function _compile() {
 			console.log(e);
 		}
 	}
-	
 }
 
 module.exports = {
