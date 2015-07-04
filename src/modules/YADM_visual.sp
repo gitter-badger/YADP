@@ -15,22 +15,43 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: $version$
+ * Version: 0.0.0.585
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
+#include <smlib>
 #pragma newdecls required
 #include <YADP>
 
 public Plugin myinfo = {
-	name = "YADM: ",
+	name = "YADM: visual",
 	author = "Hendrik Reker",
-	description = "Yet Another Dice Module: ",
-	version = "$version$",
+	description = "Yet Another Dice Module: visual",
+	version = "0.0.0.585",
 	url = "https://github.com/reker-/YADP"
 };
 
-static int g_modIndex = -1;
+static float g_minFoV;
+static float g_maxFoV;
+static int g_modIndexFOV = -1;
+static int g_modIndexFOVExtreme = -1;
+static ConVar g_cvEnableFoV;
+static ConVar g_cvWeightFoV;
+static ConVar g_cvFoVMin;
+static ConVar g_cvFoVMax;
+static ConVar g_cvEnableFoVExtreme;
+static ConVar g_cvWeightFoVExtreme;
+
+public void OnPluginStart()
+{
+	LoadTranslations("yadp.visual.phrases.txt");
+	g_cvEnableFoV = CreateConVar("yadp_fov_enable", "1", "Players can roll a FoV change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightFoV = CreateConVar("yadp_fov_weight", "50", "Probability of players getting a FoV change.", FCVAR_PLUGIN, true, 0.0);
+	g_cvFoVMin = CreateConVar("yadp_fov_min", "0.5", "Minimum health a player can receive.", FCVAR_PLUGIN);
+	g_cvFoVMax = CreateConVar("yadp_fov_max", "1.5", "Maximum health a player can receive.", FCVAR_PLUGIN);
+	g_cvEnableFoVExtreme = CreateConVar("yadp_fovExtreme_enable", "1", "Players can roll a FoV change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightFoVExtreme = CreateConVar("yadp_fovExtreme_weight", "50", "Probability of players getting a FoV change.", FCVAR_PLUGIN, true, 0.0);
+}
 
 public void OnLibraryAdded(const char[] name)
 {
@@ -48,32 +69,83 @@ public void OnLibraryRemoved(const char[] name)
 	{
 		return;
 	}
-	g_modIndex = -1;
+	g_modIndexFOV = -1;
 }
 
 static void ModuleInit()
 {
-	g_modIndex = YADP_RegisterModule("name", "desc", 50, ModuleTeam_Any);
-	YADP_RegisterOnDice(g_modIndex, HandleDiced, ResetDiced);
+	AutoExecConfig(true, "plugin.YADP.Visual");
+	if(GetConVarInt(g_cvEnableFoV) == 1)
+	{
+		g_modIndexFOV = YADP_RegisterModule("FoV", "Players get random FoV.", GetConVarInt(g_cvWeightFoV), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexFOV, HandleDicedFoV, ResetDicedFoV);
+	}
+	if(GetConVarInt(g_cvEnableFoVExtreme) == 1)
+	{
+		g_modIndexFOVExtreme = YADP_RegisterModule("FoVEx", "Players get extreme FoV.", GetConVarInt(g_cvWeightFoVExtreme), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexFOVExtreme, HandleDicedFoVExtreme, ResetDicedFoVExtreme);
+	}
 }
 
 static void ModuleConf()
 {
-
+	g_minFoV = GetConVarFloat(g_cvFoVMin);
+	g_maxFoV = GetConVarFloat(g_cvFoVMax);
 }
 
-static void HandleDiced(int client)
+static void HandleDicedFoV(int client)
 {
-	if(g_modIndex < 0 || !YADP_IsValidClient(client, true))
+	if(g_modIndexFOV < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
+	float val = Math_GetRandomFloat(g_minFoV, g_maxFoV);
+	int oldVal = GetPlayerFoV(client);
+	int newVal = RoundToFloor(oldVal * val);
+	SetPlayerFoV(client, newVal);
+	char msg[180];
+	Format(msg, sizeof(msg), "o: %d / n: %d", oldVal, newVal);
+	YADP_SendChatMessage(client, msg);
 }
 
-static void ResetDiced(int client)
+static void ResetDicedFoV(int client)
 {
-	if(g_modIndex < 0 || !YADP_IsValidClient(client, true))
+	if(g_modIndexFOV < 0 || !YADP_IsValidClient(client, true))
 	{
 		return;
 	}
+	SetPlayerFoV(client, 90);
+}
+
+static void HandleDicedFoVExtreme(int client)
+{
+	if(g_modIndexFOVExtreme < 0 || !YADP_IsValidClient(client, true))
+	{
+		return;
+	}
+	SetPlayerFoV(client, 199);
+}
+
+static void ResetDicedFoVExtreme(int client)
+{
+	if(g_modIndexFOVExtreme < 0 || !YADP_IsValidClient(client, true))
+	{
+		return;
+	}
+	SetPlayerFoV(client, 90);
+}
+
+static int GetPlayerFoV(int client)
+{
+	return !YADP_IsValidClient(client, true) ? -1 : GetEntProp(client, Prop_Send, "m_iDefaultFOV");
+}
+
+static void SetPlayerFoV(int client, int val)
+{
+	if(!YADP_IsValidClient(client, true))
+	{
+		return;
+	}
+	SetEntProp(client, Prop_Send, "m_iDefaultFOV", val);
+	SetEntProp(client, Prop_Send, "m_iFOV", val);
 }

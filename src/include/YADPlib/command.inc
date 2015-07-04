@@ -109,10 +109,13 @@ stock Action YADP_Command_HandleRequest(int client, int args)
 		YADP_Chat_PrintToChat(client, msg);
 		return Plugin_Handled;
 	}
-	//if(GetUserAdmin(client) == INVALID_ADMIN_ID || (GetUserAdmin(client) != INVALID_ADMIN_ID && !GetAdminFlag(GetUserAdmin(client), Admin_Root)))
-	//{
-	g_DiceState[client][0]--;
-	//}
+	
+
+	if(!YADP_IsDebugInstance())
+	{
+		g_DiceState[client][0]--;
+	}
+	
 	int mod = YADP_Module_ChooseRandom(view_as<YADP_Module_Team>(GetClientTeam(client)));
 	g_DiceState[client][1] = mod;
 	YADP_Module_SendOnDiced(mod, client);
