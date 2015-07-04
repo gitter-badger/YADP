@@ -161,3 +161,21 @@ static int RegModule(Handle plugin, int numParams)
 	YADP_Debug_LogMessage("global", msg, LogFile, LevelInfo);
 	return YADP_Module_Register(mName, mDesc, GetNativeCell(3), view_as<YADP_Module_Team>(GetNativeCell(4)));
 }
+
+stock bool YADP_IsReleaseInstance()
+{
+#if __RELEASE__
+	return true;
+#else
+	return false;
+#endif
+}
+
+stock bool YADP_IsDebugInstance()
+{
+#if __DEBUG__
+	return true;
+#else
+	return false;
+#endif
+}
