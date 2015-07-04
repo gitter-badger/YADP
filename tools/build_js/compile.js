@@ -45,17 +45,20 @@ function preprocessFile(file) {
 }
 
 function clearPreprocessor(file) {
-	fsx.deleteSync(file);
-	fs.renameSync(file + ".tmp", file);
+	try {
+		fsx.deleteSync(file);
+		fs.renameSync(file + ".tmp", file);
+	} catch(e) {
+		console.log(e);
+	}
 }
 
 function emptyDir(dir) {
 	try {
 		fsx.removeSync(dir);
 		fsx.mkdirsSync(dir);
-		return true;
 	} catch(e) {
-		return false;
+		console.log(e);
 	}
 }
 
