@@ -1,0 +1,12 @@
+"Phrases"
+{
+	"yadp_visual_FoV"
+	{
+		"#format"	"{1:d}"
+		"en"		"your FoV changed to {1}°."
+	}
+	"yadp_visual_FoVExtreme"
+	{
+		"en"		"you got {orange}extreme {red}FoV{default}."
+	}
+}

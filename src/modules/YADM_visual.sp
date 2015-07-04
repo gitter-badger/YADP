@@ -15,7 +15,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: 0.0.0.585
+ * Version: $version$
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
@@ -27,7 +27,7 @@ public Plugin myinfo = {
 	name = "YADM: visual",
 	author = "Hendrik Reker",
 	description = "Yet Another Dice Module: visual",
-	version = "0.0.0.585",
+	version = "$version$",
 	url = "https://github.com/reker-/YADP"
 };
 
@@ -115,8 +115,8 @@ static void HandleDicedFoV(int client)
 	int oldVal = GetPlayerFoV(client);
 	int newVal = RoundToFloor(oldVal * val);
 	SetPlayerFoV(client, newVal);
-	char msg[180];
-	Format(msg, sizeof(msg), "o: %d / n: %d", oldVal, newVal);
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", "yadp_visual_FoV", client, newVal);
 	YADP_SendChatMessage(client, msg);
 }
 
@@ -136,6 +136,9 @@ static void HandleDicedFoVExtreme(int client)
 		return;
 	}
 	SetPlayerFoV(client, 199);
+	char msg[80];
+	Format(msg, sizeof(msg), "%T", "yadp_visual_FoVExtreme", client);
+	YADP_SendChatMessage(client, msg);
 }
 
 static void ResetDicedFoVExtreme(int client)
