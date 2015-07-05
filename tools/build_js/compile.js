@@ -119,15 +119,15 @@ function buildProject(sourceFiles, sourcePath, includePath, sourceIncludePath, d
 	for (var i in sourceFiles) {
 		var fileRes =  path.basename(sourceFiles[i], '.sp') + '.smx';
 		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + getDependencyOrigins(dependencyPath) + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
-		var cmd = (os.platform() == 'linux' ? "./" : "") + path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
+		var cmd = (os.platform() == 'linux' ? "exec " : "") + path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
 		console.log("> " + cmd);
 		console.log();
 		try {
 			var proc = cprocess.execSync(cmd, {cwd: sourcePath, encoding: 'utf8'});
 			process.stdout.write(proc);
+			console.log("Compiled " + sourceFiles[i]);
 		} catch(e) {
-			if(e && e.stdout)
-				process.stdout.write(e.stdout);
+			if(e && e.stdout) process.stdout.write(e.stdout);
 		}
 		
 		if(fs.existsSync(sourcePath + fileRes)){
