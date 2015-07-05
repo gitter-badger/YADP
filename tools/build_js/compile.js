@@ -186,6 +186,7 @@ function _compile() {
 	var allFiles = srcFiles.concat(incFiles);
 	
 	updateVersion();
+	console-log(argv.travis ? "automated build" : "");
 	console.log("Current Version: " + version.getVersion());
 	emptyDir(binPath);
 	executePreprocessor(allFiles);

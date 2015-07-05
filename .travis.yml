@@ -2,7 +2,8 @@ language: cpp
 compiler: clang
 
 git:
-    submodules: false #http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
+    submodules: false 
+	#http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
 	
 before_install:
 	- sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
