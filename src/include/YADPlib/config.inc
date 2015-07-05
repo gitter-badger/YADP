@@ -16,6 +16,7 @@
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
  * Version: $version$
+ * GitBase: $git-branch$ / $git-hash-long$
  * Authors: Hendrik Reker
  */
 #if defined _YADPLIB_CONFIG_INCLUDED

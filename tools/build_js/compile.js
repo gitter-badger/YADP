@@ -5,6 +5,7 @@ var fs = require("fs");
 var fsx = require('fs-extra');
 var argv = require('yargs').argv;
 var moment = require('moment');
+var gitrev = require('git-rev-sync');
 var settings = require(path.join(__dirname, "./settings.js"));
 var version = require(path.join(__dirname, "./version.js"));
 
@@ -26,6 +27,10 @@ function updateFile(file) {
 	res = updatePlaceholder(res, getTagExp('date'), moment().format('YYYY-MM-DD'));
 	res = updatePlaceholder(res, getTagExp('time'), moment().format('HH:mm:ss'));
 	res = updatePlaceholder(res, getTagExp('datetime'), moment().format('YYYY-MM-DD HH:mm:ss'));
+	res = updatePlaceholder(res, getTagExp('version'), version.getVersion());
+	res = updatePlaceholder(res, getTagExp('git-hash-short'), gitrev.short());
+	res = updatePlaceholder(res, getTagExp('git-hash-long'), gitrev.long());
+	res = updatePlaceholder(res, getTagExp('git-branch'), gitrev.branch());
 	
 	fs.writeFileSync(file, res, 'utf8');
 }
