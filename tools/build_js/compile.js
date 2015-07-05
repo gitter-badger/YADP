@@ -6,7 +6,7 @@ var fsx = require('fs-extra');
 var argv = require('yargs').argv;
 var moment = require('moment');
 var gitrev = require('git-rev-sync');
-var settings = require(path.join(__dirname, "./settings.js"));
+var settings = require(path.join(__dirname, "./settings" + (argv.travis ? ".travis" : "") + ".js"));
 var version = require(path.join(__dirname, "./version.js"));
 
 function updatePlaceholder(fileData, id, value) {
