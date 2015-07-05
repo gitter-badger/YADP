@@ -6,6 +6,7 @@ var fsx = require('fs-extra');
 var argv = require('yargs').argv;
 var moment = require('moment');
 var gitrev = require('git-rev-sync');
+var os = require('os');
 var settings = require(path.join(__dirname, "./settings" + (argv.travis ? ".travis" : "") + ".js"));
 var version = require(path.join(__dirname, "./version.js"));
 
@@ -118,9 +119,11 @@ function buildProject(sourceFiles, sourcePath, includePath, sourceIncludePath, d
 	for (var i in sourceFiles) {
 		var fileRes =  path.basename(sourceFiles[i], '.sp') + '.smx';
 		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + getDependencyOrigins(dependencyPath) + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
-		
+		var cmd = (os.platform() == 'linux' ? "./" : "") + path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
+		console.log("> " + cmd);
+		console.log();
 		try {
-			var proc = cprocess.execSync(path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg, {cwd: sourcePath, encoding: 'utf8'});
+			var proc = cprocess.execSync(cmd, {cwd: sourcePath, encoding: 'utf8'});
 			process.stdout.write(proc);
 		} catch(e) {
 			if(e && e.stdout)
@@ -186,7 +189,7 @@ function _compile() {
 	var allFiles = srcFiles.concat(incFiles);
 	
 	updateVersion();
-	console-log(argv.travis ? "automated build" : "");
+	console.log(argv.travis ? "automated build" : "");
 	console.log("Current Version: " + version.getVersion());
 	emptyDir(binPath);
 	executePreprocessor(allFiles);
