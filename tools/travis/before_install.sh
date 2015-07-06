@@ -1,3 +1,5 @@
+#http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
+
 sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
 
 git submodule update --init --recursive

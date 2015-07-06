@@ -3,8 +3,7 @@ compiler: clang
 sudo: required
 
 git:
-  submodules: false 
-  #http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
+  submodules: false
 
 before_install:
   - chmod +rx tools/travis/before_install.sh
@@ -20,4 +19,5 @@ before_script:
 
 script:
   - chmod +rx tools/travis/script.sh 
-  - ./tools/travis/script.sh 
+  - ./tools/travis/script.sh
+  - sudo find . -print | grep -i 'spcomp'

@@ -79,7 +79,7 @@ function getDependencyOrigins(dep_path) {
 				if(dpath == "path_inc" && dependencies[dependency].hasOwnProperty(dpath)) {
 					if(dependencies[dependency][dpath].hasOwnProperty("org")) {
 						var pth = path.join(dep_path, dependencies[dependency][dpath]["org"]);
-						res += "-i " + pth + " ";
+						res += "-i" + pth + " ";
 						console.log(pth);
 					}
 				}
@@ -119,7 +119,7 @@ function buildProject(sourceFiles, sourcePath, includePath, sourceIncludePath, d
 	for (var i in sourceFiles) {
 		var fileRes =  path.basename(sourceFiles[i], '.sp') + '.smx';
 		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + getDependencyOrigins(dependencyPath) + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
-		var cmd = (os.platform() == 'linux' ? "exec " : "") + path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
+		var cmd = (os.platform() == 'linux' ? "" : "") + path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
 		console.log("> " + cmd);
 		console.log();
 		try {
