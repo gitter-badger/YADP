@@ -112,8 +112,8 @@ static void HandleDicedGravPull(int client)
 		return;
 	}
 	g_Modes[client] = MiscMode_GravPull;
-	char msg[80];
-	Format(msg, sizeof(msg), "Got GravPull");
+	char msg[100];
+	Format(msg, sizeof(msg), "%T", "yadp_misc_GravPull", client);
 	YADP_SendChatMessage(client, msg);
 }
 
@@ -139,7 +139,7 @@ static void ApplyForce(int client, int target)
 	float clPos[3], clTgt[3], clNew[3], clVel[3];
 	GetEntPropVector(client, Prop_Send, "m_vecOrigin", clPos);
 	GetEntPropVector(target, Prop_Send, "m_vecOrigin", clTgt);
-	if(GetVectorDistance(clPos, clTgt) < 0.5)
+	if(GetVectorDistance(clPos, clTgt) < 0.5 || GetVectorDistance(clPos, clTgt) > 100.0)
 	{
 		return;
 	}

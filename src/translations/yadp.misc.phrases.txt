@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"yadp_misc_GravPull"
+	{
+		"en"		"you experience a stronger gravitational pull towards some objects."
+	}
+}

@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"yadp_misc_GravPull"
+	{
+		"de"		"du erfährst eine stärkere gravitative Anziehungskraft zu einigen Objekten."
+	}
+}
