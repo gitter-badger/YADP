@@ -15,8 +15,8 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU
  * General Public License along with YADP. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Version: 0.0.0.600
- * GitBase: master / 33522b2aa51513852a930674ce789e3d696b1b6e
+ * Version: $version$
+ * GitBase: $git-branch$ / $git-hash-long$
  * Authors: Hendrik Reker
  */
 #include <sourcemod>
@@ -28,7 +28,7 @@ public Plugin myinfo = {
 	name = "YADM: misc",
 	author = "Hendrik Reker",
 	description = "Yet Another Dice Module: misc",
-	version = "0.0.0.600",
+	version = "$version$",
 	url = "https://github.com/reker-/YADP"
 };
 
