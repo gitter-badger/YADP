@@ -119,7 +119,7 @@ function buildProject(sourceFiles, sourcePath, includePath, sourceIncludePath, d
 	for (var i in sourceFiles) {
 		var fileRes =  path.basename(sourceFiles[i], '.sp') + '.smx';
 		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + getDependencyOrigins(dependencyPath) + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
-		var cmd = (os.platform() == 'linux' ? "." : "") + /*path.join(__dirname,*/ settings.PATH_COMPILER/*)*/ + ' ' + arg;
+		var cmd = (os.platform() == 'linux' ? "." : "") + path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
 		console.log("> " + cmd);
 		console.log();
 		try {
