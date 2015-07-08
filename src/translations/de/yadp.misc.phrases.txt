@@ -4,4 +4,8 @@
 	{
 		"de"		"du erfährst eine stärkere gravitative Anziehungskraft zu einigen Objekten."
 	}
+	"yadp_misc_GravPush"
+	{
+		"de"		"du erfährst eine stärkere gravitative Abstoßungskraft von einigen Objekten."
+	}
 }

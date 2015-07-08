@@ -4,4 +4,8 @@
 	{
 		"en"		"you experience a stronger gravitational pull towards some objects."
 	}
+	"yadp_misc_GravPush"
+	{
+		"en"		"you experience a stronger gravitational push from some objects."
+	}
 }

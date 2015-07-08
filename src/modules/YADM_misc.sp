@@ -35,22 +35,31 @@ public Plugin myinfo = {
 enum MiscMode {
 	MiscMode_None = 0,
 	MiscMode_GravPull = 1,
+	MiscMode_GravPush = 2,
 };
 
 static ConVar g_cvEnableGravPull;
 static ConVar g_cvWeightGravPull;
+static ConVar g_cvEnableGravPush;
+static ConVar g_cvWeightGravPush;
 static ConVar g_cvGravPullForce;
+static ConVar g_cvGravPushForce;
 static int g_modIndexGravPull = -1;
-static Handle g_PullTimer = null;
+static int g_modIndexGravPush = -1;
+static Handle g_forceTimer = null;
 static MiscMode g_Modes[MAXPLAYERS + 1];
 static float g_GravPullForce;
+static float g_GravPushForce;
 
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.misc.phrases.txt");
-	g_cvEnableGravPull = CreateConVar("yadp_gravPull_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvEnableGravPull = CreateConVar("yadp_gravPull_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_cvWeightGravPull = CreateConVar("yadp_gravPull_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
-	g_cvGravPullForce = CreateConVar("yadp_gravPull_force", "20.0", "Force of the gravitational pull.", FCVAR_PLUGIN, true, 1.0, true, 10.0);
+	g_cvGravPullForce = CreateConVar("yadp_gravPull_force", "20.0", "Force of the gravitational pull.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
+	g_cvEnableGravPush = CreateConVar("yadp_gravPush_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_cvWeightGravPush = CreateConVar("yadp_gravPush_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
+	g_cvGravPushForce = CreateConVar("yadp_gravPush_force", "20.0", "Force of the gravitational pull.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -70,6 +79,7 @@ public void OnLibraryRemoved(const char[] name)
 		return;
 	}
 	g_modIndexGravPull = -1;
+	g_modIndexGravPush = -1;
 }
 
 static void ModuleInit()
@@ -80,6 +90,11 @@ static void ModuleInit()
 		g_modIndexGravPull = YADP_RegisterModule("GravPull", "Players get additional gravitational pull.", GetConVarInt(g_cvWeightGravPull), ModuleTeam_Any);
 		YADP_RegisterOnDice(g_modIndexGravPull, HandleDicedGravPull, ResetDicedGravPull);
 	}
+	if(GetConVarInt(g_cvEnableGravPush) == 1)
+	{
+		g_modIndexGravPush = YADP_RegisterModule("GravPush", "Players get additional gravitational pull.", GetConVarInt(g_cvWeightGravPush), ModuleTeam_Any);
+		YADP_RegisterOnDice(g_modIndexGravPush, HandleDicedGravPush, ResetDicedGravPush);
+	}
 	HookEvent("round_start", RoundStartHook, EventHookMode_Post);
 	HookEvent("round_end", RoundEndHook, EventHookMode_Post);
 }
@@ -87,20 +102,21 @@ static void ModuleInit()
 static void ModuleConf()
 {
 	g_GravPullForce = GetConVarFloat(g_cvGravPullForce);
+	g_GravPushForce = GetConVarFloat(g_cvGravPushForce);
 }
 
 public Action RoundStartHook(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	g_PullTimer = CreateTimer(0.1, PullTimer, 0, TIMER_REPEAT);
+	g_forceTimer = CreateTimer(0.1, PullTimer, 0, TIMER_REPEAT);
 	return Plugin_Continue;
 }
 
 public Action RoundEndHook(Handle:event, const String:name[], bool:dontBroadcast)
 {
-	if(g_PullTimer != null)
+	if(g_forceTimer != null)
 	{
-		KillTimer(g_PullTimer, false);
-		g_PullTimer = null;
+		KillTimer(g_forceTimer, false);
+		g_forceTimer = null;
 	}
 	return Plugin_Continue;
 }
@@ -122,11 +138,28 @@ static void ResetDicedGravPull(int client)
 	g_Modes[client] = MiscMode_None;
 }
 
+static void HandleDicedGravPush(int client)
+{
+	if(g_modIndexGravPush < 0 || !YADP_IsValidClient(client, true))
+	{
+		return;
+	}
+	g_Modes[client] = MiscMode_GravPush;
+	char msg[100];
+	Format(msg, sizeof(msg), "%T", "yadp_misc_GravPush", client);
+	YADP_SendChatMessage(client, msg);
+}
+
+static void ResetDicedGravPush(int client)
+{
+	g_Modes[client] = MiscMode_None;
+}
+
 static Action PullTimer(Handle timer, any data)
 {
 	for(int i = 1; i <= MAXPLAYERS; i++)
 	{
-		if(g_Modes[i] != MiscMode_GravPull || !YADP_IsValidClient(i, true)) continue;
+		if(g_Modes[i] == MiscMode_None || !YADP_IsValidClient(i, true)) continue;
 		int target = Client_GetClosestToClient(i);
 		if(!YADP_IsValidClient(target, true)) continue;
 		ApplyForce(i, target);
@@ -146,8 +179,10 @@ static void ApplyForce(int client, int target)
 	SubtractVectors(clTgt, clPos, clNew);
 	NormalizeVector(clNew, clNew);
 	Entity_GetAbsVelocity(client, clVel);
-	clVel[0] += (clNew[0]) * (g_GravPullForce * 10);
-	clVel[1] += (clNew[1]) * (g_GravPullForce * 10);
-	clVel[2] += (clNew[2]) * (g_GravPullForce * 10);
+	int sg = (g_Modes[client] == MiscMode_GravPush ? -1 : 1);
+	float fs = (g_Modes[client] == MiscMode_GravPush ? g_GravPushForce : g_GravPullForce);
+	clVel[0] += sg * (clNew[0]) * (fs * 10);
+	clVel[1] += sg * (clNew[1]) * (fs * 10);
+	clVel[2] += sg * (clNew[2]) * (fs * 10);
 	Entity_SetAbsVelocity(client, clVel);
 }
