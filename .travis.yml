@@ -8,20 +8,21 @@ git:
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - sudo apt-get update -qq
-  - wget -qO- https://deb.nodesource.com/setup_0.12 | sudo bash -
-  - sudo apt-get install -y nodejs
+  - sudo apt-get update -qq 2>>err.log
+  - wget -qO- https://deb.nodesource.com/setup_0.12 | sudo bash - 2>>err.log
+  - sudo apt-get install -y nodejs 2>>err.log
 
 install:
-  - wget http://www.sourcemod.net/smdrop/1.8/sourcemod-1.8.0-git5506-linux.tar.gz -O /tmp/sourcemod.tar.gz
-  - tar -xzvf /tmp/sourcemod.tar.gz 
+  - wget http://www.sourcemod.net/smdrop/1.8/sourcemod-1.8.0-git5506-linux.tar.gz -O /tmp/sourcemod.tar.gz 2>>err.log
+  - tar -xzvf /tmp/sourcemod.tar.gz 2>>err.log
+  - cat err.log
   - chmod +rx tools/misc/npm_dependencies.sh
   - ./tools/misc/npm_dependencies.sh
 
 before_script:
-  - chmod +rx addons/sourcemod/scripting/spcomp
-  - chmod +rx addons/sourcemod/scripting/compile.sh
-  - chmod +rx tools/travis_build.sh
+  - chmod 711 addons/sourcemod/scripting/spcomp
+  - chmod 711 addons/sourcemod/scripting/compile.sh
+  - chmod 711 tools/travis_build.sh
   - pwd
   - sudo find / -print | grep -i 'spcomp'
   - cp src/modules/* src
@@ -29,20 +30,5 @@ before_script:
 
 script:
   - sudo tools/travis_build.sh
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_health.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_misc.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_modifiers.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_teleport.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_unfair.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_visual.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_weapon.sp
-  - addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADP.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_health.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_misc.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_modifiers.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_teleport.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_unfair.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_visual.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADM_weapon.sp
-  - exec addons/sourcemod/scripting/spcomp -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/src/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include   /home/travis/build/reker-/YADP/src/YADP.sp
-  
+  - ./addons/sourcemod/scripting/compile.sh
+  - git status
