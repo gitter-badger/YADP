@@ -1,34 +1,33 @@
 language: cpp
 compiler: clang
-sudo: required
 
 git:
   submodules: false #http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
+  
+addons:
+  apt:
+    packages: 
+    - nodejs
 
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - sudo apt-get update -qq 2>>err.log
-  - wget -qO- https://deb.nodesource.com/setup_0.12 | sudo bash - 2>>err.log
-  - sudo apt-get install -y nodejs 2>>err.log
 
 install:
-  - wget http://www.sourcemod.net/smdrop/1.8/sourcemod-1.8.0-git5506-linux.tar.gz -O /tmp/sourcemod.tar.gz 2>>err.log
-  - tar -xzvf /tmp/sourcemod.tar.gz 2>>err.log
-  - cat err.log
   - chmod +rx tools/misc/npm_dependencies.sh
   - ./tools/misc/npm_dependencies.sh
+  - wget http://www.sourcemod.net/smdrop/1.8/sourcemod-1.8.0-git5506-linux.tar.gz -O /tmp/sourcemod.tar.gz
+  - mkdir sm
+  - tar -xzvf /tmp/sourcemod.tar.gz -C sm
+  - export PATH=$PATH:$PWD/sm/addons/sourcemod/scripting/
 
 before_script:
-  - chmod 711 addons/sourcemod/scripting/spcomp
-  - chmod 711 addons/sourcemod/scripting/compile.sh
+  - chmod 711 sm/addons/sourcemod/scripting/spcomp
+  - chmod 711 sm/addons/sourcemod/scripting/compile.sh
   - chmod 711 tools/travis_build.sh
-  - pwd
-  - sudo find / -print | grep -i 'spcomp'
-  - cp src/modules/* src
-  - ls -la
 
 script:
-  - sudo tools/travis_build.sh
-  - ./addons/sourcemod/scripting/compile.sh
+  - ./tools/travis_build.sh
   - git status
+  - ./spcomp -i/home/travis/build/reker-/YADP/sm/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include /home/travis/build/reker-/YADP/addons/sourcemod/scripting/YADP.sp
+  - ./spcomp -i/home/travis/build/reker-/YADP/sm/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include /home/travis/build/reker-/YADP/addons/sourcemod/scripting/YADM_modifiers.sp

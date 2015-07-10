@@ -1,1 +1,1 @@
-sudo node build.js --publish --travis --bd
+node build.js --publish --travis --bd
