@@ -74,8 +74,8 @@ stock bool YADP_Initialize()
 {
 	LoadTranslations("yadp.phrases.txt");
 	char msgStr[128];
-	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_PLUGIN|FCVAR_DONTRECORD));
+	g_cvEnabled = CreateConVar("yadp_enabled", "1", "Toggles YADP", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvVersion = CreateConVar("yadp_version", YADPLIB_VERSION, "The version of YADP", (FCVAR_NONE|FCVAR_DONTRECORD));
 	if(g_cvEnabled == null || g_cvVersion == null)
 	{
 		char errMsg[40];

@@ -55,7 +55,7 @@ stock void YADP_Configure_Debug()
 
 static void CreateConfig()
 {
-	g_cvLoglevel = CreateConVar("yadp_loglevel", "1", "Determines what messages will be ignored. (1,2,4 or 8)", (FCVAR_PLUGIN), true, float(view_as<int>(LevelInfo)), true, float(view_as<int>(LevelCritical)));
+	g_cvLoglevel = CreateConVar("yadp_loglevel", "1", "Determines what messages will be ignored. (1,2,4 or 8)", (FCVAR_NONE), true, float(view_as<int>(LevelInfo)), true, float(view_as<int>(LevelCritical)));
 }
 
 static void ApplyConfig()

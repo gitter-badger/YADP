@@ -57,14 +57,14 @@ static TeleportMode g_Modes[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.teleport.phrases.txt");
-	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightSwitch = CreateConVar("yadp_switch_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightSwitchTeam = CreateConVar("yadp_switchTeam_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "1", "Players can roll a position switch.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableSmoke = CreateConVar("yadp_smoke_enable", "1", "Players can roll a teleportation grenade.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightSmoke = CreateConVar("yadp_smoke_weight", "50", "Probability of players getting a teleportation grenade.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableSwitch = CreateConVar("yadp_switch_enable", "1", "Players can roll a position switch.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightSwitch = CreateConVar("yadp_switch_weight", "50", "Probability of players getting a position switch.", FCVAR_NONE, true, 0.0);
+	g_cvEnableSwitchTeam = CreateConVar("yadp_switchTeam_enable", "1", "Players can roll a position switch.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightSwitchTeam = CreateConVar("yadp_switchTeam_weight", "50", "Probability of players getting a position switch.", FCVAR_NONE, true, 0.0);
+	g_cvEnableSwitchDmg = CreateConVar("yadp_switchDmg_enable", "1", "Players can roll a position switch.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightSwitchDmg = CreateConVar("yadp_switchDmg_weight", "50", "Probability of players getting a position switch.", FCVAR_NONE, true, 0.0);
+	g_cvEnableSmoke = CreateConVar("yadp_smoke_enable", "1", "Players can roll a teleportation grenade.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightSmoke = CreateConVar("yadp_smoke_weight", "50", "Probability of players getting a teleportation grenade.", FCVAR_NONE, true, 0.0);
 	HookEvent("smokegrenade_detonate", SmokeGrenadeDetonateHook);
 }
 

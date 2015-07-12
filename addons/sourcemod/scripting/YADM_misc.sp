@@ -54,12 +54,12 @@ static float g_GravPushForce;
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.misc.phrases.txt");
-	g_cvEnableGravPull = CreateConVar("yadp_gravPull_enable", "0", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightGravPull = CreateConVar("yadp_gravPull_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
-	g_cvGravPullForce = CreateConVar("yadp_gravPull_force", "20.0", "Force of the gravitational pull.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
-	g_cvEnableGravPush = CreateConVar("yadp_gravPush_enable", "1", "Players can roll health.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightGravPush = CreateConVar("yadp_gravPush_weight", "50", "Probability of players getting health.", FCVAR_PLUGIN, true, 0.0);
-	g_cvGravPushForce = CreateConVar("yadp_gravPush_force", "20.0", "Force of the gravitational pull.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
+	g_cvEnableGravPull = CreateConVar("yadp_gravPull_enable", "0", "Players can roll health.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightGravPull = CreateConVar("yadp_gravPull_weight", "50", "Probability of players getting health.", FCVAR_NONE, true, 0.0);
+	g_cvGravPullForce = CreateConVar("yadp_gravPull_force", "20.0", "Force of the gravitational pull.", FCVAR_NONE, true, 1.0, true, 100.0);
+	g_cvEnableGravPush = CreateConVar("yadp_gravPush_enable", "1", "Players can roll health.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightGravPush = CreateConVar("yadp_gravPush_weight", "50", "Probability of players getting health.", FCVAR_NONE, true, 0.0);
+	g_cvGravPushForce = CreateConVar("yadp_gravPush_force", "20.0", "Force of the gravitational pull.", FCVAR_NONE, true, 1.0, true, 100.0);
 }
 
 public void OnLibraryAdded(const char[] name)

@@ -33,7 +33,7 @@ static char g_chatName[10];
 
 stock void YADP_Initialize_Chat()
 {
-	g_cvChatName = CreateConVar("yadp_chatName", "YADP", "The identifier used by YADP in chat messages.", FCVAR_PLUGIN);
+	g_cvChatName = CreateConVar("yadp_chatName", "YADP", "The identifier used by YADP in chat messages.", FCVAR_NONE);
 }
 
 stock void YADP_Configure_Chat()

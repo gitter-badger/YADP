@@ -99,10 +99,10 @@ static ConVar g_cvWeightGrenade;
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.weapon.phrases.txt");
-	g_cvEnableWeapon = CreateConVar("yadp_weapon_enable", "1", "Players can roll weapons.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightWeapon = CreateConVar("yadp_weapon_weight", "10", "Probability of players getting a weapons.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableGrenade = CreateConVar("yadp_grenade_enable", "1", "Players can roll grenades.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightGrenade = CreateConVar("yadp_grenade_weight", "50", "Probability of players getting a weapons.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableWeapon = CreateConVar("yadp_weapon_enable", "1", "Players can roll weapons.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightWeapon = CreateConVar("yadp_weapon_weight", "10", "Probability of players getting a weapons.", FCVAR_NONE, true, 0.0);
+	g_cvEnableGrenade = CreateConVar("yadp_grenade_enable", "1", "Players can roll grenades.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightGrenade = CreateConVar("yadp_grenade_weight", "50", "Probability of players getting a weapons.", FCVAR_NONE, true, 0.0);
 	CreateConVars();
 }
 
@@ -238,8 +238,8 @@ static void CreateConVars()
 		g_cVarsGrenades[i][2] = CreateItemConVarWeight(g_gNames[i][0], g_gNames[i][1], false, true, "100");
 		g_cVarsGrenades[i][3] = CreateItemConVarWeight(g_gNames[i][0], g_gNames[i][1], false, false, "100");
 	}
-	g_cvGrenadeMax = CreateConVar("yadp_grenade_max", "5", "Upper bound of grenades a player might get.", FCVAR_PLUGIN, true, 1.0);
-	g_cvGrenadeMin = CreateConVar("yadp_grenade_min", "1", "Lower bound of grenades a player might get.", FCVAR_PLUGIN, true, 1.0);
+	g_cvGrenadeMax = CreateConVar("yadp_grenade_max", "5", "Upper bound of grenades a player might get.", FCVAR_NONE, true, 1.0);
+	g_cvGrenadeMin = CreateConVar("yadp_grenade_min", "1", "Lower bound of grenades a player might get.", FCVAR_NONE, true, 1.0);
 }
 
 static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool weapon, bool ct, const char[] defVal)
@@ -248,7 +248,7 @@ static ConVar CreateItemConVarEnable(const char[] name, const char[] lName, bool
 	char cvDesc[128];
 	Format(cvName, sizeof(cvName), "yadp_%s_%s_enable_%s", (weapon?"weapon":"grenade"), (ct?"ct":"t"), name);
 	Format(cvDesc, sizeof(cvDesc), "Are %ss allowed to get a %s?", (ct?"CT":"T"), lName);
-	return CreateConVar(cvName, defVal, cvDesc, FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	return CreateConVar(cvName, defVal, cvDesc, FCVAR_NONE, true, 0.0, true, 1.0);
 }
 
 
@@ -258,7 +258,7 @@ static ConVar CreateItemConVarWeight(const char[] name, const char[] lName, bool
 	char cvDesc[128];
 	Format(cvName, sizeof(cvName), "yadp_%s_%s_weight_%s", (weapon?"weapon":"grenade"), (ct?"ct":"t"), name);
 	Format(cvDesc, sizeof(cvDesc), "Determines the probability of %ss getting a %s", (ct?"CT":"T"), lName);
-	return CreateConVar(cvName, defVal, cvDesc, FCVAR_PLUGIN, true, 0.0);
+	return CreateConVar(cvName, defVal, cvDesc, FCVAR_NONE, true, 0.0);
 }
 
 static bool CanGetItem(int idx, int team, bool weapon)

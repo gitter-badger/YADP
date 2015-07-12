@@ -70,22 +70,22 @@ static ConVar g_cvAttemptsMax;
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.modifiers.phrases.txt");
-	g_cvEnableLongjump = CreateConVar("yadp_longjump_enable", "1", "Players can roll Longjump.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightLongjump = CreateConVar("yadp_longjump_weight", "50", "Probability of players getting Longjump.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableLongjumpExtreme = CreateConVar("yadp_longjumpex_enable", "1", "Players can roll Longjump Extreme.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightLongjumpExtreme = CreateConVar("yadp_longjumpex_weight", "50", "Probability of players getting Longjump Extreme.", FCVAR_PLUGIN, true, 0.0);
-	g_cvEnableGravity = CreateConVar("yadp_gravity_enable", "1", "Players can roll a gravity change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightGravity = CreateConVar("yadp_gravity_weight", "50", "Probability of players getting a gravity change.", FCVAR_PLUGIN, true, 0.0);
-	g_cvGravityMin = CreateConVar("yadp_gravity_min", "0.1", "Minimum gravity.", FCVAR_PLUGIN, true, 0.1, true, 1.0);
-	g_cvGravityMax = CreateConVar("yadp_gravity_max", "3.0", "Maximum gravity.", FCVAR_PLUGIN, true, 1.0, true, 3.0);
-	g_cvEnableSpeed = CreateConVar("yadp_speed_enable", "1", "Players can roll a speed change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightSpeed = CreateConVar("yadp_speed_weight", "50", "Probability of players getting a speed change.", FCVAR_PLUGIN, true, 0.0);
-	g_cvSpeedMin = CreateConVar("yadp_speed_min", "0.1", "Minimum speed.", FCVAR_PLUGIN, true, 0.1, true, 1.0);
-	g_cvSpeedMax = CreateConVar("yadp_speed_max", "2.0", "Maximum speed.", FCVAR_PLUGIN, true, 1.0, true, 2.0);
-	g_cvEnableAttempts = CreateConVar("yadp_attempts_enable", "1", "Players can roll additional attempts.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightAttempts = CreateConVar("yadp_attempts_weight", "50", "Probability of players getting additional attempts.", FCVAR_PLUGIN, true, 0.0);
-	g_cvAttemptsMin = CreateConVar("yadp_attempts_min", "-3.0", "Minimum attempts.", FCVAR_PLUGIN, true, -5.0, true, 1.0);
-	g_cvAttemptsMax = CreateConVar("yadp_attempts_max", "3.0", "Maximum attempts.", FCVAR_PLUGIN, true, 1.0, true, 5.0);
+	g_cvEnableLongjump = CreateConVar("yadp_longjump_enable", "1", "Players can roll Longjump.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightLongjump = CreateConVar("yadp_longjump_weight", "50", "Probability of players getting Longjump.", FCVAR_NONE, true, 0.0);
+	g_cvEnableLongjumpExtreme = CreateConVar("yadp_longjumpex_enable", "1", "Players can roll Longjump Extreme.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightLongjumpExtreme = CreateConVar("yadp_longjumpex_weight", "50", "Probability of players getting Longjump Extreme.", FCVAR_NONE, true, 0.0);
+	g_cvEnableGravity = CreateConVar("yadp_gravity_enable", "1", "Players can roll a gravity change.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightGravity = CreateConVar("yadp_gravity_weight", "50", "Probability of players getting a gravity change.", FCVAR_NONE, true, 0.0);
+	g_cvGravityMin = CreateConVar("yadp_gravity_min", "0.1", "Minimum gravity.", FCVAR_NONE, true, 0.1, true, 1.0);
+	g_cvGravityMax = CreateConVar("yadp_gravity_max", "3.0", "Maximum gravity.", FCVAR_NONE, true, 1.0, true, 3.0);
+	g_cvEnableSpeed = CreateConVar("yadp_speed_enable", "1", "Players can roll a speed change.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightSpeed = CreateConVar("yadp_speed_weight", "50", "Probability of players getting a speed change.", FCVAR_NONE, true, 0.0);
+	g_cvSpeedMin = CreateConVar("yadp_speed_min", "0.1", "Minimum speed.", FCVAR_NONE, true, 0.1, true, 1.0);
+	g_cvSpeedMax = CreateConVar("yadp_speed_max", "2.0", "Maximum speed.", FCVAR_NONE, true, 1.0, true, 2.0);
+	g_cvEnableAttempts = CreateConVar("yadp_attempts_enable", "1", "Players can roll additional attempts.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightAttempts = CreateConVar("yadp_attempts_weight", "50", "Probability of players getting additional attempts.", FCVAR_NONE, true, 0.0);
+	g_cvAttemptsMin = CreateConVar("yadp_attempts_min", "-3.0", "Minimum attempts.", FCVAR_NONE, true, -5.0, true, 1.0);
+	g_cvAttemptsMax = CreateConVar("yadp_attempts_max", "3.0", "Maximum attempts.", FCVAR_NONE, true, 1.0, true, 5.0);
 }
 
 public void OnLibraryAdded(const char[] name)

@@ -46,12 +46,12 @@ static ConVar g_cvWeightFoVExtreme;
 public void OnPluginStart()
 {
 	LoadTranslations("yadp.visual.phrases.txt");
-	g_cvEnableFoV = CreateConVar("yadp_fov_enable", "1", "Players can roll a FoV change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightFoV = CreateConVar("yadp_fov_weight", "50", "Probability of players getting a FoV change.", FCVAR_PLUGIN, true, 0.0);
-	g_cvFoVMin = CreateConVar("yadp_fov_min", "0.5", "Minimum health a player can receive.", FCVAR_PLUGIN);
-	g_cvFoVMax = CreateConVar("yadp_fov_max", "1.5", "Maximum health a player can receive.", FCVAR_PLUGIN);
-	g_cvEnableFoVExtreme = CreateConVar("yadp_fovExtreme_enable", "1", "Players can roll a FoV change.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_cvWeightFoVExtreme = CreateConVar("yadp_fovExtreme_weight", "50", "Probability of players getting a FoV change.", FCVAR_PLUGIN, true, 0.0);
+	g_cvEnableFoV = CreateConVar("yadp_fov_enable", "1", "Players can roll a FoV change.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightFoV = CreateConVar("yadp_fov_weight", "50", "Probability of players getting a FoV change.", FCVAR_NONE, true, 0.0);
+	g_cvFoVMin = CreateConVar("yadp_fov_min", "0.5", "Minimum health a player can receive.", FCVAR_NONE);
+	g_cvFoVMax = CreateConVar("yadp_fov_max", "1.5", "Maximum health a player can receive.", FCVAR_NONE);
+	g_cvEnableFoVExtreme = CreateConVar("yadp_fovExtreme_enable", "1", "Players can roll a FoV change.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_cvWeightFoVExtreme = CreateConVar("yadp_fovExtreme_weight", "50", "Probability of players getting a FoV change.", FCVAR_NONE, true, 0.0);
 	HookEvent("player_spawn", OnPlayerSpawnHook);
 }
 
