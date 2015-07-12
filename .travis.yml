@@ -1,6 +1,12 @@
 language: cpp
 compiler: clang
 
+env:
+  global:
+  - secure: nYwqvsHff2E73PdsNd2vHzftObDQWcBkfHuQ1MFttCMrXZYiSz7MiQ4ij9dd3a6src/Y4I6+yS5K83QOK74Lr2lPQF0OYiEjfXFAylzHn/BsvfiZuOc0xGXsBZAqLKgEg00f2Ztbx2RPe0IiMHE2MxUzEGNj3/WWAHkMGob3W6qHfycq0k+TG+6LIanLMFGF2JzhYtIOPih/RiqUazOkVxSZLRre4ws0S40fcbjEHWizo4rE/Uzf+KBxTf8vSt5Bb2Zbhz4iq6Xi8xh2zA8nXfTVa/NBGVv54RuXWpSEjtKmgv8iezSXOWXfJdhmSxHAUrWMM09UwiLhgl9hS0hGviuiMx6zE0aKJ/du7FuCD6CYmMbgDEUD9HtPVUfG3QKfhdIE1PCno7u8RS4SHTGRoQ9LmIo30R7Jf0bO55ozLfdQpY2AtsjeJC5nz33ktR1P8DY7kYKpzgABKkiw6kYXXJ/JCc95U8cXlMzDy+KWkLBOH0FbaJUlw5tvi7vN6l/aqon0jJVAL9KXHRwywQMKeoQ2QXCfFLLAYWtnJK1KyrOsxvaV0dJWj1cHlu+hjUaRmXr83OYOiJWS4J7NUzzmbap+5htCN9YhhLmZwyjXIUZDaLBL/j2Zh724tywjvkYhPkJFRMd4Y3Gz+Ltz8Tl1zhil4EEd/SKFXU8bIfPGEc4=
+  - secure: TmdmPO+i4aoFv4MoEPaBy/+skn/O84TyHevYCKwACJbhxhoEC1OL/1UPQSaOuH5+/8pFt69LXo14u/XvKTQIUA2mQs2pj5H5QRzpCHt4G7a3QNoqOzSfYp2ZbH7lHd1ewc01YEtyGmlj+PTPCVJDCHlsgNKpbzS/wtdOrQ/GjIyjimxJJiw2BKD8/goR77/VDGEA+UODEFyXZ3rS7gcuqeuevrfNSSaDPxPpA0Av2t+omAs9tsQuaNNntumXfYmt1Ezd+TvCutMVIQEmGw4/utRAZwgWBSFdGNplUyFtaEAgfKacFq1a7Uiq5WykBLhfNSQ6ElPNl3iLLoYV0Kk9FVuqmZXsfTHxkQAtfSghHI1+e08MG3Rq8T9v3U1Hb8YBpjshMt38rQOl35hqK0aOj5ud931QBDbA49R983EfXPoDxf9o5XfUO9fZd2XYhUB4/DRQRQZ3crV6lJpKuUTzgZSKt2upYT1ZJAd3Qjh+UFTkBas1WXabulc+oMiH1YTrFy+At/Y1N/7brxLb0xqRGfcTb3rIu2Px0xQIPiZok8KzwIqj7gKC3lcz9SXU+j7J/bY6V6twSL3UBv23/a33Qa4+0pitHofT/59pRtQ6Z7uSB2KiPxxSNvgVo9lYksZTHfMWMWhFeso0k743eI3dqshclRLcEstPi7wL8gy0O1s=
+  - secure: TCd0MSaVNmfgTR2wnvEkQV/qEaD3pn72Y+v/TnVqPfyxr/220e8APK8qSqd8hNysPSyc2Xtzdtj2I+FBWIYOTtRkbaK5nESJkzshgbSa9H79zQEcg2ohzK5gKGO7hEyWD7sYDdXRsUKGX+AA2rkk7rGQJi0GU2fcU8g3N00AvdbiG9fLEQTjqoAac2quG9kiivtqyAkkkV1MLjhhsrNl2sR/meZf3QAeT55cV6wEuOwWRPbBjqE0SNIkolznhcbi4RO9KNtcQAzWyj/KJw2wGDFs7zoBkuu6rt/3TRVW1w12WmV3D3iD0ZHfnrl6S/fPSTLyAr2m7rfR8saOtM3WT6KPJx3MxQBr5LzIiRWGlSm+Ysk+XNKNo+JjvHrHnoUXwlPFiKFgTt0LH8zOP8p5W89svU+YTF2dyGWaE6jGr27Y30don/7jTHeTsAWq+tkZxowLOiL7ZgMCUzViq6+Sttn1CVvuEghBK5M9xJR2N6GIrfY7HJ4xtQlJQq4cMJu8hsWiaVmQOesk9QRhBKCtGk+i3qGoTBjERmnE/SFc/qJ8/FTA0IVqs/rqRN3B6kDylMktgdhrr+ymJn49Rb7WqY5rLkHHYKjzQPgXTL7mjGeqMjy6kUv6a/nw5pa6YqZYN88aTpDb+kHV3vzvQkYF1On2MnBMNZJc7D7n4nY7MHM=
+
 git:
   submodules: false #http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
 
@@ -32,3 +38,16 @@ before_script:
 script:
   - ./tools/travis_build.sh
   - git status
+
+after_success:
+  - echo "machine github.com" > ~/.netrc
+  - echo "login $DEPLOY_USER" >> ~/.netrc
+  - echo "password $DEPLOY_KEY" >> ~/.netrc
+  - chmod 600 ~/.netrc
+  - git remote add deploy https://github.com/reker-/YADP.git
+  - git config user.name $DEPLOY_USER
+  - git config user.email $DEPLOY_MAIL
+  - git checkout master
+  - git add VERSION
+  - git commit -m "[CI BUILD]"
+  - git push deploy master
