@@ -8,6 +8,9 @@ addons:
   apt:
     packages: 
     - nodejs
+    - gcc-multilib
+    - lib32stdc++6
+    - lib32z1
 
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
@@ -29,5 +32,3 @@ before_script:
 script:
   - ./tools/travis_build.sh
   - git status
-  - ./spcomp -i/home/travis/build/reker-/YADP/sm/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include /home/travis/build/reker-/YADP/addons/sourcemod/scripting/YADP.sp
-  - ./spcomp -i/home/travis/build/reker-/YADP/sm/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/addons/sourcemod/scripting/include/ -i/home/travis/build/reker-/YADP/dependencies/smlib/scripting/include /home/travis/build/reker-/YADP/addons/sourcemod/scripting/YADM_modifiers.sp
