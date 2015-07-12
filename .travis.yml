@@ -1,18 +1,14 @@
 language: cpp
 compiler: clang
+sudo: required
 
 git:
   submodules: false #http://stackoverflow.com/questions/15674064/github-submodule-access-rights-travis-ci/24600210#24600210
-  
-addons:
-  apt:
-    packages: 
-    - nodejs
-    - gcc-multilib
-    - lib32stdc++6
-    - lib32z1
 
 before_install:
+  - curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
+  - sudo apt-get update
+  - sudo apt-get install gcc-multilib lib32stdc++6 lib32z1 nodejs
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
 
