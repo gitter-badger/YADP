@@ -3,3 +3,4 @@ npm install git-rev-sync
 npm install glob
 npm install moment
 npm install yargs
+npm install shelljs

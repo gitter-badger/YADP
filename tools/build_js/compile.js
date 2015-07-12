@@ -1,4 +1,3 @@
-var cprocess = require('child_process');
 var glob = require("glob");
 var path = require("path");
 var fs = require("fs");
@@ -6,6 +5,7 @@ var fsx = require('fs-extra');
 var argv = require('yargs').argv;
 var moment = require('moment');
 var gitrev = require('git-rev-sync');
+var shelljs = require('shelljs');
 var os = require('os');
 var settings = require(path.join(__dirname, "./settings" + (argv.travis ? ".travis" : (os.platform() == 'linux' ? ".linux" : "")) + ".js"));
 var version = require(path.join(__dirname, "./version.js"));
@@ -22,21 +22,20 @@ function emptyDir(dir) {
 
 function buildProject(sourceFiles, sourcePath, includePath, sourceIncludePath, dependencyPath) {
 	var compiledFiles = [];
+	var cdir = shelljs.pwd();
+	shelljs.cd(sourcePath);
 	for (var i in sourceFiles) {
 		var fileRes =  path.basename(sourceFiles[i], '.sp') + '.smx';
-		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + util.getDependencyOrigins(dependencyPath) + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
+		var arg = ("-i" + includePath) + " " + ("-i" + sourceIncludePath) + " " + util.getDependencyOrigins(dependencyPath) + " -o" + fileRes + " " + settings.COMP_FLAGS + " " + sourceFiles[i];
 		var cmd = path.join(__dirname, settings.PATH_COMPILER) + ' ' + arg;
 		console.log();
-		try {
-			var proc = cprocess.execSync(cmd, {cwd: sourcePath, encoding: 'utf8'});
-			process.stdout.write(proc);
-		} catch(e) {
-			if(e && e.stdout) process.stdout.write(e.stdout);
-			console.log(e);
-			continue;
+		shelljs.exec(cmd);
+		if(fs.existsSync(fileRes)) {
+			compiledFiles.push(fileRes);
+			console.log("Compiled: " + fileRes);
 		}
-		compiledFiles.push(fileRes);
 	}
+	shelljs.cd(cdir);
 	return compiledFiles;
 }
 
@@ -51,10 +50,16 @@ function backupFiles(base_path) {
 }
 
 function restoreFiles(base_path) {
-	var act_path = path.join(__dirname, "../../bak/" + path.basename(base_path));
+	var bname = path.basename(base_path);
+	var bck_path = path.join(__dirname, "../../bak/");
+	var act_path = bck_path + bname;
+	var bin_path = path.join(__dirname, "../../" + bname + "/sourcemod/plugins");
+	var nbn_path = path.join(__dirname, "../../bak/" + bname + "/sourcemod/plugins");
+	emptyDir(nbn_path);
+	fsx.copySync(bin_path, nbn_path);
 	fsx.deleteSync(base_path);
 	fsx.copySync(act_path, base_path);
-	fsx.deleteSync(act_path);
+	fsx.deleteSync(bck_path);
 }
 
 function _compile() {
